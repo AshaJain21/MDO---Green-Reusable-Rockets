@@ -26,7 +26,7 @@ classdef MissionModule
             
             if num_launches <= obj.fleet_size
                 launch_cadence = sat_prod_time_per_launch; %Assume that you can launch as quickly as satellites are produced
-            else
+            else %NOT WORKING BELOW THIS LINE
                 if stg1_reuse==true
                     launch_cadence = ((num_launches-obj.fleet_size)*obj.booster_prod_time*obj.booster_refurb_time) / ( (num_launches-1)*(obj.booster_refurb_time + obj.booster_prod_time)); 
                 else
