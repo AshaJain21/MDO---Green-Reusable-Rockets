@@ -95,7 +95,15 @@ classdef MissionModule
                     num_launchers_available = num_launchers_available - 1;
                     launch_cadences(end+1) = curr_time_step - last_launch_time;
                     last_launch_time = curr_time_step;
+                end
 
+                if (num_sats_awaiting_launch > 0) && (num_sats_awaiting_launch < num_sat_per_launch) && (num_sats_produced >= obj.num_sats) && (num_launchers_available >= 1)
+%                     fprintf('============Last Launch!============\n')
+                    num_sats_launched = num_sats_launched + num_sats_awaiting_launch;
+                    num_sats_awaiting_launch = 0;
+                    num_launchers_available = num_launchers_available - 1;
+                    launch_cadences(end+1) = curr_time_step - last_launch_time;
+                    last_launch_time = curr_time_step;
                 end
             end
         end
