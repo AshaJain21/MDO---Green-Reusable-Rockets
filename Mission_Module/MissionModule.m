@@ -59,11 +59,7 @@ classdef MissionModule
 
             while num_sats_launched < obj.num_sats
                 
-                if num_sats_produced < obj.num_sats
-                    curr_time_step = min([next_sat_prod_time, next_launcher_prod_time, next_launcher_refurb_time]);
-                else
-                    curr_time_step = min([next_launcher_prod_time, next_launcher_refurb_time]);
-                end
+                curr_time_step = obj.GetNextTimeStep(num_sats_produced, stg1_reuse, next_sat_prod_time, next_launcher_prod_time, next_launcher_refurb_time);
 
                 % PRODUCE WHATEVER SHOULD BE PRODUCED AT THIS TIME
                 if (curr_time_step == next_sat_prod_time) && (num_sats_produced < obj.num_sats)
@@ -73,10 +69,6 @@ classdef MissionModule
                     if num_sats_produced < obj.num_sats
                         next_sat_prod_time = curr_time_step + obj.sat_prod_times(num_sats_produced+1);
                     end
-
-%                 elseif (curr_time_step == next_sat_prod_time) && (num_sats_produced >= obj.num_sats)
-%                     fprintf('\nSAT PRODUCTION COMPLETE! NO FURTHER SATS PRODUCED\n')
-%                     break
                 end
 
 
@@ -107,6 +99,22 @@ classdef MissionModule
                 end
             end
         end
+
+        function [curr_time_step] = GetNextTimeStep(obj, num_sats_produced, stg1_reuse, next_sat_prod_time, next_launcher_prod_time, next_launcher_refurb_time)
+            if num_sats_produced < obj.num_sats
+                if stg1_reuse == true
+                    curr_time_step = min([next_sat_prod_time, next_launcher_prod_time, next_launcher_refurb_time]);
+                else
+                    curr_time_step = min([next_sat_prod_time, next_launcher_prod_time]);
+                end
+            else
+                if stg1_reuse == true
+                    curr_time_step = min([next_launcher_prod_time, next_launcher_refurb_time]);
+                else
+                    curr_time_step = next_launcher_prod_time;
+                end
+            end
+        end
+
     end
-    
 end
