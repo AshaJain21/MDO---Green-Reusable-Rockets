@@ -56,33 +56,39 @@ classdef MissionModule
             last_launch_time = 0;
             launch_cadences = [];
             additional_rockets_available = 0;
-            run_count = 0;
 
             while num_sats_launched < obj.num_sats
                 
-                run_count = run_count + 1;
-                curr_time_step = min([next_sat_prod_time, next_launcher_prod_time, next_launcher_refurb_time]);
+                if num_sats_produced < obj.num_sats
+                    curr_time_step = min([next_sat_prod_time, next_launcher_prod_time, next_launcher_refurb_time]);
+                else
+                    curr_time_step = min([next_launcher_prod_time, next_launcher_refurb_time]);
+                end
 
                 % PRODUCE WHATEVER SHOULD BE PRODUCED AT THIS TIME
-                if curr_time_step == next_sat_prod_time
-%                     fprintf('Satellite being produced!')
+                if (curr_time_step == next_sat_prod_time) && (num_sats_produced < obj.num_sats)
+%                     fprintf('\nSatellite being produced!\n')
                     num_sats_produced = num_sats_produced + 1;
                     num_sats_awaiting_launch = num_sats_awaiting_launch + 1;
                     if num_sats_produced < obj.num_sats
                         next_sat_prod_time = curr_time_step + obj.sat_prod_times(num_sats_produced+1);
                     end
+
+%                 elseif (curr_time_step == next_sat_prod_time) && (num_sats_produced >= obj.num_sats)
+%                     fprintf('\nSAT PRODUCTION COMPLETE! NO FURTHER SATS PRODUCED\n')
+%                     break
                 end
 
 
                 if curr_time_step == next_launcher_prod_time
-%                     fprintf('Launcher being produced!')
+%                     fprintf('\nLauncher being produced!\n')
                     num_launchers_available = num_launchers_available + 1;
                     next_launcher_prod_time = curr_time_step + launcher_prod_time;
                     additional_rockets_available = additional_rockets_available + 1;
                 end
 
                 if curr_time_step == next_launcher_refurb_time
-%                     fprintf('Launcher being refurbished!')
+%                     fprintf('\nLauncher being refurbished!\n')
                     num_launchers_available = num_launchers_available + 1;
                     next_launcher_refurb_time = curr_time_step + obj.launcher_refurb_time;
                     additional_rockets_available = additional_rockets_available + 1;
@@ -94,6 +100,7 @@ classdef MissionModule
 %                     fprintf('============Launch!============\n')
                     num_sats_launched = num_sats_launched + num_sat_per_launch;
                     num_sats_awaiting_launch = num_sats_awaiting_launch - num_sat_per_launch;
+                    num_launchers_available = num_launchers_available - 1;
                     launch_cadences(end+1) = curr_time_step - last_launch_time;
                     last_launch_time = curr_time_step;
 
