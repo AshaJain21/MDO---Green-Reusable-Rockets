@@ -96,7 +96,7 @@ classdef MissionModule
 
                 % CHECK TO SEE IF WE CAN LAUNCH ANYTHING YET (ASSUMES
                 % LAUNCH ON DEMAND)
-                if (num_sats_awaiting_launch >= num_sat_per_launch) && (num_launchers_available >= 1)
+                while (floor(num_sats_awaiting_launch/num_sat_per_launch) > 0) && (num_launchers_available >= 1)
 %                     fprintf('============Launch!============\n')
                     num_sats_launched = num_sats_launched + num_sat_per_launch;
                     num_sats_awaiting_launch = num_sats_awaiting_launch - num_sat_per_launch;
