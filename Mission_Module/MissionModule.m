@@ -22,7 +22,7 @@ classdef MissionModule
             obj.LR = LR;
 
             sat_vec =  1:obj.num_sats;
-            obj.sat_prod_times = init_sat_prod_time*sat_vec.^(log(obj.LR)/log(2));
+            obj.sat_prod_times = init_sat_prod_time*sat_vec.^(log(obj.LR)/log(2)); %Based on Crawford's Learning Curve
 
             obj.size_ubs = [3,6,9]; %1st bin driven by electron, 2nd bin driven by falcon 9, large bin driven by SLS
             obj.launcher_prod_times = [0.5, 0.5, 36];
