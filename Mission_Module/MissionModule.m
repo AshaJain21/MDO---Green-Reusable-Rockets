@@ -87,7 +87,7 @@ classdef MissionModule
                     additional_rockets_available = additional_rockets_available + 1;
                 end
 
-                if curr_time_step == next_launcher_refurb_time
+                if (curr_time_step == next_launcher_refurb_time) && (stg1_reuse==true)
 %                     fprintf('\nLauncher being refurbished!\n')
                     num_launchers_available = num_launchers_available + 1;
                     next_launcher_refurb_time = curr_time_step + obj.launcher_refurb_time;
