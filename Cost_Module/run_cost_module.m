@@ -1,4 +1,4 @@
-function total_cost = run_cost_module(design_variables, parameters, rocket)
+function total_cost = run_cost_module(design_variables, parameters, rocket, launch_cadence)
     
     %Launcher material cost
     stg1_mat_volume = ((2*pi*rocket.stg1_radius*rocket.stg1_height) + (pi*srocket.stg1_radius^2)) * rocket.wall_thickness; %material volume of stage 1
@@ -8,9 +8,11 @@ function total_cost = run_cost_module(design_variables, parameters, rocket)
 
     launcher_mat_cost = launcher_mat_volume * parameters.launcher_mat_density * parameters.mat_unit_cost;
     
-
+    % Launcher development cost
+    launcher_dev_cost = compute_launcher_dev_cost(rocket);
+    
     %Launcher manufacturing cost
-
+    launcher_manuf_cost = compute_launcher_manuf_cost();
 
     %Launcher refurbishment cost
 
