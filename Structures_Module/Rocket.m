@@ -10,6 +10,12 @@ classdef Rocket
         stg2_radius
         stg1_reuse
         stg2_reuse
+        stg1_engine
+        stg2_engine
+        stg1_prop
+        stg2_prop
+        shield_material
+        wall_thickness
         % May add cone on top
     end
 end
