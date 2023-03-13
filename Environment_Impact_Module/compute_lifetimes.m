@@ -27,7 +27,7 @@ function aerosol_lifetimes = compute_aerosol_lifetimes(aerosol_species)
     %https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6472719/ 
     %https://agupubs.onlinelibrary.wiley.com/doi/10.1029/2021JD036373
 
-    %assumed mesospheric lifetime is 4 yrs from 
+    %assumed mesospheric lifetime is 4 yrs from https://agupubs.onlinelibrary.wiley.com/doi/10.1002/2013EF000160
 
     diameters = containers.Map({'Al2O3', 'BC'}, {2, 2.5}); %microns 
     stratosphere_lifetimes = readtable("stratosphere_lifetimes.csv");
@@ -55,6 +55,11 @@ function gas_lifetimes = compute_gas_lifetimes(gas_species)
     gases = gas_species.keys;
     gas_lifetimes = containers.Map;
     for i = 1:size(gases)
+        if 'CO2' == gases(i)
+            lifetimes = ones(size(altitudes))*;
+        elseif 'H2O'
+            lifetimes = ones(size(altitudes)) * 14;
+        end
         gas_data = gas_species(gases(i));
         altitudes = gas_data(2,:);
         lifetimes = zeros(size(altitudes));
