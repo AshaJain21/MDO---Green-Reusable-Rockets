@@ -1,4 +1,4 @@
-function total_cost = run_cost_module(design_variables, parameters, rocket, launch_schedule)
+function total_cost = run_cost_module(design_variables, parameters, rocket, launch_cadence)
     %Setting up array to track total cost for each launch
     size_launch_schedule = size(launch_schedule);
     total_cost_for_each_launch = zeros([1, size_launch_schedule(2)]);
@@ -14,17 +14,21 @@ function total_cost = run_cost_module(design_variables, parameters, rocket, laun
     total_cost_for_each_launch = total_cost_for_each_launch + launcher_mat_costs_per_launcher;
 
     
+    % Launcher development cost
+    launcher_dev_cost = compute_launcher_dev_cost(rocket);
 
     %Launcher manufacturing cost
+    launcher_manuf_cost = compute_launcher_manuf_cost();
 
+     total_cost_for_each_launch = total_cost_for_each_launch + launcher_dev_cost + launcher_manuf_cost;
 
     %Launcher refurbishment cost
 
     if parameters.reusable_stage(0) == 1
-        stage_1_refurb_cost= compute_refurb_cost(stages_1_manuf_cost, launch_schedule, parameters.refurb_cost_learning_curve);
+        stage_1_refurb_cost= compute_refurb_cost(stages_1_manuf_cost, launch_cadence, parameters.refurb_cost_learning_curve);
         total_cost_for_each_launch = total_cost_for_each_launch + stage_1_refurb_cost;
     elseif parameters.reusable_stage(1) == 1
-        stage_2_refurb_cost= compute_refurb_cost(stages_2_manuf_cost, launch_schedule, parameters.refurb_cost_learning_curve);
+        stage_2_refurb_cost= compute_refurb_cost(stages_2_manuf_cost, launch_cadence, parameters.refurb_cost_learning_curve);
         total_cost_for_each_launch = total_cost_for_each_launch + stage_2_refurb_cost;
     end
 
