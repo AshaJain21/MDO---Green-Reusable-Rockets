@@ -1,37 +1,3 @@
-% classdef MissionModule
-%     properties
-%         sat_mass %[kg]
-%         num_sats %[# satellites]
-%         fleet_size %[# launch vehicles]
-%         del_window %[months]
-%         sat_prod_times %[months per satellite]
-%         size_ubs %size bounds for the rocket size bins
-%         launcher_refurb_time %[months per launcher]
-%         launcher_prod_times %[months per launcher]
-%         LR %learning rate
-%         ready_q %Queue of rockets ready to use
-% 
-%     end
-%     methods
-%         function obj = MissionModule(sat_mass, num_sats, fleet_size, del_window, init_sat_prod_time, booster_refurb_time, LR)
-%             
-%             obj.sat_mass = sat_mass;
-%             obj.num_sats = num_sats;
-%             obj.fleet_size = fleet_size;
-%             obj.del_window = del_window;
-%             obj.launcher_refurb_time = booster_refurb_time;
-%             obj.LR = LR;
-% 
-%             sat_vec =  1:obj.num_sats;
-%             obj.sat_prod_times = init_sat_prod_time*sat_vec.^(log(obj.LR)/log(2)); %Based on Crawford's Learning Curve
-% 
-%             obj.size_ubs = [3,6,9]; %1st bin driven by electron, 2nd bin driven by falcon 9, large bin driven by SLS
-%             obj.launcher_prod_times = [0.5, 0.5, 36];
-% 
-%             obj.ready_q = zeros(1,fleet_size);
-% %             obj.awaiting_refurb=0;
-% %             obj.refurb_active=false;
-%         end
 function [per_launch_mass, launch_cadences] = run_mission_module(design_variables, parameters)
     
     %CALCULATE MASS PER LAUNCH (DIVIDE EVENLY)
@@ -171,6 +137,3 @@ function tracking_vars = place_rocket_in_refurb(tracking_vars, curr_time_step, p
     end
 
 end
-
-%     end
-% end
