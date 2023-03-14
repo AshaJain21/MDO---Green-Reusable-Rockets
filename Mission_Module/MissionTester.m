@@ -6,7 +6,7 @@ parameters.num_of_satellites = 5280; %[# of satellites], based on 110 satellites
 parameters.delivery_time = 48; %[months] NEED REFERENCE
 parameters.rocket_fleet_size = 0; %[# of boosters, counted based on https://en.wikipedia.org/wiki/List_of_Falcon_9_first-stage_boosters counting just boosters awaiting assignment or ready for launch (boosters being refurbished not included)
 parameters.init_sat_prod_time = 0.001;%120; %satellites per month (from https://www.cnbc.com/2020/08/10/spacex-starlink-satellte-production-now-120-per-month.html)
-parameters.launcher_refurb_time = 60/30; %[days] (from rough numbers at https://www.quora.com/How-does-SpaceX-refurbish-their-Falcon-9-rockets-after-they-land-How-long-does-it-take)
+parameters.launcher_refurb_time = 60/30; %[months] (from rough numbers at https://www.quora.com/How-does-SpaceX-refurbish-their-Falcon-9-rockets-after-they-land-How-long-does-it-take)
 parameters.launcher_prod_time_bins = [3,6,9; 0.5,0.5, 36];
 parameters.sat_prod_learning_rate = 0.9;
 
