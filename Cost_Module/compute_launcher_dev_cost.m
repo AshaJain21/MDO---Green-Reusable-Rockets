@@ -1,14 +1,9 @@
-function launcher_dev_cost = compute_launcher_dev_cost(rocket)
+function launcher_dev_cost = compute_launcher_dev_cost(rocket, design_variables, parameters, total_masses)
     % Assumptions
     % 1. Assumes no engine development costs
 
-    MY = 120000; %USD, most recent value from Koelle paper
+    stage_dev_cost = get_stage_dev_cost(design_variables.reusable_stages(1), total_masses(1), rocket.stg1_prop_mass, parameters) + get_stage_dev_cost(design_variables.reusable_stages(2), total_masses(2), rocket.stg2_prop_mass, parameters);
 
-    stg1_total_mass = rocket.stg1_struct_mass + rocket.stg1_prop_mass;
-    stg2_total_mass = rocket.stg2_struct_mass + rocket.stg2_prop_mass;
-
-    stage_dev_cost = get_stage_dev_cost(rocket.stg1_reuse, stg1_total_mass, rocket.stg1_prop_mass) + get_stage_dev_cost(rocket.stg2_reuse, stg2_total_mass, rocket.stg2_prop_mass);
-
-    launcher_dev_cost = (1.1 * stage_dev_cost) * MY;
+    launcher_dev_cost = (1.1 * stage_dev_cost) * parameters.MY_value;
 
 end
