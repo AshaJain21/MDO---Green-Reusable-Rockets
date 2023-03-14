@@ -47,5 +47,5 @@ function total_cost = run_cost_module(design_variables, parameters, rocket, laun
     %Spreading costs over time (?) with dev costs amortized, this may boil
     %down to maximum cost per launch
 
-    total_cost = [total_cost_for_each_launch; launch_cadence(1,:)];
+    total_cost = [total_cost_for_each_launch; cumsum(launch_cadence(1,:))];
 end
