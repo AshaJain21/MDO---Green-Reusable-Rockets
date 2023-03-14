@@ -1,4 +1,4 @@
-function env_impact = run_env_impact_module(propellant_mass_burned_per_altitude, second_stage_reentry_mass, parameters)
+function env_impact = run_env_impact_module(parameters, propellant_mass_burned_per_altitude, second_stage_reentry_mass)
     %Assumed that propellants are given in kg
     reentry_nox_emissions = compute_reentry_nox_emission(second_stage_reentry_mass);
     combined_emissions = combine_emissions(propellant_mass_burned_per_altitude, reentry_nox_emissions);
