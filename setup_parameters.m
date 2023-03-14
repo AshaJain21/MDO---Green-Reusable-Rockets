@@ -7,6 +7,7 @@ function parameters = setup_parameters()
 
     material.density = tbd;
     material.emissivity = tbd;
+    material.unit_cost = tbd;
     parameters.structural_material = material;
 
     parameters.orbital_altitude = 500; %km 
@@ -20,6 +21,12 @@ function parameters = setup_parameters()
     parameters.launcher_refurb_time = tbd;
     parameters.launcher_prod_time_bins = [3,6,9; 0.5,0.5, 36];
     parameters.init_sat_prod_time = tbd;
+
+    parameters.MY_value = 120000; %USD
+    parameters.num_engines_per_stage = tbd;
+    parameters.f1 = 0.6; %from koeller paper
+    parameters.f3 = 1.0; %from koeller paper
+    parameters.f4 = tbd;
 
 
     
