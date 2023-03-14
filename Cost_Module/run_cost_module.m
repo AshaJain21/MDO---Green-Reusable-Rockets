@@ -16,6 +16,7 @@ function total_cost = run_cost_module(design_variables, parameters, rocket, laun
     
     % Launcher development cost
     launcher_dev_cost = compute_launcher_dev_cost(rocket);
+    total_cost_for_each_launch = total_cost_for_each_launch + ones([1, size_launch_schedule(2)]) * launcher_dev_cost / size_launch_schedule(2)
 
     %Launcher manufacturing cost
     launcher_manuf_cost = compute_launcher_manuf_cost();
