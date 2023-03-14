@@ -23,8 +23,8 @@
 
 %stage mass ratio -total stage mass/mass at end of burn (mass at end of burn = total mass - burned prop mass)
 %%%NEED KINJAL TO CALCJLATE THE EMISSIONS PER 500 M FOR THE ROKCET
-function [LEOalt, stgsep, flighttime, rocket, CHECKS] = aerodynamics(st1t...
-    , st2t, reangle, rocket, st1ve, st2ve, e)
+function [rocket, emiss_m_launch] = aerodynamics(st1t... %%[rocket, %CHECKS%, emiss_m]
+    , st2t, reangle, rocket, st1ve, st2ve, mdot_emiss)
 %intialize constants and other vars
 st1mass = rocket.stage1.mass;
 st1prop = rocket.stage1.propmass;
@@ -34,6 +34,7 @@ st1rad = rocket.stage1.radius;
 st2rad = rocket.stage2.radius;
 st1h = rocket.stage1.height;
 st2h = rocket.stage2.height;
+T = readtable(mdot_emiss);
 mdotst1_f = st1t/st1ve; %mass flow rate of exhaust 
 mdotst2_f = st2t/st2ve; %mass flow rate of exhaust upper stage
 theight = st1h+st2h; %total rocket height [m]
@@ -80,10 +81,10 @@ q_l_presep = zeros(length(h)); %heat flux HOW DO I PUT THIS IN THE CLASSSSSS????
         time(i) = 2/( u(i) + u(i-1) ) ; %basic kinematics
         
         %check if there is enough fuel left
-        if mf < (rockmass(i) - st1prop)
-            fprintf('WARNING: Not Enough Fuel for Stage Separation at 75 km!')
-            St1propcheck = 0; %zero = fail
-        end
+%         if mf < (rockmass(i) - st1prop)
+%             fprintf('WARNING: Not Enough Fuel for Stage Separation at 75 km!')
+%             St1propcheck = 0; %zero = fail
+%         end
 
         if h(i) <= 4572 %set speed of sound and mach number params
             v = (0.000157*exp(0.00002503*h(i)))/3.28^2 ;%[m2/s]
@@ -145,10 +146,10 @@ q_l_presep = zeros(length(h)); %heat flux HOW DO I PUT THIS IN THE CLASSSSSS????
    
  end
  
-if (rockmass(end) - st1prop) >= 0
-    fprintf('Stage 1 Fuel Sufficient for Stage Separation!')
-    St1propcheck = 1; %zero = fail one = pass
-end
+% if (rockmass(end) - st1prop) >= 0
+%     fprintf('Stage 1 Fuel Sufficient for Stage Separation!')
+%     St1propcheck = 1; %zero = fail one = pass
+% end
 
 rocket.stage1.launchheatflux = q_l_presep;
 
@@ -181,11 +182,11 @@ q_l_st2(1) = q_1_presep(end); %PROBALY NEEDS TO BE DECREASEDDDDDDDDDDDDDDDDDDDDD
       u2(i) = u2(i-1) + delv; %calculate velocity of rocket
       time(i-1+length(h)) = 2/(u2(i) + u2(i-1) ) ; %basic kinematics CHECK CONTINUITY HEREEEEEE!!!! There mauy be a gap in time
       
-      %check if there is enough fuel left
-      if mf < (st2mass_calc(i) - st1prop)
-          fprintf('WARNING: Not Enough Fuel to Reach LEO!')
-          St2propcheck = 0; %zero = fail
-      end
+%       %check if there is enough fuel left
+%       if mf < (st2mass_calc(i) - st1prop)
+%           fprintf('WARNING: Not Enough Fuel to Reach LEO!')
+%           St2propcheck = 0; %zero = fail
+%       end
       
       %h>9144 m
       v = (0.000157*exp(0.00004664*h(i) -0.6882))/3.28^2 ;%[m2/s]
@@ -233,24 +234,40 @@ q_l_st2(1) = q_1_presep(end); %PROBALY NEEDS TO BE DECREASEDDDDDDDDDDDDDDDDDDDDD
     
  end
   
-if (st2mass_calc(end) - st2prop) >= 0
-    fprintf('Stage 2 Fuel Sufficient for LEO!')
-    St2propcheck = 1; %zero = fail one = pass
-end 
+% if (st2mass_calc(end) - st2prop) >= 0
+%     fprintf('Stage 2 Fuel Sufficient for LEO!')
+%     St2propcheck = 1; %zero = fail one = pass
+% end 
  
 rocket.stage2.launchheatflux = q_l_st2;
 
 %orbital veloctiy required for orbit 2nd stage only assuming circular orbit %CONSTRAINT %(from NASA) MAY REVISIT
 RE = 6377830; %radius of Earth [m]
 Vorb = sqrt(g*RE^2/(RE+LEOalt)); %~ 8.8e3; %[m/s] actually (current calc gives ~7.62 km/s SHOULD I UPDATE THIS VELOCITY BUDGET???
-if u2(end) < Vorb
-    fprintf('Danger, Stage 2 Velocity Not High Enough to Support Orbital flight!')  
-    Vorbcheck = 0; %fail
-else
-    Vorbcheck = 1; %pass
-end
+% if u2(end) < Vorb
+%     fprintf('Danger, Stage 2 Velocity Not High Enough to Support Orbital flight!')  
+%     Vorbcheck = 0; %fail
+% else
+%     Vorbcheck = 1; %pass
+% end
 
 flighttime = sum(time); %time calc as s/m in flight
+
+
+%Calculate emissions per 500 m for launch based on input emissions from
+%engine stage1 and 2 combined
+emiss_m_launch.stage1.NOX = mdot_emiss.stage1.NOX./u;
+emiss_m_launch.stage1.COX = mdot_emiss.stage1.COX./u;
+emiss_m_launch.stage1.HXO = mdot_emiss.stage1.HXO./u;
+emiss_m_launch.stage1.BC = mdot_emiss.stage1.BC./u;
+emiss_m_launch.stage1.H2O = mdot_emiss.stage1.H2O./u ;
+
+%stage 2 post separation to LEO
+emiss_m_launch.stage2.NOX = mdot_emiss.stage2.NOX./u2;
+emiss_m_launch.stage2.COX = mdot_emiss.stage2.COX./u2;
+emiss_m_launch.stage2.HXO = mdot_emiss.stage2.HXO./u2;
+emiss_m_launch.stage2.BC = mdot_emiss.stage2.BC./u2;
+emiss_m_launch.stage2.H2O = mdot_emiss.stage2.H2O./u2 ;
 
 %Boost Back Stg1: terminal velocity, separation @75 km (get rho)
 %assume a fall angle from normal (vertical) 10 degrees
@@ -372,7 +389,6 @@ if rocket.stage2.reuse == 1 %re-entry, landing burn needed + belly flop
     end
       
 end
-
-CHECKS = [St1propcheck, St2propcheck, Vorbcheck];
+%CHECKS = [St1propcheck, St2propcheck, Vorbcheck];
 
 end
