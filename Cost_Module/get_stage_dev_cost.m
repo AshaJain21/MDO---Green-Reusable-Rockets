@@ -4,8 +4,8 @@ function stage_dev_cost = get_stage_dev_cost(reuse, total_mass, prop_mass, param
     % 2. Assume team is somewhat experienced (f3 of 1.0)
 
     K_eff = total_mass/prop_mass;
-    Kref = -0.037ln(prop_mass) + 0.1016 %Empirically derived from chart in Koelle paper
-    f2 = Kref / Keff;
+    K_ref = -0.037 * log(prop_mass) + 0.1016; %Empirically derived from chart in Koelle paper
+    f2 = K_ref / K_eff;
 
     
     if reuse == true

@@ -4,6 +4,7 @@ function parameters = setup_parameters()
     parameters.rocket_fleet_size = tbd;
     parameters.structural_material = tbd;
     parameters.struc_to_propellant_mass_ratio = tbd;
+    parameters.prop_unit_costs = tbd;
 
     material.density = tbd;
     material.emissivity = tbd;
@@ -21,6 +22,7 @@ function parameters = setup_parameters()
     parameters.launcher_refurb_time = tbd;
     parameters.launcher_prod_time_bins = [3,6,9; 0.5,0.5, 36];
     parameters.init_sat_prod_time = tbd;
+    parameters.init_refurb_cost_percentage = 0.7;
 
     parameters.MY_value = 120000; %USD
     parameters.num_engines_per_stage = tbd;
