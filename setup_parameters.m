@@ -18,7 +18,7 @@ function parameters = setup_parameters()
     parameters.sat_prod_learning_rate = 0.9;
 
     parameters.launcher_refurb_time = tbd;
-    parameters.launcher_prod_time = tbd;
+    parameters.launcher_prod_time_bins = [3,6,9; 0.5,0.5, 36];
     parameters.init_sat_prod_time = tbd;
 
 
