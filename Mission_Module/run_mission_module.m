@@ -1,12 +1,14 @@
-function [per_launch_mass, launch_cadences] = run_mission_module(design_variables, parameters)
+function [launch_cadences, rocket] = run_mission_module(design_variables, parameters, rocket)
     
     %CALCULATE MASS PER LAUNCH (DIVIDE EVENLY)
     num_sat_per_launch = ceil(parameters.num_of_satellites / design_variables.num_of_launches);
     per_launch_mass = parameters.mass_per_satellite * num_sat_per_launch;
 
+    rocket.payload = per_launch_mass;
+
     %SET UP LEARNING CURVE FOR SATELLITE PRODUCTION TIMES
     sat_vec =  1:parameters.num_of_satellites;
-    sat_prod_times = parameters.init_sat_prod_time*sat_vec.^(log(parameters.sat_prod_learning_rate)/log(2)); %Based on Crawford's Learning Curve
+    sat_prod_times = (parameters.init_sat_prod_time/30)*sat_vec.^(log(parameters.sat_prod_learning_rate)/log(2)); %Based on Crawford's Learning Curve
 
     %DETERMINE LAUNCHER PRODUCTION TIME BASED ON REQUIRED LAUNCHER
     %RADIUS
