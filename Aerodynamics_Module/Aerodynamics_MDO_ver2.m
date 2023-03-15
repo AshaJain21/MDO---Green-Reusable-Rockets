@@ -34,7 +34,7 @@ st1rad = rocket.stage1.radius;
 st2rad = rocket.stage2.radius;
 st1h = rocket.stage1.height;
 st2h = rocket.stage2.height;
-T = readtable(mdot_emiss);
+T = readtable(mdot_emiss);%%%%%%%%%%%%%%%%%%%%%
 mdotst1_f = st1t/st1ve; %mass flow rate of exhaust 
 mdotst2_f = st2t/st2ve; %mass flow rate of exhaust upper stage
 theight = st1h+st2h; %total rocket height [m]
@@ -329,7 +329,7 @@ if rocket.stage1.reuse == 1 %boost back, landing burn needed
         qrad = e*sigma*Tair^4;
         q_st1_rec(i) = qconv_st1_rec + qrad;
   end
-       
+       rocket.stage1.recoveryheatflux = q_st1_rec;
 end
 %UPPer atmosphere boost back -need
 %Re-entry from LEO Stg 2 %heat flux %angle, radius, length of stg2 - 
@@ -387,7 +387,7 @@ if rocket.stage2.reuse == 1 %re-entry, landing burn needed + belly flop
         qrad = e*sigma*Tair^4;
         q_st2_rec(i) = qconv_st2_rec + qrad; %heat flux for reentry
     end
-      
+      rocket.stage2.recoveryheatflux = q_st2_rec;
 end
 %CHECKS = [St1propcheck, St2propcheck, Vorbcheck];
 
