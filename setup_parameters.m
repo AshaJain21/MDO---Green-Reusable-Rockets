@@ -27,7 +27,7 @@ function parameters = setup_parameters()
     parameters.init_sat_prod_time = 30; %days, lets try this value and see if the learning rate drops fast enough to realistic values  
     parameters.init_refurb_cost_percentage = 0.7;
 
-    parameters.MY_value = 120000; %USD
+    parameters.MY_value = 350000; %USD, inflation adjusted (and rounded up) from the 1984 number provided in the Koelle paper
     parameters.num_engines_per_stage = tbd;
     parameters.f1 = 0.6; %from koeller paper
     parameters.f3 = 1.0; %from koeller paper
