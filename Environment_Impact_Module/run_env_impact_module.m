@@ -1,8 +1,11 @@
-function env_impact = run_env_impact_module(parameters, propellant_mass_burned_per_altitude, second_stage_reentry_mass)
+function env_impact = run_env_impact_module(design_variables, rocket)
+    second_stage_reentry_mass = rocket.stage2.mstruct;
+    combustion_products_kgs_per_km = rocket.emiss_per500m;
+    combined_emissions = combustion_products_kgs_per_km;
     %Assumed that propellants are given in kg
     reentry_nox_emissions = compute_reentry_nox_emission(second_stage_reentry_mass);
-    combined_emissions = combine_emissions(propellant_mass_burned_per_altitude, reentry_nox_emissions);
-    if parameters.reusable_stage(2) == 0
+    combined_emissions = combine_emissions(combined_emissions, reentry_nox_emissions);
+    if design_variables.stage2.reusable == 0
         alumina_emissions = compute_reentry_alumina_emission(second_stage_reentry_mass);
         combined_emissions = combine_emissions(combined_emissions, alumina_emissions);
     end

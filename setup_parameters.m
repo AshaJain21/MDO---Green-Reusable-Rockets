@@ -9,6 +9,7 @@ function parameters = setup_parameters()
     material.density = 2700; %kg/m3
     material.emissivity = 0.05 ; %source : https://www.engineeringtoolbox.com/radiation-heat-emissivity-aluminum-d_433.html
     material.unit_cost = 2.85; %per kg source: https://www.navstarsteel.com/6061-t6-aluminium-plate.html
+    material.fatigue_stress = 9.65e+7; %Pa source: https://www.thomasnet.com/articles/metals-metal-products/6061-aluminum/
     parameters.structural_material = material;
 
     parameters.orbital_altitude = 500; %km 
