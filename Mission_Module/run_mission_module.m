@@ -12,7 +12,7 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
 
     %DETERMINE LAUNCHER PRODUCTION TIME BASED ON REQUIRED LAUNCHER
     %RADIUS
-    launcher_prod_time = get_launcher_prod_time(parameters, design_variables.rocket_radius);
+    launcher_prod_time = get_launcher_prod_time(parameters, design_variables.rocket_ri);
     
 
 %             fprintf('============Starting Numbers============\n')
@@ -82,7 +82,7 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
             launch_cadences(2, tracking_vars.curr_launch_num) = tracking_vars.ready_q(1);
 
             tracking_vars.ready_q = tracking_vars.ready_q(2:end);
-            if design_variables.reusable_stages(1) == true
+            if design_variables.stage1.reusable == true
                 tracking_vars = place_rocket_in_refurb(tracking_vars, curr_time_step, parameters);
             end
 
@@ -103,13 +103,13 @@ end
 
 function curr_time_step = get_next_time_step(design_variables, parameters, tracking_vars)
     if tracking_vars.num_sats_produced < parameters.num_of_satellites
-        if design_variables.reusable_stages(1) == true
+        if design_variables.stage1.reusable == true
             curr_time_step = min([tracking_vars.next_sat_prod_time, tracking_vars.next_launcher_prod_time, tracking_vars.next_launcher_refurb_time]);
         else
             curr_time_step = min([tracking_vars.next_sat_prod_time, tracking_vars.next_launcher_prod_time]);
         end
     else
-        if design_variables.reusable_stages(1) == true
+        if design_variables.stage1.reusable == true
             curr_time_step = min([tracking_vars.next_launcher_prod_time, tracking_vars.next_launcher_refurb_time]);
         else
             curr_time_step = tracking_vars.next_launcher_prod_time;
