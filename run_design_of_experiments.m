@@ -9,7 +9,7 @@ experiments = readtable("design_of_experiments.csv");
 num_experiments = size(experiments.Experiment); 
 
 %Loading database data
-engine_prop_db = readtable("engine_propellant_combinations.csv");
+engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
 
@@ -21,9 +21,9 @@ for i = 1:num_experiments
     reusable_stage_1 = experiments{i, 2};
     reusable_stage_2 = experiments{i,3};
     %Engine Prop data 
-    engine_prop_1 = engine_prop_db{experiments{i, 4}, :};
-    engine_prop_2 = engine_prop_db{experiments{i, 5}, :};
-    reentry_shield_material = experiments{i, 6};
+    engine_prop_1 = engine_prop_db(experiments{i, 4}, :);
+    engine_prop_2 = engine_prop_db(experiments{i, 5}, :);
+    reentry_shield_material = reentry_shield_material_db(experiments{i, 6}, :);
     rocket_radius = experiments{i,7};
     design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine-prop_1, engine-prop_2, reentry_shield_material, rocket_radius);
 
