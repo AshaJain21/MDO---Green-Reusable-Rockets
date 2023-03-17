@@ -33,11 +33,11 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
 
     %Launcher refurbishment cost
     if design_variables.stage1.reusable == 1
-        stage_1_refurb_cost= compute_refurb_cost(manuf_cost_per_launch_per_stage(1,:), size_launch_schedule(2), launch_cadence, parameters);
+        stage_1_refurb_cost= compute_refurb_cost(1, manuf_cost_per_launch_per_stage(1,:), size_launch_schedule(2), launch_cadence, parameters);
         total_cost_for_each_launch = total_cost_for_each_launch + stage_1_refurb_cost;
     end
     if design_variables.stage2.reusable == 1
-        stage_2_refurb_cost= compute_refurb_cost(manuf_cost_per_launch_per_stage(2,:), size_launch_schedule(2), launch_cadence, parameters);
+        stage_2_refurb_cost= compute_refurb_cost(2, manuf_cost_per_launch_per_stage(2,:), size_launch_schedule(2), launch_cadence, parameters);
         total_cost_for_each_launch = total_cost_for_each_launch + stage_2_refurb_cost;
     end
 
