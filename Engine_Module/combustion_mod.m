@@ -16,7 +16,7 @@ function [thrust, ue, mdot, products] = combustion_mod(rocketProp)
     
     % SOLVE PROBLEM -------------------------------------------------------
     self = solve_problem(self, 'ROCKET');
-    [mass_fraction, ind_sort] = sort(self.PS.mix2_c{1, 1}.Xi, 'descend');
+    [mass_fraction, ind_sort] = sort(self.PS.mix2_c{1, 1}.Yi, 'descend');
     major = mass_fraction > 1.0e-14; % constant of what is negligible product
     minor  = sum(mass_fraction(~major));
     Nminor = length(mass_fraction) - sum(major);
@@ -28,12 +28,11 @@ function [thrust, ue, mdot, products] = combustion_mod(rocketProp)
     end
        
 %% Solve for Outputs
-    gamma = self.PS.mix2_c{1, 1}.gamma;
-    T_c = self.PS.mix2_c{1, 1}.T;
+    gamma = self.PS.mix3{1, 1}.gamma;
+    T_c = self.PS.mix3{1, 1}.T;
     R = 8.314;
 %     altitude = 0:500:75000;
-    exponent = -(gamma + 1)/2/(gamma - 1);
-    mdot = rocketProp.P*rocketProp.At/sqrt(T_c)*sqrt(gamma/R)*(1 + (gamma - 1)/2)^exponent;
+    mdot = rocketProp.P*rocketProp.At/sqrt(T_c)*sqrt(gamma/R)*0.56;
     
     thrust = mdot*9.81*rocketProp.Isp;
     
