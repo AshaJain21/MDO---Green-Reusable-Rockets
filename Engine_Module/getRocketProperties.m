@@ -1,12 +1,11 @@
 function properties = getRocketProperties(C)
-
-properties.F    = C{1};
-properties.O    = C{2};
-properties.Isp  = C{3};
-properties.P    = C{4};
-properties.MR   = C{5};
-properties.AR   = C{6};
-properties.De   = C{7};
+properties.F    = C{1,2};
+properties.O    = C{1,3};
+properties.Isp  = C{1,4};
+properties.P    = C{1,5};
+properties.MR   = C{1,6};
+properties.AR   = C{1,7};
+properties.De   = C{1,8};
 properties.Ae   = pi*(properties.De/2)^2;
 properties.At   = properties.Ae/properties.AR;
 

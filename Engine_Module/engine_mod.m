@@ -12,7 +12,7 @@ end
 
 rocketProp = getRocketProperties(design_variables.stage2.engine_prop);
 [thrust, ue, mdot, engine] = combustion_mod(rocketProp);
-stage2.nEng         = floor((design_variables.ri^2*pi)/rocketProp.Ae);
+stage2.nEng         = floor((design_variables.rocket_ri^2*pi)/rocketProp.Ae);
 stage2.thrust       = thrust*stage2.nEng;
 stage2.ue           = ue    *stage2.nEng;
 stage2.mdot         = mdot  *stage2.nEng;
@@ -23,7 +23,7 @@ stage2.prodValues   = engine.massFraction;
 
 rocketProp = getRocketProperties(design_variables.stage1.engine_prop);
 [thrust, ue, mdot, engine] = combustion_mod(rocketProp);
-stage1.nEng         = floor((design_variables.ri^2*pi)/rocketProp.Ae);
+stage1.nEng         = floor((design_variables.rocket_ri^2*pi)/rocketProp.Ae);
 stage1.thrust       = thrust*stage1.nEng;
 stage1.ue           = ue    *stage1.nEng;
 stage1.mdot         = mdot  *stage1.nEng;
