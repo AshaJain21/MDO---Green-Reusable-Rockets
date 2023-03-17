@@ -4,6 +4,7 @@ function parameters = setup_parameters()
     parameters.rocket_fleet_size = 15;
     parameters.structural_material = 'Al 6061';
     parameters.struc_to_propellant_mass_ratio = 0.1;
+    parameters.initial_struct_masses = [395700, 92670];
     parameters.prop_unit_costs = readtable('propellant_costs.csv');
 
     material.density = 2700; %kg/m3
