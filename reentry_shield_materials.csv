@@ -1,4 +1,4 @@
-Material,Density [kg/m3],Max Heat Flux [W/m^2],Max Temperature [K],Cost [$/m2],Sources
+Material,Density,Max Heat Flux,Max Temperature,Cost,Sources
 Carbon fiber CMC,2.08E+03,,1992,1223857.141,Aerospace Materials DB
 ACC,1.60E+03,,1866,1387468.65,Costs
 AETB-8,8.02E+02,,1699,821286.7184,
