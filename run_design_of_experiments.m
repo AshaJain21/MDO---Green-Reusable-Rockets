@@ -38,7 +38,7 @@ for i = 1:num_experiments
         reusable_stage_1 = 0;
         reusable_stage_2 = 0;
         end 
-        design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine-prop_1, engine-prop_2, reentry_shield_material, rocket_radius);
+        design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine_prop_1, engine_prop_2, reentry_shield_material, rocket_radius);
     
         [launch_cadence, env_impact, cost] = run_model(design_variables, parameters);
         Output.launch_cadence = launch_cadence;
