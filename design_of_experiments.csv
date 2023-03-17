@@ -1,9 +1,17 @@
-Experiment,num_of_launches,reusable_stage_1,resuable_stage_2,engine-prop_1,engine-prop_2,reentry_shield_material,rocket_radius
-1,20,1,1,1,1,1,4
-2,20,1,1,13,13,2,6
-3,20,0,0,1,1,2,6
-4,20,0,0,13,13,1,4
-5,40,1,0,1,13,1,6
-6,40,1,0,13,1,2,4
-7,40,0,1,1,13,2,4
-8,40,0,1,13,1,1,6
+Experiment,num_of_launches,engine-prop_1,engine-prop_2,reentry_shield_material,rocket_radius,,,Link to L16 template,https://www.researchgate.net/figure/The-orthogonal-array-L-16-4-5_tbl1_280493454
+1,1,1,1,1,1,,,,
+2,1,2,2,2,2,,,Notes:,
+3,1,3,3,3,3,,,1. This orthogonal array is based on L16 but 4th level duplicates 2nd level for all factors,
+4,1,2,2,2,2,,,2. Level definitions for these 5 factors are defined on the next sheet,
+5,2,1,2,3,2,,,"3. When running the actual DOE, each row of this orthogonal array will be repeated for all four combinations of reusable stage booleans",
+6,2,2,1,2,3,,,,
+7,2,3,2,1,2,,,,
+8,2,2,3,2,1,,,,
+9,3,1,3,2,2,,,,
+10,3,2,2,3,1,,,,
+11,3,3,1,2,2,,,,
+12,3,2,2,1,3,,,,
+13,2,1,2,2,3,,,,
+14,2,2,3,1,2,,,,
+15,2,3,2,2,1,,,,
+16,2,2,1,3,2,,,,
