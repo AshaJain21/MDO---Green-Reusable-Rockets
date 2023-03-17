@@ -28,14 +28,14 @@ function self = solve_problem(self, ProblemType)
             % Solve selected problem
             self = select_problem(self, i);
             % Display results in the command window
-            results(self, i);
+%             results(self, i);
         end
 
         % Print execution time
         self.Misc.timer_0 = toc(self.Misc.timer_0);
         self.Misc.timer_loop = toc(self.Misc.timer_loop);
-        fprintf('Elapsed time is %.6g seconds\n', self.Misc.timer_0);
-        fprintf('Elapsed time in the loop is %.6g seconds\n', self.Misc.timer_loop);
+%         fprintf('Elapsed time is %.6g seconds\n', self.Misc.timer_0);
+%         fprintf('Elapsed time in the loop is %.6g seconds\n', self.Misc.timer_loop);
         % Retrieve range values (problem set only)
         if isfield(self.PD, 'range_name')
             self.PD.(self.PD.range_name).value = self.PD.range;

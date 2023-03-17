@@ -1,12 +1,13 @@
 % Tester
 addpath(genpath([pwd '/combustion_toolbox/']))
 
-rocket.stage1.reusable = 1;
+design_variables.stage1.reusable = 1;
+design_variables.stage1.engine_prop = {"CH4", "LOX", 327, 3.00E+07, 3.6, 34.34, 1.3}; %line
+design_variables.stage2.engine_prop = {"CH4", "LOX", 327, 3.00E+07, 3.6, 34.34, 1.3};
+
 rocket.stage1.mstruct = 10000; %lbs
 rocket.stage2.mstruct = 1000;  %lbs
-rocket.stage1.ri      = 5;     %m
-rocket.stage2.ri      = 5;     %m
-% design_variables.engine_prop_1  = cell array;
 
+design_variables.ri   = 5;     %m
 
-rocket = CALL_engine_mod(rocket, design_variables);
+rocket = engine_mod(rocket, design_variables);
