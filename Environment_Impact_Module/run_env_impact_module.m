@@ -1,7 +1,22 @@
 function env_impact = run_env_impact_module(design_variables, rocket)
     second_stage_reentry_mass = rocket.stage2.mstruct;
-    combustion_products_kgs_per_km = rocket.emiss_per500m;
-    combined_emissions = combustion_products_kgs_per_km;
+   
+    stage1_combustion_products = rocket.stage1.prodValues;
+    stage2_combustion_products = rocket.stage1.prodValues;
+    stage1_species_keys = stage1_combustion_products.keys();
+    stage2_species_keys = stage2_combustion_products.keys();
+    combined_emissions = stage1_combustion_products;
+   
+    for l = 1:max(size(stage2_species_keys))
+        stage2_key = stage2_species_keys{l};
+        if isKey(stage1_combustion_products, stage2_key) 
+            combined_emissions(stage2_key) = combined_emissions(stage2_key) + stage2_combustion_products(stage2_key);
+
+        else
+            combined_emissions(stage2_key) = stage2_combustion_products(stage2_key);
+        end
+    end
+  
     %Assumed that propellants are given in kg
     reentry_nox_emissions = compute_reentry_nox_emission(second_stage_reentry_mass);
     combined_emissions = combine_emissions(combined_emissions, reentry_nox_emissions);
@@ -29,24 +44,23 @@ function ei_score = compute_combined_environmental_impact(species_rf, species_oz
     total_gwp = 0;
     for i = 1:size_of_rf_keys(2)
         data = species_rf(rf_species_keys{i});
-        integrated_effect_over_all_altitudes = trapz(data(1,:), data(2, :));
-        total_rf = total_rf + integrated_effect_over_all_altitudes; %in mW^2
+        total_rf = total_rf + data(2); %in mW^2
+     
     
     end 
     od_species_keys = species_ozone_depletion.keys;
     size_of_od_keys = size(od_species_keys);
     for j = 1:size_of_od_keys(2)
-        data = species_ozone_depletion(od_species_keys{i});
-        integrated_effect_over_all_altitudes = trapz(data(1,:), data(2, :));
-        total_od = total_od+ integrated_effect_over_all_altitudes; %percent loss 
+        data = species_ozone_depletion(od_species_keys{j});
+        total_od = total_od+ data(2); %percent loss 
+        
     end
 
     gwp_100_species_keys = species_gwp100.keys;
     size_of_gwp100_keys = size(gwp_100_species_keys);
     for l = 1:size_of_gwp100_keys(2)
-        data = species_gwp100(gwp_100_species_keys{i});
-        integrated_effect_over_all_altitudes = trapz(data(1,:), data(2, :));
-        total_gwp = total_gwp+ integrated_effect_over_all_altitudes; %kgCO2_eq 
+        data = species_gwp100(gwp_100_species_keys{l});
+        total_gwp = total_gwp+ data(2); %kgCO2_eq 
     end
 
     ei_score = [total_rf, total_od, total_gwp]; 

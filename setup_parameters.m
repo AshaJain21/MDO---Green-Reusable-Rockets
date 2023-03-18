@@ -35,6 +35,9 @@ function parameters = setup_parameters()
     parameters.f3 = 1.0; %from koeller paper
     parameters.f4 = 0.8; %Random number for now. Need to confirm this
 
+    parameters.loop_termination_threshold = 0.05; %Threshold to terminate the engine-structures-aero iterative loop
+    parameters.max_loop_iterations = 30; %Maximum number of loop iterations before termination
+
 
     
 end
