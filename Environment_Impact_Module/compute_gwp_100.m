@@ -10,8 +10,10 @@ for i = 1:size_of_keys(2)
     key = species_keys{i};
     if gwp_rf_per_species_perMg_map.isKey(key)
           data = combined_emissions(key) ; 
-          data(2,:) = data(1, :) * gwp_rf_per_species_perMg_map(key) ; 
-          gwp_rf_per_species(key)  = data;
+          modifed_data = zeros(2,1);
+          modifed_data(1,:) = data;
+          modifed_data(2,:) = data * gwp_rf_per_species_perMg_map(key) ; 
+          gwp_rf_per_species(key)  = modifed_data;
     end
     
 end

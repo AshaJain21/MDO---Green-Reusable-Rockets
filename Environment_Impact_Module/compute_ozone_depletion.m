@@ -14,8 +14,10 @@ function species_ozone_depletion = compute_ozone_depletion(combined_emissions)
    for i = 1:size_of_keys(2)
        if combined_emissions.isKey(ss_keys{i})
           data = combined_emissions(ss_keys{i}) ; 
-          data(2,:) = data(1,:)* ss_ozone_loss_per_kg(ss_keys{i}) / 1000 ; %conversion factor from Mg to kg 
-          species_ozone_depletion(ss_keys{i}) = data;
+          modifed_data = zeros(2,1);
+          modifed_data(1,:) = data;
+          modifed_data(2,:) = data* ss_ozone_loss_per_kg(ss_keys{i}) / 1000 ; %conversion factor from Mg to kg 
+          species_ozone_depletion(ss_keys{i}) = modifed_data;
        end
    end
 

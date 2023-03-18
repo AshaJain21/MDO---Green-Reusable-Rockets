@@ -7,8 +7,10 @@ for i = 1:size_of_keys(2)
     key = species_keys{i};
     if rf_per_species_perMg_map.isKey(key)
           data = combined_emissions(key) ; 
-          data(2,:) = data(1,:)* rf_per_species_perMg_map(key) / 1000 ; %conversion factor from Mg to kg 
-          rf_per_species(key)  = data;
+          modifed_data = zeros(2,1);
+          modifed_data(1, :) = data;
+          modifed_data(2,:) = data* rf_per_species_perMg_map(key) / 1000 ; %conversion factor from Mg to kg 
+          rf_per_species(key)  = modifed_data;
     end
     
 end

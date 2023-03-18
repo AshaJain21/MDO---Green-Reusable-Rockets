@@ -1,9 +1,9 @@
 function env_impact = run_env_impact_module(design_variables, rocket)
     second_stage_reentry_mass = rocket.stage2.mstruct;
-   
-    stage1_combustion_products = rocket.stage1.prodValues;
-    stage2_combustion_products = rocket.stage1.prodValues;
-    stage1_species_keys = stage1_combustion_products.keys();
+    stage1_fuel =design_variables.stage1.engine_prop.Fuel;
+    stage2_fuel = design_variables.stage2.engine_prop.Fuel;
+    stage1_combustion_products = handle_stage_products(rocket.stage1.prodValues, rocket.stage1.prodNames, rocket.stage1.mprop, stage1_fuel);
+    stage2_combustion_products = handle_stage_products(rocket.stage2.prodValues, rocket.stage2.prodValues, rocket.stage2.mprop, stage2_fuel);
     stage2_species_keys = stage2_combustion_products.keys();
     combined_emissions = stage1_combustion_products;
    
@@ -33,6 +33,48 @@ function env_impact = run_env_impact_module(design_variables, rocket)
 
 end
 
+function stage_emissions_kg = handle_stage_products(prodValues,prodNames, stage_propellant_mass, stage_fuel)
+    stage_emissions_kg = containers.Map;
+    list_of_species = {'COx', 'NOx', 'H2O'};
+    for l =1:max(size(list_of_species))
+        species = list_of_species{l};
+        emission = 0;
+        if strcmp(species, 'COx') == 1
+            sub_species = {'CO2', 'CO'};
+            for s = 1:max(size(sub_species))
+                sub_chem = sub_species{s};
+                if isempty(prodValues(strmatch(sub_chem, prodNames, 'exact'))) == 0
+                    emission = emission + prodValues(strmatch(sub_chem, prodNames, 'exact'));
+                end
+            end
+
+
+        elseif strcmp(species, 'NOx') == 1
+            sub_species = {'NO2', 'NO'};
+            for s = 1:max(size(sub_species))
+                sub_chem = sub_species{s};
+                  if isempty(prodValues(strmatch(sub_chem, prodNames, 'exact'))) == 0
+                    emission = emission + prodValues(strmatch(sub_chem, prodNames, 'exact'));
+                  end
+            end
+
+        elseif strcmp(species, 'H2O') == 1
+             sub_species = {'H2O', 'HO', 'HO2'};
+            for s = 1:max(size(sub_species))
+                sub_chem = sub_species{s};
+                if isempty(prodValues(strmatch(sub_chem, prodNames, 'exact'))) == 0
+                    emission = emission + prodValues(strmatch(sub_chem, prodNames, 'exact'));
+                end
+            end
+
+         end
+        stage_emissions_kg(species) = emission;
+    end
+   if strcmp(stage_fuel, 'UDMH') == 1 || strcmp(stage_fuel, 'RP-1') == 1 || strcmp(stage_fuel, 'A-50') == 1 || strcmp(stage_fuel, 'CH4') == 1
+        stage_emissions_kg('BC') =  (40 * stage_propellant_mass) / 1000; % kg
+        %40g/kg comes from https://agupubs-onlinelibrary-wiley-com.libproxy.mit.edu/doi/full/10.1029/2021JD036373
+   end
+end
 
 %Source for propellant byproduct mass fractions = https://www.tandfonline.com/doi/epdf/10.1080/14777620902768867?needAccess=true&role=button
 
