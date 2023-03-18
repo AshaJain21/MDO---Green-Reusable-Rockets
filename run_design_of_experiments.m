@@ -14,8 +14,8 @@ experiments = format_final_doe_array(num_experiments(1), experiments, doe_bins);
 engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
-
-output_struct_array = zeros([1, num_experiments]);
+template_output_struct = struct(launch_cadence=[], env_impact = 0, cost = 0);
+output_struct_array = repmat(template_output_struct, [1, num_experiments]);
 output_count = 1;
 
 for i = 1:num_experiments
