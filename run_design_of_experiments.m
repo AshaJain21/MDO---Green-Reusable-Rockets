@@ -18,7 +18,7 @@ template_output_struct = struct(launch_cadence=[], env_impact = 0, cost = 0);
 output_struct_array = repmat(template_output_struct, [1, num_experiments]);
 output_count = 1;
 
-for i = 3:num_experiments
+for i = 1:num_experiments
     fprintf('======= Running Experiment %.15g\n', i)
     %Set up design variables 
     num_of_launches = experiments{i, 2};
@@ -57,8 +57,6 @@ for i = 3:num_experiments
         Output.cost = cost;
         output_struct_array(output_count)  = Output;
         output_count = output_count + 1;
-
-        break
 
     end
 
