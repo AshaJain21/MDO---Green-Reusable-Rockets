@@ -22,31 +22,31 @@ SMF = parameters.struc_to_propellant_mass_ratio;
 ri = design_variables.rocket_ri;
 st1prop = rocket.stage1.mprop;
 st2prop = rocket.stage2.mprop;
-re_mat_density = design_variables.reentry_shield_material{2}; %[kg/m3] %add this on, ignore weight contribution by SMH
-re_mat_maxflux = design_variables.reentry_shield_material{3}; %W/m2 max heat flux the ablative material can undergo w/out failure
-strucmat_density = paramters.structural_material.density; %[kg/m3]
+re_mat_density = design_variables.stage2.reentry_shield_material.Density; %[kg/m3] %add this on, ignore weight contribution by SMH
+% re_mat_maxflux = design_variables.stage2.reentry_shield_material{3}; %W/m2 max heat flux the ablative material can undergo w/out failure
+strucmat_density = parameters.structural_material.density; %[kg/m3]
 sigma_max = parameters.structural_material.fatigue_stress; %max fatigue stress of material MPA
-launch_qrock = rocket.stage1.launch_qdot;
-launch_q2 = rocket.stage2.launch_qdot;
-re_q1 = rocket.stage1.recovery_qdot;
-re_q2 = rocket.stage2.recovery_qdot;
+% launch_qrock = rocket.stage1.launch_qdot;
+% launch_q2 = rocket.stage2.launch_qdot;
+% re_q1 = rocket.stage1.recovery_qdot;
+% re_q2 = rocket.stage2.recovery_qdot;
 st1mass = rocket.stage1.mstruct; %rocket dry mass stage1
 st2mass = rocket.stage2.mstruct;
 %heat flux - get max heat flux from calcs
-heatflux = [max(launch_qrock), max(launch_q2), max(re_q1), max(re_q2)]; %heat flux
+% heatflux = [max(launch_qrock), max(launch_q2), max(re_q1), max(re_q2)]; %heat flux
 
 %get wall thickness
-A1 = FOS*st1t/sigma_max; %get area required to accomodate this stress w/chosen FOS
+A1 = FOS*rocket.stage1.thrust/sigma_max; %get area required to accomodate this stress w/chosen FOS
 R_outer1 = sqrt(ri^2 + A1/pi); %outer radius [m]
 wallst1 = R_outer1 - ri; %[m]
 
-A2 = FOS*st2t/sigma_max; %get area required to accomodate this stress w/chosen FOS
+A2 = FOS*rocket.stage2.thrust/sigma_max; %get area required to accomodate this stress w/chosen FOS
 R_outer2 = sqrt(ri^2 + A2/pi); %inner radius [m]
 wallst2 = R_outer2 - ri; %[m]
 
 %take largest required wallthickness/radius
 rout = [R_outer1, R_outer2];
-rocket.stage1.ro = max(rout); %get out outer radius of rocket
+rocket.ro = max(rout); %get out outer radius of rocket
 
 %wall = [wallst1, wallst2];
 %wallthickness = max(wall);
@@ -69,7 +69,7 @@ rocket.stage2.height = st2h; %[m]
 %size shield thickness via max heat flux, ignore time for now but later %this must be updated to include how long that walue of heat flux is held
 %for, so we can decrease the thickness predicted here, its probably ~4mm so
 %this estimate may be too thick for now
-maxq = max(heatflux); %W/m^2 max heat flux at any point in flight
+% maxq = max(heatflux); %W/m^2 max heat flux at any point in flight
 
 %if maxq > re_mat_maxflux %if max heat flux is higher than the shield capacity 
 

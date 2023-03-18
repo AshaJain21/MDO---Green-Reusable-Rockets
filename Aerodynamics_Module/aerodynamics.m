@@ -41,7 +41,7 @@ st1ve = rocket.stage1.ue;
 st2ve = rocket.stage2.ue;
 mdotst1_f = rocket.stage1.mdot; %mass flow rate of exhaust 
 mdotst2_f = rocket.stage1.mdot; %mass flow rate of exhaust upper stage
-e = parameters.material.emissivity; %emissivity of aluminum
+e = parameters.structural_material.emissivity; %emissivity of aluminum
 st2emiss_fract = st2emiss/st2prop; %get fraction of prop mass burned /total prop mass assume = relation to mdot - this fraction can be used for mdot
 st2emiss_per_sec = st2emiss_fract*mdotst2_f; %kg/s of emissions
 st1emiss_fract = st1emiss./st1prop;
@@ -68,7 +68,7 @@ rocket_cross_launch = pi*ro^2;
 fc = mdotst1_f/st1ve;  %fuel consumption kg per metre;
 h = 0:500:stgsep; %altitude array --> launch until stage separation (75km),
 %calculate every 500 m
-h2 = stgstep:500:LEOalt; %altitude array for stage 2 75km to LEO 500 km
+h2 = stgsep:500:LEOalt; %altitude array for stage 2 75km to LEO 500 km
 
 M = zeros(length(h)); %Mach number
 u = zeros(length(h)); %rocket velocity
@@ -81,8 +81,8 @@ time = zeros(length(h) + length(h2)) ;%per m total time for reaching LEO
 %velocity budget of 9.85 km/s
 q_l_presep = zeros(length(h)); %heat flux HOW DO I PUT THIS IN THE CLASSSSSS????????????
 
- for i = 2:length(h)-1 %%%%%%DO I NEED TO DO H-1 IN LENGTH TO ENSURE ROCKET MASS DOES NOT GO OUTSIDE OF ARRAY BOUNDS
-        %get atmospheric data
+ for i = 2:length(h)-1 %%%%%%DO I NEED TO DO H-1 IN LENGTH TO ENSURE ROCKET MASS DOES NOT GO OUTSIDE OF ARRAY BOUNDS 
+     %get atmospheric data
         [Tair,a,~,rho] = atmoscoesa(h(i));
 
         mi = rockmass(i); %initial fuel
@@ -91,7 +91,6 @@ q_l_presep = zeros(length(h)); %heat flux HOW DO I PUT THIS IN THE CLASSSSSS????
         delv = -st1ve*log(mf/mi); %ideal rocket equation change in vel IS THIS MASS THE ROCKET MASS OR THE STAGE 1 MASS?
         u(i) = u(i-1) + delv; %calculate velocity of rocket
         time(i) = 2/( u(i) + u(i-1) ) ; %basic kinematics
-        
         prodemiss_1(i) = (st1emiss_per_sec./u(i))*500; %kg/m * 500 for 500 m
         %check if there is enough fuel left
 %         if mf < (rockmass(i) - st1prop)
