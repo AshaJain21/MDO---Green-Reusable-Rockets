@@ -49,7 +49,7 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
 
     %Heat Shield cost
     shield_material_unit_cost = design_variables.stage2.reentry_shield_material.Cost;
-    heat_shield_cost = ones([1, size_launch_schedule(2)]) * (rocket.stage2.heat_shield_mass*shield_material_unit_cost);
+    heat_shield_cost = ones([1, size_launch_schedule(2)]) * (rocket.stage2.heat_shield_SA*shield_material_unit_cost);
     total_cost_for_each_launch = total_cost_for_each_launch + heat_shield_cost;
 
     %Spreading costs over time (?) with dev costs amortized, this may boil
