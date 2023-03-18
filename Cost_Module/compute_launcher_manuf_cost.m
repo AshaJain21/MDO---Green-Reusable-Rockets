@@ -6,11 +6,11 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(parameters, design_va
 
     N = num_stages;
 
-    stg1_manuf_cost = compute_manuf_cost(1, rocket.stage1.num_engines, design_variables.stage1.reusable, parameters, rocket.stage1.mstruct)
-    stg1_engine_manuf_costs = compute_manuf_cost(0, rocket.stage1.num_engines, design_variables.stage1.reusable, parameters, design_variables.stage1.engine_prop{9})
+    stg1_manuf_cost = compute_manuf_cost(1, rocket.stage1.nEng, design_variables.stage1.reusable, parameters, rocket.stage1.mstruct);
+    stg1_engine_manuf_costs = compute_manuf_cost(0, rocket.stage1.nEng, design_variables.stage1.reusable, parameters, design_variables.stage1.engine_prop.EngineMass_kg_);
     
-    stg2_manuf_cost = compute_manuf_cost(1, rocket.stage2.num_engines, design_variables.stage2.reusable, parameters, rocket.stage2.mstruct)
-    stg2_engine_manuf_costs = compute_manuf_cost(0, rocket.stage2.num_engines, design_variables.stage2.reusable, parameters, design_variables.stage2.engine_prop{9})
+    stg2_manuf_cost = compute_manuf_cost(1, rocket.stage2.nEng, design_variables.stage2.reusable, parameters, rocket.stage2.mstruct);
+    stg2_engine_manuf_costs = compute_manuf_cost(0, rocket.stage2.nEng, design_variables.stage2.reusable, parameters, design_variables.stage2.engine_prop.EngineMass_kg_);
 
     stage_costs = [(stg1_manuf_cost + stg1_engine_manuf_costs); (stg2_manuf_cost + stg2_engine_manuf_costs)];
 
@@ -19,7 +19,6 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(parameters, design_va
 end
 
 function manuf_cost = compute_manuf_cost(equip_type, n, reuse, parameters, mass)
-
     if equip_type == 0 % 0 indicates we're estimating manuf cost of an engine
         if reuse == 1
             coeff = 5.0;
