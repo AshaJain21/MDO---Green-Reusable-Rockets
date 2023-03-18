@@ -28,9 +28,9 @@ function [rocket] = aerodynamics(design_variables, parameters, rocket)
 st1mass = rocket.stage1.mstruct; %dry mass stage 1
 st2emiss = rocket.stage2.prodValues; %in kg add together = total prop mass
 st1emiss = rocket.stage1.prodValues;
-st1prop = design_variables.stage1.engine_prop; %total mass - structural mass = prop mass
+st1prop = rocket.stage1.engine_prop; %total mass - structural mass = prop mass
 st2mass = rocket.stage2.mstruct;
-st2prop = design_variables.stage2.engine_prop;
+st2prop = rocket.stage2.engine_prop;
 ro = rocket.ro; %inner radius of rocket
 %st2rad = rocket.stage2.ri; %
 st1h = rocket.stage1.height;
@@ -42,10 +42,10 @@ st2ve = rocket.stage2.ue;
 mdotst1_f = rocket.stage1.mdot; %mass flow rate of exhaust 
 mdotst2_f = rocket.stage2.mdot; %mass flow rate of exhaust upper stage
 e = parameters.structural_material.emissivity; %emissivity of aluminum
-st2emiss_fract = st2emiss/st2prop; %get fraction of prop mass burned /total prop mass assume = relation to mdot - this fraction can be used for mdot
-st2emiss_per_sec = st2emiss_fract*mdotst2_f; %kg/s of emissions
-st1emiss_fract = st1emiss./st1prop;
-st1emiss_per_sec = st1emiss_fract*mdotst1_f; %kg/s of emissions for each emission type
+%st2emiss_fract = st2emiss/st2prop; %get fraction of prop mass burned /total prop mass assume = relation to mdot - this fraction can be used for mdot
+%st2emiss_per_sec = st2emiss_fract*mdotst2_f; %kg/s of emissions
+%st1emiss_fract = st1emiss./st1prop;
+%st1emiss_per_sec = st1emiss_fract*mdotst1_f; %kg/s of emissions for each emission type
 reangle = parameters.reentry_angle;
 theight = st1h+st2h; %total rocket height [m]
 
