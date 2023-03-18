@@ -7,8 +7,6 @@ rocket.stage2.mstruct=parameters.initial_struct_masses(2);
 
 [rocket] = engine_mod(rocket, design_variables);
 
-rocket.stage1
-
 [rocket] = Structures(design_variables, parameters, rocket);
 
 [rocket] = aerodynamics(design_variables, parameters, rocket);
