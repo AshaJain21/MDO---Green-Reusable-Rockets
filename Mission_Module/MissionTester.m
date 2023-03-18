@@ -44,7 +44,7 @@ fprintf('>> Test case 2: Fleet of 10, num_launches > fleet_size, fast satellite 
 design_variables.stage1.reusable=1;
 design_variables.stage2.reusable=1;
 design_variables.num_of_launches=100;
-design_variables.rocket_radius = 5;
+design_variables.rocket_ri = 5;
 [launch_cadences, rocket] = run_mission_module(design_variables, parameters_fast_fleet)
 total_time = sum(launch_cadences(1,:))
 fprintf('\n========================\n')
@@ -54,7 +54,7 @@ fprintf('>> Test case 3: No fleet, fast satellite production (0.001 months per s
 design_variables.stage1.reusable=1;
 design_variables.stage2.reusable=1;
 design_variables.num_of_launches=10;
-design_variables.rocket_radius = 5;
+design_variables.rocket_ri = 5;
 [launch_cadences, rocket] = run_mission_module(design_variables, parameters_fast_nofleet)
 total_time = sum(launch_cadences(1,:))
 fprintf('\n========================\n')
@@ -64,7 +64,7 @@ fprintf('>> Test case 4: No fleet, no stage 1 reuse, fast satellite production (
 design_variables.stage1.reusable=0;
 design_variables.stage2.reusable=1;
 design_variables.num_of_launches=10;
-design_variables.rocket_radius = 5;
+design_variables.rocket_ri = 5;
 [launch_cadences, rocket] = run_mission_module(design_variables, parameters_fast_nofleet)
 total_time = sum(launch_cadences(1,:))
 fprintf('\n========================\n')
@@ -74,7 +74,7 @@ fprintf('>> Test case 5: Fleet of 10, num_launches < fleet_size, slow satellite 
 design_variables.stage1.reusable=1;
 design_variables.stage2.reusable=1;
 design_variables.num_of_launches=10;
-design_variables.rocket_radius = 5;
+design_variables.rocket_ri = 5;
 [launch_cadences, rocket] = run_mission_module(design_variables, parameters_slow_fleet)
 total_time = sum(launch_cadences(1,:))
 fprintf('\n========================\n')
@@ -84,7 +84,7 @@ fprintf('>> Test case 6: Fleet of 10, num_launches > fleet_size, slow satellite 
 design_variables.stage1.reusable=1;
 design_variables.stage2.reusable=1;
 design_variables.num_of_launches=100;
-design_variables.rocket_radius = 5;
+design_variables.rocket_ri = 5;
 [launch_cadences, rocket] = run_mission_module(design_variables, parameters_slow_fleet)
 total_time = sum(launch_cadences(1,:))
 fprintf('\n========================\n')
@@ -94,7 +94,17 @@ fprintf('>> Test case 7: No fleet, slow satellite production (0.01 months per sa
 design_variables.stage1.reusable=1;
 design_variables.stage2.reusable=1;
 design_variables.num_of_launches=10;
-design_variables.rocket_radius = 5;
+design_variables.rocket_ri = 5;
+[launch_cadences, rocket] = run_mission_module(design_variables, parameters_slow_nofleet)
+total_time = sum(launch_cadences(1,:))
+fprintf('\n========================\n')
+
+%TEST MISSION 8
+fprintf('>> Test case 8: No fleet, slow satellite production (0.01 months per sat), large rocket')
+design_variables.stage1.reusable=1;
+design_variables.stage2.reusable=1;
+design_variables.num_of_launches=10;
+design_variables.rocket_ri = 9;
 [launch_cadences, rocket] = run_mission_module(design_variables, parameters_slow_nofleet)
 total_time = sum(launch_cadences(1,:))
 fprintf('\n========================\n')
