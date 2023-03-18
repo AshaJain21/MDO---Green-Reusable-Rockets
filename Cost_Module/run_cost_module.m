@@ -45,10 +45,12 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
 
     %Propellant costs
     total_prop_cost = calculate_prop_cost(rocket, design_variables, parameters);
-    total_cost_for_each_launch =total_cost_for_each_launch + ones([1, size_launch_schedule(2)]) * total_prop_cost;
+    total_cost_for_each_launch = total_cost_for_each_launch + ones([1, size_launch_schedule(2)]) * total_prop_cost;
 
     %Heat Shield cost
-    %TODO!!
+    shield_material_unit_cost = design_variables.stage2.reentry_shield_material.Cost;
+    heat_shield_cost = ones([1, size_launch_schedule(2)]) * (rocket.stage2.heat_shield_mass*shield_material_unit_cost);
+    total_cost_for_each_launch = total_cost_for_each_launch + heat_shield_cost;
 
     %Spreading costs over time (?) with dev costs amortized, this may boil
     %down to maximum cost per launch
