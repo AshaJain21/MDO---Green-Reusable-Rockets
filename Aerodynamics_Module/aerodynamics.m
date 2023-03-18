@@ -28,9 +28,9 @@ function [rocket] = aerodynamics(design_variables, parameters, rocket)
 st1mass = rocket.stage1.mstruct; %dry mass stage 1
 st2emiss = rocket.stage2.prodValues; %in kg add together = total prop mass
 st1emiss = rocket.stage1.prodValues;
-st1prop = rocket.stage1.engine_prop; %total mass - structural mass = prop mass
+st1prop = rocket.stage1.mprop; %total mass - structural mass = prop mass
 st2mass = rocket.stage2.mstruct;
-st2prop = rocket.stage2.engine_prop;
+st2prop = rocket.stage2.mprop;
 ro = rocket.ro; %inner radius of rocket
 %st2rad = rocket.stage2.ri; %
 st1h = rocket.stage1.height;
