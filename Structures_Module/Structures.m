@@ -20,9 +20,9 @@ function [rocket] = Structures(design_variables, parameters, rocket)
 FOS = 1.6; %factor of safety for load on rocket
 SMF = parameters.struc_to_propellant_mass_ratio;
 ri = design_variables.rocket_ri;
-st1prop = rocket.stage1.mprop;
-st2prop = rocket.stage2.mprop;
-re_mat_density = design_variables.stage2.reentry_shield_material.Density; %[kg/m3] %add this on, ignore weight contribution by SMH
+st1prop = design_variables.stage1.engine_prop;
+st2prop = design_variables.stage2.engine_prop;
+re_mat_density = design_variables.stage2.reentry_shield_material.density; %[kg/m3] %add this on, ignore weight contribution by SMH
 % re_mat_maxflux = design_variables.stage2.reentry_shield_material{3}; %W/m2 max heat flux the ablative material can undergo w/out failure
 strucmat_density = parameters.structural_material.density; %[kg/m3]
 sigma_max = parameters.structural_material.fatigue_stress; %max fatigue stress of material MPA
@@ -76,10 +76,10 @@ rocket.stage2.height = st2h; %[m]
 reshieldthick = 0.0508; %[m] shield thickness 2 inches SHOULD THIS BE CALCULATED LATER?
 
 %get mass of shield material required for cost
-SAst2 = pi*ri^2*st2h; %only need it for the upper stage for re-entry
+SAst2 = pi*rocket.ro*2*st2h; %only need it for the upper stage for re-entry
 vol_heatshield = SAst2*reshieldthick;
-rocket.stage2.heat_shield_mass = vol_heatshield*re_mat_density; %[kg]
-
+heat_shield_mass = vol_heatshield*re_mat_density; %[kg]
+rocket.stage2.heat_shield_SA = SAst2; %[m2] surface area of the heat sheild required
 
 
 end
