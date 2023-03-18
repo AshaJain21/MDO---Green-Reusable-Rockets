@@ -9,9 +9,9 @@ size_of_keys = size(species_keys);
 for i = 1:size_of_keys(2)
     key = species_keys{i};
     if gwp_rf_per_species_perMg_map.isKey(key)
-          combinded_emission_data = combined_emissions(key) ; 
-          combinded_emission_data(2,:) = combinded_emission_data(2, :) * gwp_rf_per_species_perMg_map(key) ; 
-          gwp_rf_per_species(key)  = combinded_emission_data;
+          data = combined_emissions(key) ; 
+          data(2,:) = data(1, :) * gwp_rf_per_species_perMg_map(key) ; 
+          gwp_rf_per_species(key)  = data;
     end
     
 end
