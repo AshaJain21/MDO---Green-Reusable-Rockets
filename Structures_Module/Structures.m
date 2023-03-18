@@ -76,10 +76,10 @@ rocket.stage2.height = st2h; %[m]
 reshieldthick = 0.0508; %[m] shield thickness 2 inches SHOULD THIS BE CALCULATED LATER?
 
 %get mass of shield material required for cost
-SAst2 = pi*ri^2*st2h; %only need it for the upper stage for re-entry
+SAst2 = pi*rocket.ro*2*st2h; %only need it for the upper stage for re-entry
 vol_heatshield = SAst2*reshieldthick;
-rocket.stage2.heat_shield_mass = vol_heatshield*re_mat_density; %[kg]
-
+heat_shield_mass = vol_heatshield*re_mat_density; %[kg]
+rocket.stage2.heat_shield_SA = SAst2; %[m2] surface area of the heat sheild required
 
 
 end
