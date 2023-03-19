@@ -11,7 +11,7 @@ function refurb_cost = compute_refurb_cost(stage, stage_manuf_cost, num_launches
         if launch_schedule(stage+1, i) == 1
             stage_cost = stage_manuf_cost(i); 
             refurbish_launch_count = refurbish_launch_count + 1;
-            learned_percentage = parameters.init_refurb_cost_percentage * refurbish_launch_count^parameters.refurb_learning_rate;
+            learned_percentage = parameters.init_refurb_cost_percentage * refurbish_launch_count^(log(parameters.refurb_learning_rate)/log(2));
             refurb_cost_for_stage = stage_cost * learned_percentage;
             refurb_cost(i) = refurb_cost_for_stage;
         end 
