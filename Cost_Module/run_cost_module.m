@@ -4,8 +4,8 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
     total_cost_for_each_launch = zeros([1, size_launch_schedule(2)]);
 
     %Computing total stage massesprop 
-    stg1_total_mass = rocket.stage1.mprop * (1 + parameters.struc_to_propellant_mass_ratio);
-    stg2_total_mass = rocket.stage2.mprop * (1 + parameters.struc_to_propellant_mass_ratio);
+    stg1_total_mass = rocket.stage1.mprop + rocket.stage1.mstruct;
+    stg2_total_mass = rocket.stage2.mprop + rocket.stage2.mstruct;
     stage_masses = [stg1_total_mass, stg2_total_mass];
 
     %Launcher material cost
