@@ -18,8 +18,8 @@ engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
 
-
 for i = 1:max(num_experiments)
+    fprintf('======= Running Experiment %.15g\n', i)
     %Set up design variables 
     num_of_launches = experiments{i, 2};
     %Engine Prop data 
@@ -43,7 +43,6 @@ for i = 1:max(num_experiments)
 
     [delivery_time, env_impact, cost] = run_model(design_variables, parameters);
     experiments{i, 8} = sum(cost(1, :));
-
 end
 
 %Compute the effects of each design variable

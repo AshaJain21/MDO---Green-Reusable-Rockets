@@ -20,7 +20,7 @@ function parameters = setup_parameters()
 
     parameters.refurb_learning_rate= 0.9;
     parameters.manuf_learning_rate= 0.9;
-    parameters.sat_prod_learning_rate = 0.9;
+    parameters.sat_prod_learning_rate = 0.6;
 
     parameters.launcher_refurb_times = [60, 30]; %Need to set stage 2 refurb time. shuttle avg, but space x ar 27 to 21 days. source: https://ark-invest.com/newsletters/issue-335/
     parameters.launcher_prod_time_bins = [3,6,9; 0.5,0.5, 36]; %Small based on electron, medium based on falcon9, large based on SLS
