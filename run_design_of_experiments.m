@@ -77,24 +77,23 @@ function experiments = format_final_doe_array(num_experiments, orthogonal_array,
    experiments = array2table(zeros(64,8), 'VariableNames',{'num_of_launches', 'engine-prop_1', 'engine-prop_2', 'reentry_shield_material', 'rocket_radius', 'reusable_stage1', 'reusable_stage2', 'output_cost'});
    for exp = 1:num_experiments
        for factor = 2:num_factors+1
-           experiments(exp, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
-           experiments(exp+1, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
-           experiments(exp+2, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
-           experiments(exp+3, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
-
+           experiments(exp*4-3, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
+           experiments(exp*4-2, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
+           experiments(exp*4-1, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
+           experiments(exp*4, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
        end
-       experiments{exp, 6} = 1;
-       experiments{exp, 7} = 1;
-       experiments{exp, 8} = 0;
-       experiments{exp+1, 6} = 1;
-       experiments{exp+1, 7} = 0;
-       experiments{exp+1, 8} = 0;
-       experiments{exp+2, 6} = 0;
-       experiments{exp+2, 7} = 1;
-       experiments{exp+2, 8} = 0;
-       experiments{exp+3, 6} = 0;
-       experiments{exp+3, 7} = 0;
-       experiments{exp+3, 8} = 0;
+       experiments{exp*4-3, 6} = 1;
+       experiments{exp*4-3, 7} = 1;
+       experiments{exp*4-3, 8} = 0;
+       experiments{exp*4-2, 6} = 1;
+       experiments{exp*4-2, 7} = 0;
+       experiments{exp*4-2, 8} = 0;
+       experiments{exp*4-1, 6} = 0;
+       experiments{exp*4-1, 7} = 1;
+       experiments{exp*4-1, 8} = 0;
+       experiments{exp*4, 6} = 0;
+       experiments{exp*4, 7} = 0;
+       experiments{exp*4, 8} = 0;
 
    end
 end
