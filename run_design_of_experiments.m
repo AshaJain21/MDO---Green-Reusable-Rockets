@@ -53,9 +53,9 @@ effect_count = 1;
 for k = 1:rows
     for j = 2:cols
         factor = doe_bins.Properties.VariableNames{j};
-        factor_value = doe_bins(k,j);
+        factor_value = doe_bins{k,j};
 
-        effects(effect_count) = mean(experiments.output_cost(experiments(:, factor)== factor_value)) - overall_mean;
+        effects(effect_count) = mean(experiments.output_cost(experiments{:, factor} == factor_value)) - overall_mean;
         effect_count = effect_count +1;
     end
     
@@ -63,8 +63,8 @@ end
 
 for m = 0:1
 
-        effects(effect_count) = mean(experiments.output_cost(experiments(:, "resusable_stage1") == m)) -overall_mean;
-        effects(effect_count+1) = mean(experiments.output_cost(experiments(:, "resusable_stage2") == m)) -overall_mean;
+        effects(effect_count) = mean(experiments.output_cost(experiments{:, "reusable_stage1"} == m)) -overall_mean;
+        effects(effect_count+1) = mean(experiments.output_cost(experiments{:, "reusable_stage2"} == m)) -overall_mean;
         effect_count = effect_count +2;
 end 
 
@@ -74,7 +74,7 @@ disp(effects);
 
 function experiments = format_final_doe_array(num_experiments, orthogonal_array, doe_bins)
    num_factors = 5;
-   experiments = array2table(zeros(64,8), 'VariableNames',{'num_of_launches', 'engine-prop_1', 'engine-prop_2', 'reentry_shield_material', 'rocket_radius', 'reusable_stage1', 'reusable_stage2', 'output_cost'});
+   experiments = array2table(zeros(64,8), 'VariableNames',{'num_of_launches', 'engine_prop_1', 'engine_prop_2', 'reentry_shield_material', 'rocket_radius', 'reusable_stage1', 'reusable_stage2', 'output_cost'});
    for exp = 1:num_experiments
        for factor = 2:num_factors+1
            experiments(exp*4-3, factor-1) = doe_bins(orthogonal_array{exp, factor}, factor);
