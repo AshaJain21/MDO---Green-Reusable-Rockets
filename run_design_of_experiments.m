@@ -51,7 +51,7 @@ effects = zeros([(rows*cols+4), 1]);
 overall_mean = mean(experiments.output_cost);
 effect_count = 1;
 for k = 1:rows
-    for j = 1:cols
+    for j = 2:cols
         factor = doe_bins.Properties.VariableNames{j};
         factor_value = doe_bins(k,j);
 
