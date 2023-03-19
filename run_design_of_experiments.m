@@ -21,23 +21,23 @@ reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 for i = 1:max(num_experiments)
     fprintf('======= Running Experiment %.15g\n', i)
     %Set up design variables 
-    num_of_launches = experiments{i, 2};
+    num_of_launches = experiments.num_of_launches(i);
     %Engine Prop data 
-    engine_prop_1 = engine_prop_db(experiments{i, 3}, :);
+    engine_prop_1 = engine_prop_db(experiments{i, 2}, :);
     engine_prop_1.Fuel= string(engine_prop_1.Fuel);
     engine_prop_1.Engine = string(engine_prop_1.Engine);
     engine_prop_1.Oxidizer = string(engine_prop_1.Oxidizer);
     
-    engine_prop_2 = engine_prop_db(experiments{i, 4}, :);
+    engine_prop_2 = engine_prop_db(experiments{i, 3}, :);
     engine_prop_2.Fuel= string(engine_prop_2.Fuel);
     engine_prop_2.Engine = string(engine_prop_2.Engine);
     engine_prop_2.Oxidizer = string(engine_prop_2.Oxidizer);
 
-    reentry_shield_material = reentry_shield_material_db(experiments{i, 5}, :);
-    rocket_radius = experiments{i,6};
+    reentry_shield_material = reentry_shield_material_db(experiments{i, 4}, :);
+    rocket_radius = experiments.rocket_radius(i);
 
-    reusable_stage_1 = experiments.reusable_stage1;
-    reusable_stage_2 = experiments.reusable_stage2;
+    reusable_stage_1 = experiments.reusable_stage1(i);
+    reusable_stage_2 = experiments.reusable_stage2(i);
 
     design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine_prop_1, engine_prop_2, reentry_shield_material, rocket_radius);
 
