@@ -1,6 +1,6 @@
 function parameters = setup_parameters()
     parameters.mass_per_satellite = 600; %kg
-    parameters.num_of_satellites = 8000; %kg
+    parameters.num_of_satellites = 5000; %kg
     parameters.rocket_fleet_size = 15;
     parameters.structural_material = 'Al 6061';
     parameters.struc_to_propellant_mass_ratio = 0.1;
