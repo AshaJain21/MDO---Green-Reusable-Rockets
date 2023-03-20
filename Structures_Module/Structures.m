@@ -30,8 +30,8 @@ sigma_max = parameters.structural_material.fatigue_stress; %max fatigue stress o
 % launch_q2 = rocket.stage2.launch_qdot;
 % re_q1 = rocket.stage1.recovery_qdot;
 % re_q2 = rocket.stage2.recovery_qdot;
-st1mass = rocket.stage1.mstruct; %rocket dry mass stage1
-st2mass = rocket.stage2.mstruct;
+% st1mass = rocket.stage1.mstruct; %rocket dry mass stage1
+% st2mass = rocket.stage2.mstruct;
 %heat flux - get max heat flux from calcs
 % heatflux = [max(launch_qrock), max(launch_q2), max(re_q1), max(re_q2)]; %heat flux
 
@@ -58,6 +58,9 @@ rocket.ro = max(rout); %get out outer radius of rocket
 %rocket structural mass is a fraction of the propellant mass (cost calcs)
 rocket.stage1.mstruct = st1prop*SMF;  
 rocket.stage2.mstruct = st2prop*SMF; 
+
+st1mass = rocket.stage1.mstruct;
+st2mass = rocket.stage2.mstruct;
 
 st1volume = st1mass/strucmat_density; %volume of stage 1
 st2volume = st2mass/strucmat_density; %volume of stage 2
