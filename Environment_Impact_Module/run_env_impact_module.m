@@ -1,4 +1,5 @@
 function env_impact = run_env_impact_module(design_variables, rocket)
+    num_launches = design_variables.num_of_launches;
     second_stage_reentry_mass = rocket.stage2.mstruct;
     stage1_fuel =design_variables.stage1.engine_prop.Fuel;
     stage2_fuel = design_variables.stage2.engine_prop.Fuel;
@@ -29,7 +30,7 @@ function env_impact = run_env_impact_module(design_variables, rocket)
     species_ozone_depletion = compute_ozone_depletion(combined_emissions);
     species_gwp100 = compute_gwp_100(combined_emissions);
     
-    env_impact = compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100);
+    env_impact = num_launches .* compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100);
 
 end
 
