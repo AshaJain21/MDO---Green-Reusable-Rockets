@@ -23,7 +23,7 @@ function parameters = setup_parameters()
     parameters.sat_prod_learning_rate = 0.6;
 
     parameters.launcher_refurb_times = [60, 30]; %Need to set stage 2 refurb time. shuttle avg, but space x ar 27 to 21 days. source: https://ark-invest.com/newsletters/issue-335/
-    parameters.launcher_prod_time_bins = [3,6,9; 0.5,0.5, 36]; %Small based on electron, medium based on falcon9, large based on SLS
+    parameters.launcher_prod_time_bins = [1.5,3,4.5; 0.5,0.5, 36]; %Small based on electron, medium based on falcon9, large based on SLS
     %one web is manufc 2 sats per day: https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwiaycuK89v9AhX7j4kEHbKxBusQFnoECBAQAw&url=https%3A%2F%2Fwww.floridatoday.com%2Fstory%2Ftech%2Fscience%2Fspace%2F2022%2F01%2F21%2Foneweb-satellites-look-inside-sci-fi-factory-kennedy-space-center-florida%2F6172817001%2F&usg=AOvVaw3NnmyaKJKqShZW8TTM5QS4
     %new record speed at 120 starlinks per month. source: https://www.cnbc.com/2020/08/10/spacex-starlink-satellte-production-now-120-per-month.html
     parameters.init_sat_prod_time = 30; %days, lets try this value and see if the learning rate drops fast enough to realistic values  
