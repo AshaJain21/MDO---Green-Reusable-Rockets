@@ -2,8 +2,8 @@ function env_impact = run_env_impact_module(design_variables, rocket)
     second_stage_reentry_mass = rocket.stage2.mstruct;
     stage1_fuel =design_variables.stage1.engine_prop.Fuel;
     stage2_fuel = design_variables.stage2.engine_prop.Fuel;
-    stage1_combustion_products = handle_stage_products(rocket.stage1.prodValues, rocket.stage1.prodNames, rocket.stage1.mprop, stage1_fuel);
-    stage2_combustion_products = handle_stage_products(rocket.stage2.prodValues, rocket.stage2.prodValues, rocket.stage2.mprop, stage2_fuel);
+    stage1_combustion_products = handle_stage_products(rocket.stage1.mprop.*rocket.stage1.prodValues, rocket.stage1.prodNames, rocket.stage1.mprop, stage1_fuel);
+    stage2_combustion_products = handle_stage_products(rocket.stage2.mprop.*rocket.stage2.prodValues, rocket.stage2.prodNames, rocket.stage2.mprop, stage2_fuel);
     stage2_species_keys = stage2_combustion_products.keys();
     combined_emissions = stage1_combustion_products;
    
