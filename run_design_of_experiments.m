@@ -47,7 +47,7 @@ end
 
 %Compute the effects of each design variable
 [rows, cols] = size(doe_bins);
-effects = zeros([(rows*cols+4), 1]);
+effects = zeros([(rows*(cols-1) +4), 1]); %extra column
 overall_mean = mean(experiments.output_cost);
 effect_count = 1;
 for k = 1:rows

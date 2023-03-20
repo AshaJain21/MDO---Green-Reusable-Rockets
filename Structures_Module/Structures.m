@@ -38,6 +38,8 @@ st2mass = rocket.stage2.mstruct;
 %get wall thickness
 A1 = FOS*rocket.stage1.thrust/sigma_max; %get area required to accomodate this stress w/chosen FOS
 R_outer1 = sqrt(ri^2 + A1/pi); %outer radius [m]
+%or! 
+%t = A1/(pi*ri*2); %does the same!
 wallst1 = R_outer1 - ri; %[m]
 
 A2 = FOS*rocket.stage2.thrust/sigma_max; %get area required to accomodate this stress w/chosen FOS
