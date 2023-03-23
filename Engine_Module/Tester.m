@@ -8,6 +8,8 @@ design_variables.stage2.engine_prop = {"", "RP-1", "LOX", 337.5, 1.8E+07, 2.6, 3
 rocket.stage1.mstruct = 22000; %kgs
 rocket.stage2.mstruct = 4000;   %kgs
 rocket.payload        = 20000; %kgs
+stage1.alpha          = 0.1; % 10% of payload mass is structure mass
+stage2.alpha          = 0.1; % 10% of payload mass is structure mass
 
 design_variables.rocket_ri = 1.5;     %m
 
