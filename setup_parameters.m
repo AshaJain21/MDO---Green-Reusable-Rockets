@@ -33,7 +33,6 @@ function parameters = setup_parameters()
     parameters.MY_value = 350000; %USD, inflation adjusted (and rounded up) from the 1984 number provided in the Koelle paper
     parameters.f1 = 0.6; %from koeller paper
     parameters.f3 = 1.0; %from koeller paper
-    parameters.f4 = 0.8; %Random number for now. Need to confirm this
 
     parameters.loop_termination_threshold = 0.05; %Threshold to terminate the engine-structures-aero iterative loop
     parameters.max_loop_iterations = 30; %Maximum number of loop iterations before termination

@@ -27,7 +27,7 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
 
     %Launcher manufacturing cost
     num_stages = 2;
-    init_stage_manuf_costs = compute_launcher_manuf_cost(parameters, design_variables, num_stages, stage_masses, rocket);
+    init_stage_manuf_costs = compute_launcher_manuf_cost(parameters, design_variables, num_stages, rocket, launch_cadence);
     launch_nums = 1:size_launch_schedule(2);
     manuf_cost_per_launch_per_stage = init_stage_manuf_costs * launch_nums.^(log(parameters.manuf_learning_rate)/log(2));
     total_cost_for_each_launch = total_cost_for_each_launch + sum(manuf_cost_per_launch_per_stage, 1);
