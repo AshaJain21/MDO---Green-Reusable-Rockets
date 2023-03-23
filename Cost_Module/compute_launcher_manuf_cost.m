@@ -16,36 +16,49 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(parameters, design_va
     stage1_masses = struct(mstruct=rocket.stage1.mstruct, meng=design_variables.stage1.engine_prop.EngineMass_kg_);
     stage2_masses = struct(mstruct=rocket.stage2.mstruct, meng=design_variables.stage2.engine_prop.EngineMass_kg_);
     masses = [stage1_masses, stage2_masses];
+
+    LH2_stage_boolean = [(rocket.stage1.engine_prop.Fuel=='LH2'), (rocket.stage2.engine_prop.Fuel=='LH2')];
     
     for i = 1:num_stages
-        stage_manuf_cost = compute_stage_manuf_cost(num_engines(i), masses(i), num_stages_produced(i), total_duration);
+        stage_manuf_cost = compute_stage_manuf_cost(LH2_stage_boolean(i), num_engines(i), masses(i), num_stages_produced(i), total_duration);
     
         launcher_manuf_cost = 1.02^N * stage_costs * parameters.MY_value;
     end
 
 end
 
-function total_stage_manuf_cost = compute_stage_manuf_cost(num_engines, masses, num_stages_produced, total_duration)
+function total_stage_manuf_cost = compute_stage_manuf_cost(LH2_stage, num_engines, masses, num_stages_produced, total_duration)
     %Calculate manufacturing cost of the engines
-    engine_manuf_cost = compute_manuf_cost(0, num_engines, masses.meng, (num_engines*num_stages_produced), total_duration);
+    engine_manuf_cost = compute_manuf_cost(0, LH2_stage, num_engines, masses.meng, (num_engines*num_stages_produced), total_duration);
 
     %Calculate manufacturing cost of the stage itself
-    stage_manuf_cost = compute_manuf_cost(1, num_engines, masses.meng, num_stages_produced, total_duration);
+    stage_manuf_cost = compute_manuf_cost(1, LH2_stage, num_engines, masses.meng, num_stages_produced, total_duration);
 
     %Combine them
     total_stage_manuf_cost = stage_manuf_cost + engine_manuf_cost;
 end
 
-function manuf_cost = compute_manuf_cost(equip_type, n, mass, num_units, total_duration)
+function manuf_cost = compute_manuf_cost(equip_type, LH2_stage, n, mass, num_units, total_duration)
     f4 = compute_f4_vector(equip_type, mass, num_units, total_duration);
 
     if equip_type == 0 % 0 indicates we're estimating manuf cost of an engine
-        coeff = 4.0;
+        if LH2_stage == true
+            coeff = 3.15;
+        else
+            coeff = 1.9;
+        end
+        M_exp = 0.535;
     else % otherwise a 1 would indicate we're estimating manuf cost of a stage
-        coeff = 5.0;
+        if LH2_stage == true
+            coeff = 1.418;
+            M_exp = 0.646;
+        else
+            coeff = 1.439;
+            M_exp = 0.593;
+        end
     end
 
-    manuf_cost = n * coeff * mass^0.46 * f4;
+    manuf_cost = coeff * n * mass^M_exp * f4;
 
 end
 
