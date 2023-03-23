@@ -19,8 +19,8 @@ stage2.ue           = ue    *stage2.nEng;
 stage2.mdot         = mdot  *stage2.nEng;
 
 B                   = exp((delV_stg2 - delV_stg1)/stage2.ue);
-alpha               = 0.1; % 10% of payload mass is structure mass
-stage2.mprop        = (B - 1)*rocket.payload/(1 + alpha - B*alpha);
+stage2.alpha        = 0.1; % 10% of payload mass is structure mass
+stage2.mprop        = (B - 1)*rocket.payload/(1 + (1 - B)*stage2.alpha);
 
 stage2.prodNames    = engine.name;
 stage2.prodValues   = engine.massFraction;
@@ -33,8 +33,8 @@ stage1.ue           = ue    *stage1.nEng;
 stage1.mdot         = mdot  *stage1.nEng;
 
 B                   = exp(delV_stg1/stage1.ue);
-alpha               = 0.1; % 10% of payload mass is structure mass
-stage1.mprop        = ((1 + alpha) - B*(1 + alpha))*stage2.mprop/(1 - alpha);
+stage1.alpha        = 0.1; % 10% of payload mass is structure mass
+stage1.mprop        = (1 - B)*(1 + stage1.alpha)*stage2.mprop/(1 - stage1.alpha);
 
 stage1.prodNames    = engine.name;
 stage1.prodValues   = engine.massFraction;
