@@ -11,10 +11,12 @@ rocket.stage2.mstruct = 4000;  % kgs
 rocket.payload        = 20000; % kgs
 rocket.stage1.alpha   = 0.1;   % 10% of payload mass is structure mass
 rocket.stage2.alpha   = 0.1;   % 10% of payload mass is structure mass
+rocket.stage1.terminal_velocity = 90;
+rocket.stage2.terminal_velocity = 310;
+rocket.iter = 11;
 
 parameters.struc_to_propellant_mass_ratio = .1;
-parameters.vTerm1 = 53;
-parameters.vTerm2 = 53;
+parameters.vTerm1 = 90;
+parameters.vTerm2 = 310;
 
-rocket.iter = 1;
 rocket = engine_mod(rocket, design_variables, parameters);
