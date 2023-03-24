@@ -7,6 +7,9 @@ function parameters = setup_parameters()
     parameters.initial_struct_masses = [25600, 3900]; % Based on falcon 9's structural masses for stage 1 and 2
     parameters.prop_unit_costs = readtable('propellant_costs.csv');
 
+    parameters.vTerm1 = 310;
+    parameters.vTerm2 = 90;
+
     material.density = 2700; %kg/m3
     material.emissivity = 0.05 ; %source : https://www.engineeringtoolbox.com/radiation-heat-emissivity-aluminum-d_433.html
     material.unit_cost = 2.85; %per kg source: https://www.navstarsteel.com/6061-t6-aluminium-plate.html
