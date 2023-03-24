@@ -25,7 +25,8 @@ if rocket.iter == 1
     stage2.mprop    = (B - 1)*rocket.payload/(1 + (1 - B)*alpha);
     stage2.mBB      = (exp(vTerm2/stage2.ue) - 1)*alpha*stage2.mprop;
 else
-    stage2.mprop    = (B - 1)*(stage2.mstruct + rocket.payload);   
+    stage2.mprop    = (B - 1)*(stage2.mstruct + rocket.payload);
+    stage2.mBB      = (exp(stage2.terminal_velocity/stage2.ue) - 1)*stage2.mprop;
 end
 
 stage2.prodNames    = engine.name;
@@ -45,6 +46,7 @@ if rocket.iter == 1
 else
     mf              = stage1.mstruct + rocket.payload + stage2.mstruct + stage2.mprop;
     stage1.mprop    = (B - 1)*mf;
+    stage1.mBB      = (exp(stage1.terminal_velocity/stage1.ue) - 1)*stage1.mprop;
 end
 stage1.prodNames    = engine.name;
 stage1.prodValues   = engine.massFraction;
