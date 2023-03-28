@@ -6,11 +6,11 @@ rocket.stage2.mstruct=parameters.initial_struct_masses(2);
 [launch_cadence, rocket] = run_mission_module(design_variables, parameters, rocket);
 
 % avg_error_perc = 1;
-% num_iterations = 0;
+% rocket.iter = 0;
 % 
 % while (avg_error_perc >= parameters.loop_termination_threshold) && (num_iterations <= parameters.max_loop_iterations)
 % 
-%     num_iterations = num_iterations + 1;
+%     rocket.iter = rocket.iter + 1;
 %     previous_struct_masses = [rocket.stage1.mstruct, rocket.stage2.mstruct];
 %     fprintf('Current iteration: %.15g. Average error: %.15g\n', num_iterations, avg_error_perc)
 

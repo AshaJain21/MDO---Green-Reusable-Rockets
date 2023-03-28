@@ -1,7 +1,7 @@
 % TO DO
 % 1) figure out which engines are staged (hot T) and which are not (cold T) 
 
-function [thrust, ue, mdot, products] = combustion_mod(rocketProp)
+function [thrust, ue, mdot, products, rocketProp] = combustion_mod(rocketProp)
 %% Get Combustion Products
     % INITIALIZE FINITE-AREA-CHAMBER --------------------------------------
     self = App('HC/O2/N2 PROPELLANTS');
