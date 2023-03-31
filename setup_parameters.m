@@ -5,7 +5,7 @@ function parameters = setup_parameters()
     parameters.structural_material = 'Al 6061';
     parameters.struc_to_propellant_mass_ratio = 0.1;
     parameters.initial_struct_masses = [25600, 3900]; % Based on falcon 9's structural masses for stage 1 and 2
-    parameters.propellant_properties = readtable('propellant_costs.csv');
+    parameters.propellant_properties = readtable('propellant_properties.csv');
 
     parameters.vTerm1 = 310;
     parameters.vTerm2 = 90;
