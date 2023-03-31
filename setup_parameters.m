@@ -1,5 +1,9 @@
 function parameters = setup_parameters()
+    parameters.circle_packing_table = readtable('circle_packing_table.csv');
+
     parameters.mass_per_satellite = 600; %kg
+    parameters.sat_model_radius = 1.5; %m
+    parameters.sat_model_height = 0.4; %m
     parameters.num_of_satellites = 5000; %kg
     parameters.rocket_fleet_size = 15;
     parameters.structural_material = 'Al 6061';

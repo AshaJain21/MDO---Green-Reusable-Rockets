@@ -8,6 +8,11 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
 
     rocket.payload = per_launch_mass;
 
+    %CALCULATE PAYLOAD HEIGHT
+    num_sat_stacks = calculate_num_stacks(design_variables.rocket_ri, parameters.sat_model_radius, parameters.circle_packing_table.Density);
+    num_sats_per_stack = ceil(num_sat_per_launch / num_sat_stacks);
+    rocket.payload_height = num_sats_per_stack * parameters.sat_model_height;
+
     %SET UP LEARNING CURVE FOR SATELLITE PRODUCTION TIMES
     sat_vec =  1:parameters.num_of_satellites;
     sat_prod_times = (parameters.init_sat_prod_time/30)*sat_vec.^(log(parameters.sat_prod_learning_rate)/log(2)); %Based on Crawford's Learning Curve
