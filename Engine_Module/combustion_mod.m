@@ -8,7 +8,7 @@ function [thrust, ue, mdot, products, rocketProp] = combustion_mod(rocketProp)
 
     % SET CONDITIONS ------------------------------------------------------
     self = set_prop(self, 'TR', 90, 'pR', rocketProp.P/1e5,'phi',rocketProp.MR);
-    self.PD.S_Fuel     = {rocketProp.F};
+    self.PD.S_Fuel     = rocketProp.F;
     self.PD.N_Fuel     = rocketProp.N_F;
     self.PD.S_Oxidizer = {rocketProp.O};
     self.PD.FLAG_IAC   = true;

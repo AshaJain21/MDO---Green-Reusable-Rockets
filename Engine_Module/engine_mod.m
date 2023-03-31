@@ -3,7 +3,6 @@ function [rocket] = engine_mod(rocket, design_variables, parameters)
 stage1 = rocket.stage1;
 stage2 = rocket.stage2;
 
-drag_delV = 2000; %m/s
 
 %Reading in engine prop variables and computing engine thrust, velocity...
 rocketProp_stg2 = getRocketProperties(design_variables.stage2.engine_prop);
@@ -16,10 +15,10 @@ if design_variables.stage1.reusable == 1
     vterm1 = stage1.vTerm;
     mbb1 = stage1.mstruct * (exp( vterm1 / (rocketProp_stg1.Isp * 9.81)) - 1);
     separation_velocity = parameters.vSepReusable;
-    delV_stg1 = separation_velocity + drag_delV; % m/s 
+    delV_stg1 = separation_velocity + parameters.drag_deltaV ; % m/s 
 else
     separation_velocity = parameters.vSepNonReusable;
-    delV_stg1 = separation_velocity + drag_delV; % m/s
+    delV_stg1 = separation_velocity + parameters.drag_deltaV ; % m/s
     mbb1 =0;
 end
 

@@ -37,6 +37,7 @@ function parameters = setup_parameters()
     parameters.f1 = 0.6; %from koeller paper
     parameters.f3 = 1.0; %from koeller paper
     parameters.f4 = 0.8; %Random number for now. Need to confirm this
+    parameters.max_cost_per_year = 1e12;
 
     parameters.loop_termination_threshold = 0.05; %Threshold to terminate the engine-structures-aero iterative loop
     parameters.max_loop_iterations = 30; %Maximum number of loop iterations before termination
@@ -44,5 +45,10 @@ function parameters = setup_parameters()
     parameters.vSepReusable = 2300; %m/s
     parameters.vSepNonReusable = 3400; %m/s
     parameters.orbitalVelocity = 7600; %m/s
+    parameters.drag_deltaV = 2000; %m/s
+
+    parameters.max_rocket_height = 100; %m
+    parameters.min_num_engines = 1;
+    parameters.max_num_engines = 30;
     
 end
