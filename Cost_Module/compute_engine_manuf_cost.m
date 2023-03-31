@@ -2,7 +2,7 @@ function manuf_cost = compute_engine_manuf_cost(LH2_eng, eng_lc, eng_uc, total_u
     % Note that f4 includes a learning rate so there's no need to apply a
     % further learning rate to this
 
-    f4 = compute_engine_f4(unit_mass, eng_lc, eng_uc, total_units, total_duration);
+    f4 = compute_engine_f4(eng_mass, eng_lc, eng_uc, total_units, total_duration);
 
     if LH2_eng == true
         coeff = 3.15;

@@ -12,7 +12,7 @@ function manuf_cost = compute_stage_manuf_cost(LH2_stage, stage_mass, num_stages
         M_exp = 0.593;
     end
 
-    manuf_cost = coeff * mass^M_exp * f4;
+    manuf_cost = coeff * stage_mass^M_exp * f4;
 end
 
 

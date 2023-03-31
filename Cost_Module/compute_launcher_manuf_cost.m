@@ -1,4 +1,4 @@
-function launcher_manuf_cost = compute_launcher_manuf_cost(design_variables, rocket, launch_cadence)
+function launcher_manuf_cost = compute_launcher_manuf_cost(design_variables, rocket, launch_cadence, parameters)
     % Assumptions
     % 1. Always only 2 stages (N=2)
     % 2. Always liquid propellants (solid propellants require a different
@@ -16,7 +16,7 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(design_variables, roc
     masses = [stage1_masses, stage2_masses];
     
     %Determine how many of each engine and stage need to be produced
-    production_totals = consolidate_production_totals(rocket, design_variables.num_of_launches, num_refurbished);
+    production_totals = consolidate_production_totals(design_variables, rocket, num_refurbished, parameters);
 
     %Calculate manufacturing cost curves for each stage
     stage1_cost_curve = compute_stage_manuf_cost(production_totals.stages_cryo(1), masses(1).mstruct, production_totals.stages_produced(1), total_duration);
@@ -61,12 +61,12 @@ function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2
     end
 end
 
-function production_totals = consolidate_production_totals(rocket, num_launches, num_refurbished)
+function production_totals = consolidate_production_totals(design_variables, rocket, num_refurbished, parameters)
     
-    LH2_stage_boolean = [(rocket.stage1.engine_prop.Fuel=='LH2'), (rocket.stage2.engine_prop.Fuel=='LH2')];
+    LH2_stage_boolean = [(design_variables.stage1.engine_prop.Fuel=='LH2'), (design_variables.stage2.engine_prop.Fuel=='LH2')];
 
     % Determine how many of each stage needs to be produced
-    num_stages_produced = num_launches - num_refurbished - parameters.rocket_fleet_size;
+    num_stages_produced = design_variables.num_of_launches - num_refurbished - parameters.rocket_fleet_size;
     
     for i = 1:length(num_stages_produced)
         if num_stages_produced(i) <= 0

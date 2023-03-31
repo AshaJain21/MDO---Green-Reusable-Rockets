@@ -26,7 +26,7 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
     total_cost_for_each_launch = total_cost_for_each_launch + launcher_dev_cost_per_launch;
 
     %Launcher manufacturing cost
-    manuf_cost_per_launch_per_stage = compute_launcher_manuf_cost(design_variables, rocket, launch_cadence);
+    manuf_cost_per_launch_per_stage = compute_launcher_manuf_cost(design_variables, rocket, launch_cadence, parameters);
     total_cost_for_each_launch = total_cost_for_each_launch + sum(manuf_cost_per_launch_per_stage, 1);
 
     %Launcher refurbishment cost
