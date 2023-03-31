@@ -1,11 +1,15 @@
 function parameters = setup_parameters()
+    parameters.circle_packing_table = readtable('circle_packing_table.csv');
+
     parameters.mass_per_satellite = 600; %kg
+    parameters.sat_model_radius = 1.5; %m
+    parameters.sat_model_height = 0.4; %m
     parameters.num_of_satellites = 5000; %kg
     parameters.rocket_fleet_size = 15;
     parameters.structural_material = 'Al 6061';
     parameters.struc_to_propellant_mass_ratio = 0.1;
     parameters.initial_struct_masses = [25600, 3900]; % Based on falcon 9's structural masses for stage 1 and 2
-    parameters.prop_unit_costs = readtable('propellant_costs.csv');
+    parameters.propellant_properties = readtable('propellant_properties.csv');
 
     parameters.vTerm1 = 310;
     parameters.vTerm2 = 90;
@@ -36,10 +40,18 @@ function parameters = setup_parameters()
     parameters.MY_value = 350000; %USD, inflation adjusted (and rounded up) from the 1984 number provided in the Koelle paper
     parameters.f1 = 0.6; %from koeller paper
     parameters.f3 = 1.0; %from koeller paper
+    parameters.max_cost_per_year = 1e12;
 
     parameters.loop_termination_threshold = 0.05; %Threshold to terminate the engine-structures-aero iterative loop
     parameters.max_loop_iterations = 30; %Maximum number of loop iterations before termination
 
+    parameters.vSepReusable = 2300; %m/s
+    parameters.vSepNonReusable = 3400; %m/s
+    parameters.orbitalVelocity = 7600; %m/s
+    parameters.drag_deltaV = 2000; %m/s
 
+    parameters.max_rocket_height = 100; %m
+    parameters.min_num_engines = 1;
+    parameters.max_num_engines = 30;
     
 end

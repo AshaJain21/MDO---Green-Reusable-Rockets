@@ -18,7 +18,7 @@ engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
 
-for i = 1:max(num_experiments)
+for i = 1:4%max(num_experiments)
     fprintf('======= Running Experiment %.15g\n', i)
     %Set up design variables 
     num_of_launches = experiments.num_of_launches(i);

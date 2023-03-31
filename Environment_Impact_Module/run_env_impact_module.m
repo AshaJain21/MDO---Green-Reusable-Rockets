@@ -1,4 +1,4 @@
-function env_impact = run_env_impact_module(design_variables, rocket)
+function  [total_rf, total_od, total_gwp] = run_env_impact_module(design_variables, rocket)
     num_launches = design_variables.num_of_launches;
     second_stage_reentry_mass = rocket.stage2.mstruct;
     stage1_fuel =design_variables.stage1.engine_prop.Fuel;
@@ -30,7 +30,7 @@ function env_impact = run_env_impact_module(design_variables, rocket)
     species_ozone_depletion = compute_ozone_depletion(combined_emissions);
     species_gwp100 = compute_gwp_100(combined_emissions);
     
-    env_impact = num_launches .* compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100);
+     [total_rf, total_od, total_gwp] = num_launches .* compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100);
 
 end
 
@@ -79,7 +79,7 @@ end
 
 %Source for propellant byproduct mass fractions = https://www.tandfonline.com/doi/epdf/10.1080/14777620902768867?needAccess=true&role=button
 
-function ei_score = compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100)
+function [total_rf, total_od, total_gwp] = compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100)
     rf_species_keys = species_rf.keys;
     size_of_rf_keys = size(rf_species_keys);
     total_rf  = 0;
@@ -106,7 +106,7 @@ function ei_score = compute_combined_environmental_impact(species_rf, species_oz
         total_gwp = total_gwp+ data(2); %kgCO2_eq 
     end
 
-    ei_score = [total_rf, total_od, total_gwp]; 
+
 
        
 end

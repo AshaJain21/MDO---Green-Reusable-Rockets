@@ -2,55 +2,57 @@ function [rocket] = engine_mod(rocket, design_variables, parameters)
 
 stage1 = rocket.stage1;
 stage2 = rocket.stage2;
-alpha  = parameters.struc_to_propellant_mass_ratio;
-vTerm1 = parameters.vTerm1;
-vTerm2 = parameters.vTerm2;
 
+
+%Reading in engine prop variables and computing engine thrust, velocity...
+rocketProp_stg2 = getRocketProperties(design_variables.stage2.engine_prop);
+rocketProp_stg1 = getRocketProperties(design_variables.stage1.engine_prop);
+[thrust2, ue2, mdot2, engine2] = combustion_mod(rocketProp_stg2);
+[thrust1, ue1, mdot1, engine1] = combustion_mod(rocketProp_stg1);
+
+%Decision tree for resuable stage 1 to compute boost back propellant mass
 if design_variables.stage1.reusable == 1
-    delV_stg1 = 4500; % m/s
-    delV_stg2 = 7600; % m/s
+    vterm1 = stage1.vTerm;
+    mbb1 = stage1.mstruct * (exp( vterm1 / (rocketProp_stg1.Isp * 9.81)) - 1);
+    separation_velocity = parameters.vSepReusable;
+    delV_stg1 = separation_velocity + parameters.drag_deltaV ; % m/s 
 else
-    delV_stg1 = 5600; % m/s
-    delV_stg2 = 7600; % m/s
+    separation_velocity = parameters.vSepNonReusable;
+    delV_stg1 = separation_velocity + parameters.drag_deltaV ; % m/s
+    mbb1 =0;
 end
 
-rocketProp = getRocketProperties(design_variables.stage2.engine_prop);
-[thrust, ue, mdot, engine] = combustion_mod(rocketProp);
-stage2.nEng         = floor(design_variables.rocket_ri^2/(rocketProp.De^2/4)*.83);
-stage2.thrust       = thrust*stage2.nEng;
-stage2.ue           = ue    *stage2.nEng;
-stage2.mdot         = mdot  *stage2.nEng;
-B                   = exp((delV_stg2 - delV_stg1)/stage2.ue);
-if rocket.iter == 1
-    stage2.mprop    = (B - 1)*rocket.payload/(1 + (1 - B)*alpha);
-    stage2.mBB      = (exp(vTerm2/stage2.ue) - 1)*alpha*stage2.mprop;
+%Decision tree for resuable stage 2 to compute boost back propellant mass
+if design_variables.stage2.resuable == 2
+    vterm2 = stage2.vTerm;
+    mbb2 = stage2.mstruct * (exp( vterm2 / (rocketProp_stg2.Isp * 9.81)) - 1);
 else
-    stage2.mprop    = (B - 1)*(stage2.mstruct + rocket.payload);
-    stage2.mBB      = (exp(stage2.terminal_velocity/stage2.ue) - 1)*stage2.mprop;
+    mbb2 = 0;
 end
 
-stage2.prodNames    = engine.name;
-stage2.prodValues   = engine.massFraction;
+%Final Computation for Stage 2 
+stage2.nEng         = floor(design_variables.rocket_ri^2/(rocketProp_stg2.De^2/4)*.83);
+stage2.thrust       = thrust2*stage2.nEng;
+stage2.ue           = ue2    *stage2.nEng;
+stage2.mdot         = mdot2  *stage2.nEng;
+stage2.mf           = stage2.mstruct + rocket.payload + mbb2;
+stage2.mprop        = (stage2.mf)* ( exp( (parameters.orbitalVelocity-separation_velocity) / (rocketProp_stg2.Isp * 9.81)) - 1 );
+stage2.mbb          = mbb2;
+stage2.prodNames    = engine2.name;
+stage2.prodValues   = engine2.massFraction;
 
-rocketProp = getRocketProperties(design_variables.stage1.engine_prop);
-[thrust, ue, mdot, engine] = combustion_mod(rocketProp);
-stage1.nEng         = floor(design_variables.rocket_ri^2/(rocketProp.De^2/4)*.83);
-stage1.thrust       = thrust*stage1.nEng;
-stage1.ue           = ue    *stage1.nEng;
-stage1.mdot         = mdot  *stage1.nEng;
+%Final Computation for Stage 1
+stage1.nEng         = floor(design_variables.rocket_ri^2/(rocketProp_stg1.De^2/4)*.83);
+stage1.thrust       = thrust1*stage1.nEng;
+stage1.ue           = ue1 *stage1.nEng;
+stage1.mdot         = mdot1 *stage1.nEng;
+stage1.mf           = stage1.mstruct + stage2.mf + stage2.mprop + mbb1;
+stage1.mprop        = stage1.mf* ( exp(delV_stg1/ (rocketProp_stg1.Isp * 9.81)) - 1);
+stage1.mbb          = mbb1;
+stage1.prodNames    = engine1.name;
+stage1.prodValues   = engine1.massFraction;
 
-B                   = exp(delV_stg1/stage1.ue);
-if rocket.iter == 1
-    stage1.mprop    = (1 - B)*(1 + alpha)*stage2.mprop/(1 - alpha);
-    stage1.mBB      = (exp(vTerm1/stage1.ue) - 1)*alpha*stage1.mprop;
-else
-    mf              = stage1.mstruct + rocket.payload + stage2.mstruct + stage2.mprop;
-    stage1.mprop    = (B - 1)*mf;
-    stage1.mBB      = (exp(stage1.terminal_velocity/stage1.ue) - 1)*stage1.mprop;
-end
-stage1.prodNames    = engine.name;
-stage1.prodValues   = engine.massFraction;
-
+%Saving computed values into rocket variable
 rocket.stage1 = stage1;
 rocket.stage2 = stage2;
 
