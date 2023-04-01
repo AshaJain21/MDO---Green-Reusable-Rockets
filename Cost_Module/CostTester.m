@@ -1,7 +1,7 @@
 clear
-addpath(genpath(pwd))
+% addpath(genpath(pwd))
 
-load('doe_exp5_vars.mat')
+load('cost_test_case_falcon9.mat')
 
 total_cost = run_cost_module(design_variables, parameters, rocket, launch_cadence);
 
