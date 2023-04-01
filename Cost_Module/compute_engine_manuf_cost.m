@@ -10,7 +10,7 @@ function manuf_cost = compute_engine_manuf_cost(LH2_eng, eng_lc, eng_uc, total_u
         coeff = 1.9;
     end
 
-    manuf_cost = coeff * num_engines * eng_mass^0.535 * f4;
+    manuf_cost = coeff * (eng_uc - eng_lc +1) * eng_mass^0.535 * f4;
 end
 
 

@@ -27,12 +27,12 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(design_variables, roc
 end
 
 function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2_cost_curve, num_engines, engine_types, masses, launch_cadence, production_totals, total_duration)
-    [num_rows, num_columns] = size(launch_cadence);
-    launcher_manuf_cost = zeros(2, num_columns);
+    num_launches = width(launch_cadence);
+    launcher_manuf_cost = zeros(2, num_launches);
     engine_counts = zeros(1, length(production_totals.engine_types));
 
 
-    for i = 1:num_columns
+    for i = 1:num_launches
         ith_launcher_cost = 0;
         
         % Add cost to manufacture first stage if one was manufactured
@@ -40,7 +40,7 @@ function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2
             engine_prod_index = find(strcmp(production_totals.engine_types, engine_types{1}));
             engine_lc = engine_counts(engine_prod_index);
             engine_uc = engine_lc + num_engines(1);
-            stage1_engine_cost = compute_engine_manuf_cost(masses(1).meng, engine_lc, engine_uc, production_totals.engine_counts(engine_prod_index), total_duration);  
+            stage1_engine_cost = compute_engine_manuf_cost(production_totals.stages_cryo(1), engine_lc, engine_uc, production_totals.engine_counts(engine_prod_index), masses(1).meng, total_duration);  
             launcher_manuf_cost(1, i) = ith_launcher_cost + stage1_cost_curve(i) + stage1_engine_cost;
             engine_counts(engine_prod_index) = engine_counts(engine_prod_index) + num_engines(1);
         else
@@ -52,7 +52,7 @@ function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2
             engine_prod_index = find(strcmp(production_totals.engine_types, engine_types{2}));
             engine_lc = engine_counts(engine_prod_index);
             engine_uc = engine_lc + num_engines(2);
-            stage2_engine_cost = compute_engine_manuf_cost(masses(2).meng, engine_lc, engine_uc, production_totals.engine_counts(engine_prod_index), total_duration);  
+            stage2_engine_cost = compute_engine_manuf_cost(production_totals.stages_cryo(2), engine_lc, engine_uc, production_totals.engine_counts(engine_prod_index), masses(2).meng, total_duration);  
             launcher_manuf_cost(1, i) = ith_launcher_cost + stage2_cost_curve(i) + stage2_engine_cost;
             engine_counts(engine_prod_index) = engine_counts(engine_prod_index) + num_engines(2);
         else
@@ -66,7 +66,7 @@ function production_totals = consolidate_production_totals(design_variables, roc
     LH2_stage_boolean = [(design_variables.stage1.engine_prop.Fuel=='LH2'), (design_variables.stage2.engine_prop.Fuel=='LH2')];
 
     % Determine how many of each stage needs to be produced
-    num_stages_produced = design_variables.num_of_launches - num_refurbished - parameters.rocket_fleet_size;
+    num_stages_produced = design_variables.num_of_launches - num_refurbished;
     
     for i = 1:length(num_stages_produced)
         if num_stages_produced(i) <= 0
