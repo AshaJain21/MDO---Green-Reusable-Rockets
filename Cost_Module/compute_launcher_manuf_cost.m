@@ -22,14 +22,15 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(design_variables, roc
     stage1_cost_curve = compute_stage_manuf_cost(production_totals.stages_cryo(1), masses(1).mstruct, production_totals.stages_produced(1), total_duration);
     stage2_cost_curve = compute_stage_manuf_cost(production_totals.stages_cryo(2), masses(2).mstruct, production_totals.stages_produced(2), total_duration);
     
-    launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2_cost_curve, num_engines, engine_types, masses, launch_cadence, production_totals, total_duration);
-
+    launcher_manuf_cost_wy = combined_launcher_costs_wy(stage1_cost_curve, stage2_cost_curve, num_engines, engine_types, masses, launch_cadence, production_totals, total_duration);
+    launcher_manuf_cost = launcher_manuf_cost_wy * parameters.MY_value;
 end
 
-function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2_cost_curve, num_engines, engine_types, masses, launch_cadence, production_totals, total_duration)
+function launcher_manuf_cost_wy = combined_launcher_costs_wy(stage1_cost_curve, stage2_cost_curve, num_engines, engine_types, masses, launch_cadence, production_totals, total_duration)
     num_launches = width(launch_cadence);
-    launcher_manuf_cost = zeros(2, num_launches);
+    launcher_manuf_cost_wy = zeros(2, num_launches);
     engine_counts = zeros(1, length(production_totals.engine_types));
+    engine_counts = engine_counts + 1;
     num_stages_consumed = [0,0];
 
 
@@ -43,10 +44,10 @@ function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2
             engine_uc = engine_lc + num_engines(1);
             num_stages_consumed(1) = num_stages_consumed(1) + 1;
             stage1_engine_cost = compute_engine_manuf_cost(production_totals.stages_cryo(1), engine_lc, engine_uc, production_totals.engine_counts(engine_prod_index), masses(1).meng, total_duration);  
-            launcher_manuf_cost(1, i) = ith_launcher_cost + stage1_cost_curve(num_stages_consumed(1)) + stage1_engine_cost;
+            launcher_manuf_cost_wy(1, i) = ith_launcher_cost + stage1_cost_curve(num_stages_consumed(1)) + stage1_engine_cost;
             engine_counts(engine_prod_index) = engine_counts(engine_prod_index) + num_engines(1);
         else
-            launcher_manuf_cost(1,i) = 0;
+            launcher_manuf_cost_wy(1,i) = 0;
         end
         
         % Add cost to manufacture second stage if one was manufactured
@@ -56,10 +57,10 @@ function launcher_manuf_cost = combined_launcher_costs(stage1_cost_curve, stage2
             engine_uc = engine_lc + num_engines(2);
             num_stages_consumed(2) = num_stages_consumed(2) + 1;
             stage2_engine_cost = compute_engine_manuf_cost(production_totals.stages_cryo(2), engine_lc, engine_uc, production_totals.engine_counts(engine_prod_index), masses(2).meng, total_duration);  
-            launcher_manuf_cost(1, i) = ith_launcher_cost + stage2_cost_curve(num_stages_consumed(2)) + stage2_engine_cost;
+            launcher_manuf_cost_wy(2, i) = ith_launcher_cost + stage2_cost_curve(num_stages_consumed(2)) + stage2_engine_cost;
             engine_counts(engine_prod_index) = engine_counts(engine_prod_index) + num_engines(2);
         else
-            launcher_manuf_cost(2,i) = 0;
+            launcher_manuf_cost_wy(2,i) = 0;
         end
     end
 end
