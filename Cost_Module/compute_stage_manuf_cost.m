@@ -19,7 +19,7 @@ end
 
 function f4 = compute_stage_f4(unit_mass, num_units, total_duration)
     n_vec = 1:num_units;
-    units_per_year = num_units/total_duration;
+    units_per_year = num_units/total_duration*12;
     p = compute_stage_p_val(unit_mass, units_per_year);
     f4 = n_vec .^(log(p)/log(2)); 
 end
