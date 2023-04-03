@@ -8,6 +8,11 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
 
     rocket.payload = per_launch_mass;
 
+    %CALCULATE PAYLOAD HEIGHT
+    rocket.num_sat_stacks = calculate_num_stacks(design_variables.rocket_ri, parameters.sat_model_radius, parameters.circle_packing_table.Density);
+    rocket.num_sats_per_stack = ceil(num_sat_per_launch / rocket.num_sat_stacks);
+    rocket.payload_height = rocket.num_sats_per_stack * parameters.sat_model_height;
+
     %SET UP LEARNING CURVE FOR SATELLITE PRODUCTION TIMES
     sat_vec =  1:parameters.num_of_satellites;
     sat_prod_times = (parameters.init_sat_prod_time/30)*sat_vec.^(log(parameters.sat_prod_learning_rate)/log(2)); %Based on Crawford's Learning Curve
@@ -28,7 +33,6 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
     tracking_vars.next_launcher_prod_times = [first_stage_prod_time, second_stage_prod_time];
     tracking_vars.stages_awaiting_final = {[], []};
     tracking_vars.next_stage_refurb_time = [inf, inf];
-    tracking_vars.curr_time_step = 0;
     tracking_vars.last_launch_time = 0;
     tracking_vars.launch_cadences = zeros(2,design_variables.num_of_launches);
     tracking_vars.additional_rockets_available = 0;
@@ -63,7 +67,7 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
         end
 
         % LAUNCHER REFURBISHMENT
-        if (tracking_vars.refurb_active(1) == true) && (curr_time_step == tracking_vars.next_stage_refurb_time(1))% && (design_variables.reusable_stages(1) == true)
+        if (tracking_vars.refurb_active(1) == true) && (curr_time_step == tracking_vars.next_stage_refurb_time(1))
             tracking_vars = refurbish_launcher_stage(1, curr_time_step, tracking_vars, parameters);
         end
         if (tracking_vars.refurb_active(2) == true) && (curr_time_step == tracking_vars.next_stage_refurb_time(2))
