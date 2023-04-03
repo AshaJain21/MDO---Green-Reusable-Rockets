@@ -4,9 +4,7 @@ rocket.stage1.mprop = design_variables.mprop1_guess;
 rocket.stage2.mprop = design_variables.mprop2_guess;
 [launch_cadence, rocket] = run_mission_module(design_variables, parameters, rocket);
 
-[rocket] = Structures(design_variables, parameters, rocket);
-
-[rocket] = aerodynamics(design_variables, parameters, rocket);
+[rocket] = aerostructures(design_variables, parameters, rocket);
 
 [rocket] = engine_mod(rocket, design_variables);
     

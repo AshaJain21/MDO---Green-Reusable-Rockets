@@ -7,23 +7,33 @@
 
 %Checks I am unsure about: velocity checks? mf>(mi-mprop)?
 
-function [rocket, Checkheight] = aerostructures(design_variables, parameters, rocket)
+function [rocket] = aerostructures(design_variables, parameters, rocket)
 %intialize constants and other vars
-FOS = 1.4; %factor of safety for load on rocket
+FOS = 1.2; %factor of safety for load on rocket
+g = 9.81; %m/s2
 ri = design_variables.rocket_ri; %rocket inner radius
 st1prop = design_variables.mprop1_guess; %initial prop mass guess
 st2prop = design_variables.mprop2_guess; %init prop mass guess stage 2
-thrust1 = design_variables.stage1.engine_prop{1,10};
-thrust2 = design_variables.stage2.engine_prop{1,10};
+t1 = design_variables.stage1.engine_prop{1,10};
+t2 = design_variables.stage2.engine_prop{1,10};
+DE1 =design_variables.stage1.engine_prop{1,8};
+DE2 =design_variables.stage2.engine_prop{1,8};
+rocket.stage1.nEng = floor(ri^2/(DE1^2/4)*.83);
+rocket.stage1.thrust = t1*rocket.stage1.nEng;
+thrust1 = rocket.stage1.thrust;
+rocket.stage2.nEng = floor(ri^2/(DE2^2/4)*.83);
+rocket.stage2.thrust = t2*rocket.stage2.nEng;
+thrust2 = rocket.stage2.thrust;
+reuse1 = design_variables.stage1.reusable;
+reuse2 = design_variables.stage2.reusable;
+mdotst1_f = thrust1/(g*design_variables.stage1.engine_prop{1,4}); %mass flow rate of exhaust 
+mdotst2_f = thrust2/(g*design_variables.stage2.engine_prop{1,4}); %mass flow rate of exhaust upper stage
+%mdot = f/(isp*g)= mdot
 payh = rocket.payload_height; %get volume of satellites available 
 re_mat_density = design_variables.stage2.reentry_shield_material.Density; %[kg/m3] 
 strucmat_density = parameters.structural_material.density; %[kg/m3]
 sigma_max = parameters.structural_material.fatigue_stress; %max fatigue stress of material MPA
 pay_mass = rocket.payload_mass; %pyload mass [kg]
-reuse1 = design_variables.stage1.reusable;
-reuse2 = design_variables.stage2.reusable;
-mdotst1_f = rocket.stage1.mdot; %mass flow rate of exhaust 
-mdotst2_f = rocket.stage2.mdot; %mass flow rate of exhaust upper stage
 %% get propellat properties
 
 [prop_f1_density, prop_f2_density, prop_ox1_density, prop_ox2_density] =...
@@ -62,7 +72,7 @@ rocket.stage2.height = st2h;
 
 %% Calculate Structural masses
 
-[st1mass, st2mass,Checkheight, heat_shield_mass, SAst2] =...
+[st1mass, st2mass, heat_shield_mass, SAst2] =...
     struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density);
 
 %% Aerodynamics - set up parameters
@@ -105,7 +115,7 @@ if maxq > sigma_max
     [~, ro] = calc_wallthick(thrust1,thrust2,ri, FOS, maxq);
 
     %Calculate Structural masses
-    [st1mass, st2mass,Checkheight, heat_shield_mass, SAst2] =...
+    [st1mass, st2mass, heat_shield_mass, SAst2] =...
         struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density);
 
 else 
@@ -235,7 +245,7 @@ t2 = ro_2 - ri;
 
 end
 
-function [st1mass, st2mass,Checkheight, heat_shield_mass, SAst2]= struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density) 
+function [st1mass, st2mass, heat_shield_mass, SAst2]= struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density) 
 %Stage 1rocket.ro = ro_st2;
 vol = pi*(ro^2 -ri^2)*st1h;
 st1mass =vol*strucmat_density; %initial rocket stage 1 mass
@@ -243,14 +253,14 @@ st1mass =vol*strucmat_density; %initial rocket stage 1 mass
 vol2 = pi*(ro^2 -ri^2)*st2h;
 st2mass =vol2*strucmat_density; %initial rocket stage 2 mass
 
-%% Check constraints -ensure not too high
-%ensure it is not too high
-if (st1h+st2h) > 100 %[m]
-    Checkheight = 0; %pass to constraint module, optimizer disregard this run
-    fprintf('Rocket Exceeds heighr constraint of 100m')
-else 
-    Checkheight =1; %module will continue
-end
+% %% Check constraints -ensure not too high
+% %ensure it is not too high
+% if (st1h+st2h) > 100 %[m]
+%     rocket.checkheight = 0; %pass to constraint module, optimizer disregard this run
+%     fprintf('Rocket Exceeds height constraint of 100m')
+% else 
+%     rocket.checkheight =1; %module will continue
+% end
 
 %% Size shield thickness via max heat flux
 %its probably ~4mm so this estimate may be too thick for now

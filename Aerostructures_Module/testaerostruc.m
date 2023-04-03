@@ -34,7 +34,7 @@ design_variables = setup_designvariables(engine_prop_1, engine_prop_2, reentry_s
 %run modules
 [rocket] = setup_rocket();
 %addpath(genpath([pwd '/combustion_toolbox/']))
-[rocket, Checkheight] = aerostructures(design_variables, parameters, rocket);
+[rocket] = aerostructures(design_variables, parameters, rocket);
 
 
 function experiments = format_final_doe_array(num_experiments, orthogonal_array, doe_bins)
