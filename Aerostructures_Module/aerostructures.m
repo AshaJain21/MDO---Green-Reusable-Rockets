@@ -25,20 +25,10 @@ reuse2 = design_variables.stage2.reusable;
 mdotst1_f = rocket.stage1.mdot; %mass flow rate of exhaust 
 mdotst2_f = rocket.stage2.mdot; %mass flow rate of exhaust upper stage
 %% get propellat properties
-prop_f1 = design_variables.stage1.engine_prop{1,2};
-prop_ox1 = design_variables.stage1.engine_prop{1,3};
-prop_f2 = design_variables.stage2.engine_prop{1,2};
-prop_ox2 = design_variables.stage2.engine_prop{1,3};
 
-prop_f1_density = parameters.propellant_properties...
-    {strfind(parameters.propellant_properties.Propellant, prop_f1),4};
-prop_f2_density = parameters.propellant_properties...
-    {strfind(parameters.propellant_properties.Propellant, prop_f2),4};
+[prop_f1_density, prop_f2_density, prop_ox1_density, prop_ox2_density] =...
+    getpropdensity(design_variables, parameters);
 
-prop_ox1_density = parameters.propellant_properties...
-    {strfind(parameters.propellant_properties.Propellant, prop_ox1),4};
-prop_ox2_density = parameters.propellant_properties...
-    {strfind(parameters.propellant_properties.Propellant, prop_ox2),4};
 %% Calculate propellant volume
 OF_prop1 = design_variables.stage1.engine_prop{1,6}; %prop mixing ratio
 %massfraction = 1/3.72 vs 2.72/3.72
@@ -78,7 +68,8 @@ rocket.stage2.height = st2h;
 %% Aerodynamics - set up parameters
 reangle = parameters.reentry_angle;
 g = 9.81; %m/s2 accel due to grav
-LEOalt = parameters.orbital_altitude*1000; % [m] LEO =<2000 km from SpaceX website ~500 km circular 
+%LEO =<2000 km from SpaceX website ~500 km circular
+LEOalt = parameters.orbital_altitude*1000; % [m]  
 %orbit @98.9 deg inclination
 stgsep = 75e3; %[m] stage separation altitude
 h = 0:500:stgsep; %altitude array --> launch until stage separation (75km),
@@ -101,12 +92,13 @@ st2ve = thrust2/mdotst2_f;
 fc2 = mdotst2_f/st2ve;  %fuel consumption kg per metre; 
 
 %Run Aero Launch function (Full Stage 1 and 2 launch to LEO)
-[maxq] = launch(h, h2, ro,fc, g, fc2, st1mass,st1prop,st2prop,st2mass,pay_mass,heat_shield_mass);
+[maxq] = launch(h, h2, ro,fc, g, fc2, st1mass,st1prop,st2prop,st2mass...
+    ,pay_mass,heat_shield_mass, thrust1, thrust2);
 
 %Check max q ensure wall thickness is enough
 %q = stress FOS*thrust/sigma_max = area needed
 if maxq > sigma_max
-    fprintf(['Wall thickness for rocket'...                 %unsure if i need to check other limits?max q?
+    fprintf(['Wall thickness for rocket'...                 
         'is not enough to support max q in flight']);
     %RERUN STRUCTURES-
     %replace sigma_max with maxq
@@ -122,7 +114,8 @@ else
 end 
 
 %check again using new masses
-[maxqnew] = launch(h, h2, ro,fc, g, fc2, st1mass,st1prop,st2prop,st2mass,pay_mass,heat_shield_mass);
+[maxqnew] = launch(h, h2, ro,fc, g, fc2, st1mass,st1prop,st2prop,...
+    st2mass,pay_mass,heat_shield_mass, thrust1, thrust2);
 
 if maxqnew > maxq
     fprintf('New Maxq is larger...');
@@ -139,7 +132,7 @@ rocket.ro = ro;
 vol = pi*(ro^2 -ri^2)*st1h;
 rocket.stage1.mstruct =vol*strucmat_density;
 
-vol2 = pi*(ro2^2 -ri^2)*st2h;
+vol2 = pi*(ro^2 -ri^2)*st2h;
 rocket.stage2.mstruct =vol2*strucmat_density;
 
 rocket.stage2.heat_shield_SA = SAst2; %[m2] surface area of the heat shield required
@@ -150,22 +143,23 @@ rocket.stage2.heatshield_mass = heat_shield_mass;
 if reuse1 == 1 %boost back, landing burn needed 
     st1mpb = st1mass; %(mass post burn, still have some left over for landing)
     st1_Sb_recovery = pi*ro*2*st1h; %total SA at angle of fall 
-    st1_cross_recovery = pi*ro^2; %%cross sectional area at angle of fall (assume stg1 fall straight vertically)
+    st1_cross_recovery = pi*ro^2; %%cross sectional area at angle of fall 
+    %(assume stg1 fall straight vertically)
     st1tv = zeros(1,length(h));
     ust1 = zeros(1,length(h));
-    ust1(1) = 0; %assume 0 velocity at separation (after the "boost back" maneuver)
+    ust1(1) = 0; %assume 0 velocity at separation (after the "boost back")
   for i = 2:length(h)
      [~,~,~, rho] = atmoscoesa(h(end-i+1)); %start at altitude of separation
-      %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES FIXEEEEEEEEEEEEEEEEEEEEEE
+      %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES FIXEEEEEE
       ust1(i) = ust1(i-1) + 2*(-g); %calculate velocity of rocket (downwards)
         Cd = 1.17; %FOR NOW
         st1tv(i) = sqrt(2*st1mpb*g/rho*st1_cross_recovery*(Cd)); %goes from high alt to end
   end  
-       rocket.stage1.terminal_velocity = st1tv;
+       rocket.stage1.terminal_velocity = st1tv; %where do you want terminal velocity? MAX? ASK ASHA / JUSTIN
 end
 %Re-entry from LEO Stg 2 %heat flux %angle, radius, length of stg2 - 
 if reuse2 == 1 %re-entry, landing burn needed + belly flop
-    st2mpb = st2mass; %(mass post burn, still have some left over for landing) FIGURE THS OUT LATER -kinjal
+    st2mpb = st2mass; %(mass post burn, t over for landing)
     %cross sectional area at angle of fall
     st2_cross_recovery = pi*ro^2/cos(deg2rad(reangle)); 
     st2_Sb_recovery = pi*ro*2*st2h/cos(deg2rad(reangle)); %total wetted area not sure which to use!!!!!!!!!!!!!!!!!!!!!!
@@ -175,8 +169,8 @@ if reuse2 == 1 %re-entry, landing burn needed + belly flop
     ust2(1) = 7.2e3; %assume a deorbit velocity of ~7.2 km/s from staging paper
     
     for i = 2:(length(alt)) 
-     [~,~,~, rho] = atmoscoesa(alt(end-i+1)); %start at altitude of separation not sure atmoscoesa's limits
-        %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES fixeeeeessssssssssss
+     [~,~,~, rho] = atmoscoesa(alt(end-i+1)); %start at altitude of sep.
+        %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES 
        if alt(end-i+1) > 84852
             [~,~,~, rho] = atmoscoesa(84852); %change this later
        end
@@ -187,6 +181,37 @@ if reuse2 == 1 %re-entry, landing burn needed + belly flop
       rocket.stage2.terminal_velocity = st2tv;
 end
 
+
+end
+
+function [prop_f1_density, prop_f2_density, prop_ox1_density, prop_ox2_density] =...
+    getpropdensity(design_variables, parameters)
+%get names
+prop_f1 = design_variables.stage1.engine_prop.Fuel;
+prop_ox1 = design_variables.stage1.engine_prop.Oxidizer;
+prop_f2 = design_variables.stage2.engine_prop.Fuel;
+prop_ox2 = design_variables.stage2.engine_prop.Oxidizer;
+
+%find density in cost .csv 
+matchf1 = strcmp(parameters.propellant_properties.Propellant, prop_f1);
+locate_f1 = find(matchf1);
+prop_f1_density = parameters.propellant_properties...
+    {locate_f1,4};
+
+matchf2 = strcmp(parameters.propellant_properties.Propellant, prop_f2);
+locate_f2 = find(matchf2);
+prop_f2_density = parameters.propellant_properties...
+   {locate_f2,4};
+
+matchox1 = strcmp(parameters.propellant_properties.Propellant, prop_ox1);
+locate_ox1 = find(matchox1);
+prop_ox1_density = parameters.propellant_properties...
+    {locate_ox1,4};
+
+matchox2 = strcmp(parameters.propellant_properties.Propellant, prop_ox2);
+locate_ox2 = find(matchox2);
+prop_ox2_density = parameters.propellant_properties...
+    {locate_ox2,4};
 
 end
 
@@ -215,7 +240,7 @@ function [st1mass, st2mass,Checkheight, heat_shield_mass, SAst2]= struct_calc(st
 vol = pi*(ro^2 -ri^2)*st1h;
 st1mass =vol*strucmat_density; %initial rocket stage 1 mass
 
-vol2 = pi*(ro2^2 -ri^2)*st2h;
+vol2 = pi*(ro^2 -ri^2)*st2h;
 st2mass =vol2*strucmat_density; %initial rocket stage 2 mass
 
 %% Check constraints -ensure not too high
@@ -238,7 +263,7 @@ vol_heatshield = SAst2*reshieldthick;
 heat_shield_mass = vol_heatshield*re_mat_density; %[kg]
 
 end
-function [maxq] = launch(h, h2,ro,fc, g, fc2, st1mass,st1prop,st2prop,st2mass,pay_mass,heat_shield_mass)
+function [maxq] = launch(h, h2,ro,fc, g, fc2, st1mass,st1prop,st2prop,st2mass,pay_mass,heat_shield_mass, thrust1, thrust2)
 %% Launch
 totalmass = st1mass + st1prop + st2prop + st2mass + pay_mass + heat_shield_mass;
 rocket_SA = pi*ro^2;
@@ -257,7 +282,7 @@ accel = zeros(1,length(h));
         rockmass(i) = mf; %update new mass
         %delv = -st1ve*log(mf/mi); %ideal rocket equation change in vel IS THIS MASS THE ROCKET MASS OR THE STAGE 1 MASS?
         D = q(i-1)*rocket_SA*1.17; %CD cylinder
-        accel(i) = (st1t - D)/mi - g; %drag and gravity
+        accel(i) = (thrust1 - D)/mi - g; %drag and gravity
         u(i) = u(i-1) + 2*accel(i); %500 m
         time(i) = 2/( u(i) + u(i-1) ) ; %basic kinematics
         q(i) = 0.5*rho*u(i)^2; %dynamic pressure
@@ -280,7 +305,7 @@ accel2 = zeros(1,length(h2));
       mf = st2mass_calc(i-1) - fc2*1000; %updates fuel consumption for every 1000 m
       st2mass_calc(i) = mf; %update new mass
       D = q2(i-1)*rocket_SA*1.17; %CD cylinder
-      accel2(i) = (st2t -D)/mi -g;%drag and gravity
+      accel2(i) = (thrust2 -D)/mi -g;%drag and gravity
       u2(i) = u2(i-1) + 2*accel2(i); %1000 m
       time(i +length(h)) = 2/(u2(i) + u2(i-1) ) ; %basic kinematics CHECK CONTINUITY HEREEEEEE!!!! There mauy be a gap in time
       q2(i) = 0.5*rho*u2(i)^2; %dynamic pressure
@@ -288,7 +313,12 @@ accel2 = zeros(1,length(h2));
   
 maxq2 = max(q2);
 maxq = [maxq1, maxq2];
-maxq = max(maxq);
+if max(maxq) < 30397.5
+    maxq = 30397.5;
+else
+    maxq = max(maxq);
+end
+
 
 %flighttime = sum(time); %time calc as s/m in flight
 end
