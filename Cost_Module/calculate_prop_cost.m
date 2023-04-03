@@ -8,7 +8,7 @@ function total_prop_cost = calculate_prop_cost(rocket, design_variables, paramet
     
     for stage = 1:2
         for fuel = 1:2
-            unit_costs(stage, fuel) = parameters.prop_unit_costs.Cost(strcmp(parameters.prop_unit_costs.Propellant, prop_types(stage, fuel)));
+            unit_costs(stage, fuel) = parameters.propellant_properties.Cost(strcmp(parameters.propellant_properties.Propellant, prop_types(stage, fuel)));
         end
     end
     

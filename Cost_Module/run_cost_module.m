@@ -26,19 +26,18 @@ function [total_cost, rocket] = run_cost_module(design_variables, parameters, ro
     total_cost_for_each_launch = total_cost_for_each_launch + launcher_dev_cost_per_launch;
 
     %Launcher manufacturing cost
-    num_stages = 2;
-    init_stage_manuf_costs = compute_launcher_manuf_cost(parameters, design_variables, num_stages, stage_masses, rocket);
-    launch_nums = 1:size_launch_schedule(2);
-    manuf_cost_per_launch_per_stage = init_stage_manuf_costs * launch_nums.^(log(parameters.manuf_learning_rate)/log(2));
+    manuf_cost_per_launch_per_stage = compute_launcher_manuf_cost(design_variables, rocket, launch_cadence, parameters);
     total_cost_for_each_launch = total_cost_for_each_launch + sum(manuf_cost_per_launch_per_stage, 1);
 
     %Launcher refurbishment cost
     if design_variables.stage1.reusable == 1
-        stage_1_refurb_cost= compute_refurb_cost(1, manuf_cost_per_launch_per_stage(1,:), size_launch_schedule(2), launch_cadence, parameters);
+        avg_stage1_manuf_cost = sum(manuf_cost_per_launch_per_stage(1,:))/sum(~launch_cadence(2,:));
+        stage_1_refurb_cost= compute_refurb_cost(1, avg_stage1_manuf_cost, size_launch_schedule(2), launch_cadence, parameters);
         total_cost_for_each_launch = total_cost_for_each_launch + stage_1_refurb_cost;
     end
     if design_variables.stage2.reusable == 1
-        stage_2_refurb_cost= compute_refurb_cost(2, manuf_cost_per_launch_per_stage(2,:), size_launch_schedule(2), launch_cadence, parameters);
+        avg_stage2_manuf_cost = sum(manuf_cost_per_launch_per_stage(2,:))/sum(~launch_cadence(3,:));
+        stage_2_refurb_cost= compute_refurb_cost(2, avg_stage2_manuf_cost, size_launch_schedule(2), launch_cadence, parameters);
         total_cost_for_each_launch = total_cost_for_each_launch + stage_2_refurb_cost;
     end
 

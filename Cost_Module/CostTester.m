@@ -1,33 +1,9 @@
 clear
-addpath(genpath(pwd))
+% addpath(genpath(pwd))
 
-parameters = setup_parameters();
+load('cost_test_case_falcon9.mat')
 
-launch_cadences = [
-    2.3963    1.9206    1.7733    1.6839    1.6205    1.5716    1.5321    1.4991    1.4708    1.4461; 0         0         0         0         0         0         0         0    1.0000         0; 0         0         0         0         0         0         0         0         1.0000         1.0000
-];
-
-%Parameters in this test script are based on falcon 9 specifications
-
-rocket.stage1.height = 41; %m
-rocket.stage2.height = 14; %m
-rocket.wall_thickness = 4.7e-3; %m
-rocket.stage1.mprop = 395700; %kg
-rocket.stage2.mprop = 92670; %kg
-rocket.stage1.mstruct = (0.1*rocket.stage1.mprop);
-rocket.stage2.mstruct = (0.1*rocket.stage2.mprop);
-rocket.stage1.num_engines = 9;
-rocket.stage2.num_engines = 1;
-
-
-design_variables.rocket_ri = 3.7;%m
-design_variables.stage1.reusable = 1;
-design_variables.stage2.reusable = 1;
-design_variables.stage1.engine_prop = {'MA-5A', 'RP-1', 0,0,0,0,0,0, 1610};
-design_variables.stage2.engine_prop = {'Vulcain 2', 'LH2', 0,0,0,0,0,0, 1800};
-
-
-total_cost = run_cost_module(design_variables, parameters, rocket, launch_cadences);
+total_cost = run_cost_module(design_variables, parameters, rocket, launch_cadence);
 
 
 %Reference numbers for output validation:
