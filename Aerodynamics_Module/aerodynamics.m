@@ -23,15 +23,17 @@
 
 %stage mass ratio -total stage mass/mass at end of burn (mass at end of burn = total mass - burned prop mass)
 %%%NEED KINJAL TO CALCJLATE THE EMISSIONS PER 500 M FOR THE ROKCET
-function [rocket] = aerodynamics(design_variables, parameters, rocket)
+function [rocket, CHECKS] = aerodynamics(design_variables, parameters, rocket)
 %intialize constants and other vars
 st1mass = rocket.stage1.mstruct; %dry mass stage 1
-%st2emiss = rocket.stage2.prodValues; %in kg add together = total prop mass
-%st1emiss = rocket.stage1.prodValues;
 st1prop = rocket.stage1.mprop; %total mass - structural mass = prop mass
 st2mass = rocket.stage2.mstruct;
 st2prop = rocket.stage2.mprop;
+pay_mass = rocket.payload_mass;
+hs_mass = rocket.stage2.heatshield_mass;
 ro = rocket.ro; %inner radius of rocket
+reuse1 = design_variables.stage1.reusable;
+reuse2 = design_variables.stage2.reusable;
 %st2rad = rocket.stage2.ri; %
 st1h = rocket.stage1.height;
 st2h = rocket.stage2.height;
@@ -42,17 +44,14 @@ st2ve = rocket.stage2.ue;
 mdotst1_f = rocket.stage1.mdot; %mass flow rate of exhaust 
 mdotst2_f = rocket.stage2.mdot; %mass flow rate of exhaust upper stage
 e = parameters.structural_material.emissivity; %emissivity of aluminum
-%st2emiss_fract = st2emiss/st2prop; %get fraction of prop mass burned /total prop mass assume = relation to mdot - this fraction can be used for mdot
-%st2emiss_per_sec = st2emiss_fract*mdotst2_f; %kg/s of emissions
-%st1emiss_fract = st1emiss./st1prop;
-%st1emiss_per_sec = st1emiss_fract*mdotst1_f; %kg/s of emissions for each emission type
 reangle = parameters.reentry_angle;
 theight = st1h+st2h; %total rocket height [m]
 
 g = 9.81; %m/s2 accel due to grav
-totalmass = st1mass + st1prop + st2prop + st2mass; %starting wet mass of rocket
+totalmass = st1mass + st1prop + st2prop + st2mass + pay_mass + hs_mass; 
+%starting wet mass of rocket
 
-%%%%NEED TO DERIVE FUNCTION FOR DRAG COEFF OF STARSHIP AS A FXN OF ALTOR MACH CAN BE RELATED TO RE
+%NEED TO DERIVE FUNCTION FOR DRAG COEFF OF STARSHIP AS A FXN OF ALTOR MACH CAN BE RELATED TO RE
 %Launch
 LEOalt = parameters.orbital_altitude*1000; % [m] LEO =<2000 km from SpaceX website ~500 km circular 
 %orbit @98.9 deg inclination
@@ -63,15 +62,17 @@ sigma= 5.6703e-8; %(W/m2K4) - The Stefan-Boltzmann Constant
 %mx^2 + bx + c c=0 at t=0, dy/dx  
 theta_l = 0; %launch angle - parabolic y = x^2
 %wetted area - surface area of rocket for now
-rocket_Sb_launch = pi*ro*2*st2h/cos(theta_l) + pi*ro*2*st1h/cos(theta_l);
-rocket_cross_launch = pi*ro^2;
+%rocket_Sb_launch = pi*ro*2*st2h/cos(theta_l) + pi*ro*2*st1h/cos(theta_l);
+rocket_SA = pi*ro^2;
 fc = mdotst1_f/st1ve;  %fuel consumption kg per metre;
 h = 0:500:stgsep; %altitude array --> launch until stage separation (75km),
 %calculate every 500 m
 h2 = stgsep:1000:LEOalt; %altitude array for stage 2 75km to LEO 500 km
 
+%% Launch
 M = zeros(1,length(h)); %Mach number
 u = zeros(1,length(h)); %rocket velocity
+q = zeros(1,length(h)); %rocket dynamic pressure
 %prodemiss_1 = zeros(length(st1emiss_per_sec),length(h)); %emissions kg/m stage 1;
 rockmass = zeros(1,length(h)); %array of rocket mass
 rockmass(1) = totalmass; %CHECK THAT I SHOULD DO THIS 1:2 OR IF i SHOULD DO IT JUST TO 1 !!!!
@@ -89,18 +90,12 @@ accel = zeros(1,length(h));
         mi = rockmass(i-1); %initial fuel
         mf = rockmass(i-1) - fc*500; %updates fuel consumption for every 500 m
         rockmass(i) = mf; %update new mass
-        delv = -st1ve*log(mf/mi); %ideal rocket equation change in vel IS THIS MASS THE ROCKET MASS OR THE STAGE 1 MASS?
-        %utrial(i) = utrial(i-1) + delv; %calculate velocity of rocket USE OTHER ONE
-        %q = 0.5*rho*utrial(i-1)^2; %dynamic pressure
-        accel(i) = (st1ve*mdotst1_f)/mi -g;%- (Cd_friction(i-1)*q*pi*ro^2)/mi; %drag and gravity
+        %delv = -st1ve*log(mf/mi); %ideal rocket equation change in vel IS THIS MASS THE ROCKET MASS OR THE STAGE 1 MASS?
+        D = q(i-1)*rocket_SA*1.17; %CD cylinder
+        accel(i) = (st1t - D)/mi - g; %drag and gravity
         u(i) = u(i-1) + 2*accel(i); %500 m
         time(i) = 2/( u(i) + u(i-1) ) ; %basic kinematics
-        %prodemiss_1(:,i) = (st1emiss_per_sec./u(i))*500; %kg/m * 500 for 500 m
-        %check if there is enough fuel left
-%         if mf < (rockmass(i) - st1prop)
-%             fprintf('WARNING: Not Enough Fuel for Stage Separation at 75 km!')
-%             St1propcheck = 0; %zero = fail
-%         end
+        q(i) = 0.5*rho*u(i)^2; %dynamic pressure
 
         if h(i) <= 4572 %set speed of sound and mach number params
             v = (0.000157*exp(0.00002503*h(i)))/3.28^2 ;%[m2/s]
@@ -131,19 +126,12 @@ accel = zeros(1,length(h));
         end
 
         Cd_friction(i) = CF_final*(1 + 60/(theight/(2*ro))^3 + 0.0025*...
-            (theight/(ro*2))*(4*rocket_cross_launch/pi*(2*ro)^2)) ; %NOT SURE IF I SHOULD INCLUDE DRAG FOR EXCRESCENCIES
+            (theight/(ro*2))*(4*rocket_SA/pi*(2*ro)^2)) ; %NOT SURE IF I SHOULD INCLUDE DRAG FOR EXCRESCENCIES
         %body drag due to friction neglect fins and any protuberances 
         %^needs cross sectional area resistance to body
-       %base drag coeff
-       %if M(i) < 0.6
-        %   ()
-      % else 
-       %    ()
-       %end
     
     %heat flux calc
     %consider convective heat transfer only from speed of flow to rocket
-    %wholerocket
     k = 1.74153e-4; %constant for heat t used for Earth
     qconv_l_presep = k*((rho/ro)^0.5)*u(i)^3; %nose radius use - sutton graves
     %hot wall correction Chapman eqn
@@ -156,19 +144,41 @@ accel = zeros(1,length(h));
     %kcont = 0.76; %for axisymmetric  body
     %chs = 1- exp(-A*sqrt(M(i)^(2*w -1)*kcont*ninf))
     %qconv3 = chs*0.5*rho*u(i)^3; %this does it for the entire continuum of flow from low speed high density to hypersonic rarefied
-    
     q_l_presep(i) = qconv_l_presep + qrad; %most important for stage1
     
    
  end
  
-% if (rockmass(end) - st1prop) >= 0
-%     fprintf('Stage 1 Fuel Sufficient for Stage Separation!')
-%     St1propcheck = 1; %zero = fail one = pass
-% end
+%Check St1 fuel
+if (rockmass(end) - st1prop) >= 0
+     fprintf('Stage 1 Fuel Sufficient for Stage Separation!')
+     St1propcheck = 1; %zero = fail one = pass
+else 
+    %not sufficent
+    fprintf('WARNING: Not Enough Fuel for Stage Separation at 75 km!')
+    St1propcheck = 0; %zero = fail
+end
+
+%Check St1 velocity
+if reuse1 == 1
+   if u(end) >= 2200 
+    fprintf('Stage 1 Velocity Sufficient at Stage Separation!')
+    St1velcheck = 1;
+   else 
+       St1velcheck = 0;
+   end
+elseif reuse2 == 0
+    if u(end) >= 3400
+        fprintf('Stage 1 Velocity Sufficient at Stage Separation!')
+        St1velcheck = 1;
+    else
+        St1velcheck = 0;
+    end
+end
 
 rocket.stage1.launch_qdot = q_l_presep;
 
+%% Stage 2 Post Separation
 theta_stg2 = 0; %launch angle - parabolic y = x^2 still going up? SET AN ANGLE FOR STAGE 2 AS IT CLIMBS TO LEO FIX THIS
 %wetted area - surface area of stg2 post separation
 stg2_Sb_sep = pi*ro*2*st2h/cos(theta_l); 
@@ -178,7 +188,7 @@ M2 = zeros(1,length(h2)); %Mach number stage 2
 M2(1) = M(end); %from above
 u2 = zeros(1,length(h2)); %stg2 rocket velocity
 u2(1) = u(end); %from above
-%prodemiss_2 = zeros(length(st2emiss_per_sec),length(h2)); %emissions kg/m stage 1;
+q2 = zeros(1,length(h2)); %rocket dynamic pressure
 st2mass_calc = zeros(1,length(h2)); %array of stg2 mass
 st2mass_calc(1) = st2mass+st2prop; %starting stage mass 
 %generate an array for CD calcs -->body friction drag
@@ -195,18 +205,13 @@ accel2 = zeros(1,length(h2));
       mi = st2mass_calc(i-1); %initial fuel
       mf = st2mass_calc(i-1) - fc2*1000; %updates fuel consumption for every 1000 m
       st2mass_calc(i) = mf; %update new mass
-      delv = -st2ve*log(mf/mi); %ideal rocket equation change in vel
+      %delv = -st2ve*log(mf/mi); %ideal rocket equation change in vel
       %u2(i) = u2(i-1) + delv; %calculate velocity of rocket
-      %q = 0.5*rho*utrial(i-1)^2; %dynamic pressure
-      accel2(i) = (st2ve*mdotst2_f)/mi -g;%- (Cd_friction(i-1)*q*pi*ro^2)/mi; %drag and gravity
+      D = q2(i-1)*rocket_SA*1.17; %CD cylinder
+      accel2(i) = (st2t -D)/mi -g;%drag and gravity
       u2(i) = u2(i-1) + 2*accel2(i); %1000 m
       time(i +length(h)) = 2/(u2(i) + u2(i-1) ) ; %basic kinematics CHECK CONTINUITY HEREEEEEE!!!! There mauy be a gap in time
-      %prodemiss_2(:,i) = (st2emiss_per_sec./u2(i))*500; %kg/m * 500 for 500 m
-%       %check if there is enough fuel left
-%       if mf < (st2mass_calc(i) - st1prop)
-%           fprintf('WARNING: Not Enough Fuel to Reach LEO!')
-%           St2propcheck = 0; %zero = fail
-%       end
+      q2(i) = 0.5*rho*u2(i)^2; %dynamic pressure
       
       %h>9144 m
       v = (0.000157*exp(0.00004664*h2(i) -0.6882))/3.28^2 ;%[m2/s]
@@ -234,7 +239,6 @@ accel2 = zeros(1,length(h2));
         %body drag due to friction neglect fins and any protuberances 
         %soupcan -->can change this to incorporate a nosecone
         %need resistance to body
-
     %heat flux calc
     %consider convective heat transfer only from speed of flow to rocket
     k = 1.74153e-4; %constant for heat t used for Earth
@@ -249,38 +253,35 @@ accel2 = zeros(1,length(h2));
     %kcont = 0.76; %for axisymmetric  body
     %chs = 1- exp(-A*sqrt(M(i)^(2*w -1)*kcont*ninf))
     %qconv3 = chs*0.5*rho*u(i)^3; %this does it for the entire continuum of flow from low speed high density to hypersonic rarefied
-    
     q_l_st2(i) = qconv_st2 + qrad;
     
  end
   
-% if (st2mass_calc(end) - st2prop) >= 0
-%     fprintf('Stage 2 Fuel Sufficient for LEO!')
-%     St2propcheck = 1; %zero = fail one = pass
-% end 
-
-%if delV < 8.8e3
-%      fprintf('Stage 2 not fast enough')
-%end
+%Check St2 Fuel
+ if (st2mass_calc(end) - st2prop) >= 0
+     fprintf('Stage 2 Fuel Sufficient for LEO!')
+     St2propcheck = 1; %zero = fail one = pass
+ else 
+     %not sufficent
+    fprintf('WARNING: Not Enough Fuel to Reach LEO!')
+    St2propcheck = 0; %zero = fail
+ end 
+ 
 rocket.stage2.launch_qdot = q_l_st2;
 
+%Check Orbital velocity
 %orbital veloctiy required for orbit 2nd stage only assuming circular orbit %CONSTRAINT %(from NASA) MAY REVISIT
 RE = 6377830; %radius of Earth [m]
 Vorb = sqrt(g*RE^2/(RE+LEOalt)); %~ 8.8e3; %[m/s] actually (current calc gives ~7.62 km/s SHOULD I UPDATE THIS VELOCITY BUDGET???
-% if u2(end) < Vorb
-%     fprintf('Danger, Stage 2 Velocity Not High Enough to Support Orbital flight!')  
-%     Vorbcheck = 0; %fail
-% else
-%     Vorbcheck = 1; %pass
-% end
+ if u2(end) < Vorb
+     fprintf('Danger, Stage 2 Velocity Not High Enough to Support Orbital flight!')  
+     Vorbcheck = 0; %fail
+ else
+     Vorbcheck = 1; %pass
+ end
 
 flighttime = sum(time); %time calc as s/m in flight
 
-
-%Calculate emissions per 500 m for launch based on input emissions from
-%engine stage1 and 2 combined
-%rocket.emiss_per500m = [prodemiss_1 prodemiss_2]; 
-%concatenate emissions at stage 1 - stage2 for launch
 
 %Boost Back Stg1: terminal velocity, separation @75 km (get rho)
 %assume a fall angle from normal (vertical) 10 degrees
@@ -335,8 +336,8 @@ if design_variables.stage1.reusable == 1 %boost back, landing burn needed
 
         CD = CF_final*(1 + 60/(st1h/(ro*2))^3 + 0.0025*(st1h/(ro*2)) )*(4*st1_Sb_recovery/pi*(ro*2)^2) ; %NOT SURE IF I SHOULD INCLUDE DRAG FOR EXCRESCENCIES
         %body drag due to friction neglect fins and any protuberances 
-
-        st1tv(i) = sqrt(2*st1mpb*g/rho*st1_cross_recovery*abs(CD)); %goes from high alt to end
+        Cd = 1.17; %FOR NOW
+        st1tv(i) = sqrt(2*st1mpb*g/rho*st1_cross_recovery*abs(Cd)); %goes from high alt to end
         k = 1.74153e-4; %constant for heat t used for Earth
         qconv_st1_rec = k*((rho/ro)^0.5)*ust1(i)^3; %nose radius use - sutton graves
         qrad = e*sigma*Tair^4;
@@ -357,7 +358,7 @@ if design_variables.stage2.reusable == 1 %re-entry, landing burn needed + belly 
     st2tv = zeros(1,length(alt));
     Mst2 = zeros(1,length(alt));
     ust2 = zeros(1,length(alt));
-    ust2(1) = 300; %assume a deorbit velocity of ~300 m/s from staging paper
+    ust2(1) = 7.2e3; %assume a deorbit velocity of ~7.2 km/s from staging paper
     q_st2_rec = zeros(1,length(alt));
     
     for i = 2:(length(alt)) 
@@ -397,8 +398,8 @@ if design_variables.stage2.reusable == 1 %re-entry, landing burn needed + belly 
         
         CD = CF_final*(1 + 60/(st2h/(ro*2))^3 + 0.0025*(st2h/(ro*2)) )*(4*st2_Sb_recovery/pi*(ro*2)^2) ; %NOT SURE IF I SHOULD INCLUDE DRAG FOR EXCRESCENCIES
         %body drag due to friction neglect fins and any protuberances 
-       
-        st2tv(i) = sqrt(2*st2mpb*g/rho*st2_cross_recovery*abs(CD)); %goes from high alt to end
+        Cd = 1.17; %FOR NOW
+        st2tv(i) = sqrt(2*st2mpb*g/rho*st2_cross_recovery*abs(Cd)); %goes from high alt to end
         k = 1.74153e-4; %constant for heat t used for Earth
         qconv_st2_rec = k*((rho/ro)^0.5)*ust2(i)^3; %nose radius use - sutton graves
         qrad = e*sigma*Tair^4;
@@ -407,6 +408,6 @@ if design_variables.stage2.reusable == 1 %re-entry, landing burn needed + belly 
       rocket.stage2.recovery_qdot = q_st2_rec;
       rocket.stage2.terminal_velocity = st2tv;
 end
-%CHECKS = [St1propcheck, St2propcheck, Vorbcheck];
+CHECKS = [St1propcheck,St1velcheck, St2propcheck, Vorbcheck];
 
 end
