@@ -29,7 +29,6 @@ else
 end
 
 %Final Computation for Stage 2 
-stage2.nEng         = floor(design_variables.rocket_ri^2/(rocketProp_stg2.De^2/4)*.83);
 stage2.mf           = stage2.mstruct + rocket.payload + mbb2;
 stage2.mprop        = (stage2.mf)* ( exp( (parameters.orbitalVelocity-separation_velocity) / (rocketProp_stg2.Isp * 9.81)) - 1 );
 stage2.mbb          = mbb2;
@@ -37,7 +36,6 @@ stage2.prodNames    = engine2.name;
 stage2.prodValues   = engine2.massFraction;
 
 %Final Computation for Stage 1
-stage1.nEng         = floor(design_variables.rocket_ri^2/(rocketProp_stg1.De^2/4)*.83);
 stage1.mf           = stage1.mstruct + stage2.mf + stage2.mprop + mbb1;
 stage1.mprop        = stage1.mf* ( exp(delV_stg1/ (rocketProp_stg1.Isp * 9.81)) - 1);
 stage1.mbb          = mbb1;
