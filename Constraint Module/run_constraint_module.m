@@ -1,6 +1,6 @@
 function constraints = run_constraint_module(design_variables, parameters, rocket, launch_cadence, cost)
   %Constraint on Launch Cadence 
-   constraints.launch_cadence = sum(launch_cadence(2,:)) - parameters.delivery_time * 12; %months 
+   constraints.launch_cadence = sum(launch_cadence(2,:)) - (parameters.delivery_time * 12); %months 
 
   %Constraint on Cost 
   budget_per_year = [];
