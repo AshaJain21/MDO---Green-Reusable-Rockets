@@ -33,7 +33,7 @@ payh = rocket.payload_height; %get volume of satellites available
 re_mat_density = design_variables.stage2.reentry_shield_material.Density; %[kg/m3] 
 strucmat_density = parameters.structural_material.density; %[kg/m3]
 sigma_max = parameters.structural_material.fatigue_stress; %max fatigue stress of material MPA
-pay_mass = rocket.payload_mass; %pyload mass [kg]
+pay_mass = rocket.payload; %pyload mass [kg]
 %% get propellat properties
 
 [prop_f1_density, prop_f2_density, prop_ox1_density, prop_ox2_density] =...
@@ -165,7 +165,7 @@ if reuse1 == 1 %boost back, landing burn needed
         Cd = 1.17; %FOR NOW
         st1tv(i) = sqrt(2*st1mpb*g/rho*st1_cross_recovery*(Cd)); %goes from high alt to end
   end  
-       rocket.stage1.terminal_velocity = st1tv; %where do you want terminal velocity? MAX? ASK ASHA / JUSTIN
+       rocket.stage1.terminal_velocity = st1tv(end); %where do you want terminal velocity? MAX? ASK ASHA / JUSTIN
 end
 %Re-entry from LEO Stg 2 %heat flux %angle, radius, length of stg2 - 
 if reuse2 == 1 %re-entry, landing burn needed + belly flop
@@ -188,7 +188,7 @@ if reuse2 == 1 %re-entry, landing burn needed + belly flop
         Cd = 1.17; %FOR NOW
         st2tv(i) = sqrt(2*st2mpb*g/rho*st2_cross_recovery*(Cd)); %goes from high alt to end
     end
-      rocket.stage2.terminal_velocity = st2tv;
+      rocket.stage2.terminal_velocity = st2tv(end);
 end
 
 

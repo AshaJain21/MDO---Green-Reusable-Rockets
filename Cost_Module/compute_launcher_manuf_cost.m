@@ -67,7 +67,7 @@ end
 
 function production_totals = consolidate_production_totals(design_variables, rocket, num_refurbished, parameters)
     
-    LH2_stage_boolean = [(design_variables.stage1.engine_prop.Fuel=='LH2'), (design_variables.stage2.engine_prop.Fuel=='LH2')];
+    LH2_stage_boolean = [strcmp(design_variables.stage1.engine_prop.Fuel, 'LH2'), strcmp(design_variables.stage2.engine_prop.Fuel, 'LH2')];
 
     % Determine how many of each stage needs to be produced
     num_stages_produced = design_variables.num_of_launches - num_refurbished;
@@ -89,7 +89,7 @@ function production_totals = consolidate_production_totals(design_variables, roc
     
     
 
-    if engine_types(1) == engine_types(2)
+    if strcmp(engine_types(1), engine_types(2))
         production_totals.engine_types = [engine_types(1)];
         production_totals.engine_cryo = [LH2_stage_boolean(1)];
         production_totals.engine_counts = [sum(num_engines .* num_stages_produced)];

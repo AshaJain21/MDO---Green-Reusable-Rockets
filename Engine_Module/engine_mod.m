@@ -10,7 +10,7 @@ rocketProp_stg1 = getRocketProperties(design_variables.stage1.engine_prop);
 
 %Decision tree for resuable stage 1 to compute boost back propellant mass
 if design_variables.stage1.reusable == 1
-    vterm1 = stage1.vTerm;
+    vterm1 = stage1.terminal_velocity;
     mbb1 = stage1.mstruct * (exp( vterm1 / (rocketProp_stg1.Isp * 9.81)) - 1);
     separation_velocity = parameters.vSepReusable;
     delV_stg1 = separation_velocity + parameters.drag_deltaV ; % m/s 
@@ -21,8 +21,8 @@ else
 end
 
 %Decision tree for resuable stage 2 to compute boost back propellant mass
-if design_variables.stage2.resuable == 2
-    vterm2 = stage2.vTerm;
+if design_variables.stage2.reusable == 2
+    vterm2 = stage2.terminal_velocity;
     mbb2 = stage2.mstruct * (exp( vterm2 / (rocketProp_stg2.Isp * 9.81)) - 1);
 else
     mbb2 = 0;
@@ -32,15 +32,11 @@ end
 stage2.mf           = stage2.mstruct + rocket.payload + mbb2;
 stage2.mprop        = (stage2.mf)* ( exp( (parameters.orbitalVelocity-separation_velocity) / (rocketProp_stg2.Isp * 9.81)) - 1 );
 stage2.mbb          = mbb2;
-stage2.prodNames    = engine2.name;
-stage2.prodValues   = engine2.massFraction;
 
 %Final Computation for Stage 1
 stage1.mf           = stage1.mstruct + stage2.mf + stage2.mprop + mbb1;
 stage1.mprop        = stage1.mf* ( exp(delV_stg1/ (rocketProp_stg1.Isp * 9.81)) - 1);
 stage1.mbb          = mbb1;
-stage1.prodNames    = engine1.name;
-stage1.prodValues   = engine1.massFraction;
 
 %Saving computed values into rocket variable
 rocket.stage1 = stage1;

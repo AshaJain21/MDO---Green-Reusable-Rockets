@@ -4,7 +4,7 @@ function constraints = run_constraint_module(design_variables, parameters, rocke
 
   %Constraint on Cost 
   budget_per_year = [];
-  rows, cols = size(cost);
+  [~, cols] = size(cost);
   months_counter = 0;
   current_year_budget = 0;
   for c = 1:cols

@@ -30,8 +30,10 @@ function  [total_rf, total_od, total_gwp] = run_env_impact_module(design_variabl
     species_ozone_depletion = compute_ozone_depletion(combined_emissions);
     species_gwp100 = compute_gwp_100(combined_emissions);
     
-     [total_rf, total_od, total_gwp] = num_launches .* compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100);
-
+     [total_rf, total_od, total_gwp] =  compute_combined_environmental_impact(species_rf, species_ozone_depletion, species_gwp100);
+     total_rf = total_rf * num_launches;
+     total_od = total_od * num_launches;
+     total_gwp = total_gwp * num_launches;
 end
 
 function stage_emissions_kg = handle_stage_products(engine_prop_row, stage_propellant_mass, stage_fuel)
@@ -57,8 +59,6 @@ function [total_rf, total_od, total_gwp] = compute_combined_environmental_impact
     for i = 1:size_of_rf_keys(2)
         data = species_rf(rf_species_keys{i});
         total_rf = total_rf + data(2); %in mW^2
-     
-    
     end 
     od_species_keys = species_ozone_depletion.keys;
     size_of_od_keys = size(od_species_keys);

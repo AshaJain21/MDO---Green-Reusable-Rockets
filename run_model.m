@@ -6,7 +6,7 @@ rocket.stage2.mprop = design_variables.mprop2_guess;
 
 [rocket] = aerostructures(design_variables, parameters, rocket);
 
-[rocket] = engine_mod(rocket, design_variables);
+[rocket] = engine_mod(rocket, design_variables, parameters);
     
 [total_rf, total_od, total_gwp] =run_env_impact_module(design_variables, rocket);
 
