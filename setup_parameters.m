@@ -53,5 +53,6 @@ function parameters = setup_parameters()
     parameters.max_rocket_height = 100; %m
     parameters.min_num_engines = 1;
     parameters.max_num_engines = 30;
+    parameters.max_payload_height_fraction = 0.5; %Payload should not be more than <fraction> of total rocket height
     
 end
