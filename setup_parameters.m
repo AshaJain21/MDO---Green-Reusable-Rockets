@@ -1,6 +1,4 @@
 function parameters = setup_parameters()
-    parameters.circle_packing_table = readtable('circle_packing_table.csv');
-
     parameters.mass_per_satellite = 600; %kg
     parameters.sat_model_radius = 0.75; %m
     parameters.sat_model_height = 0.4; %m
