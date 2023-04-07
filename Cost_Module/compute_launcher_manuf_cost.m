@@ -11,8 +11,8 @@ function launcher_manuf_cost = compute_launcher_manuf_cost(design_variables, roc
     engine_types = [design_variables.stage1.engine_prop.Engine, design_variables.stage2.engine_prop.Engine];
     num_refurbished = [sum(launch_cadence(2,:)), sum(launch_cadence(3,:))];
 
-    stage1_masses = struct(mstruct=rocket.stage1.mstruct, meng=design_variables.stage1.engine_prop.EngineMass_kg_);
-    stage2_masses = struct(mstruct=rocket.stage2.mstruct, meng=design_variables.stage2.engine_prop.EngineMass_kg_);
+    stage1_masses = struct(mstruct=rocket.stage1.mstruct, meng=design_variables.stage1.engine_prop.Mass_kg_);
+    stage2_masses = struct(mstruct=rocket.stage2.mstruct, meng=design_variables.stage2.engine_prop.Mass_kg_);
     masses = [stage1_masses, stage2_masses];
     
     %Determine how many of each engine and stage need to be produced

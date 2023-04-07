@@ -1,6 +1,6 @@
 function total_prop_cost = calculate_prop_cost(rocket, design_variables, parameters)
     prop_types = [design_variables.stage1.engine_prop.Fuel, design_variables.stage2.engine_prop.Fuel; design_variables.stage1.engine_prop.Oxidizer, design_variables.stage2.engine_prop.Oxidizer];
-    MRs = [design_variables.stage1.engine_prop.MixingRatio, design_variables.stage2.engine_prop.MixingRatio];
+    MRs = [design_variables.stage1.engine_prop.O_F, design_variables.stage2.engine_prop.O_F];
     oxidizer_portion = MRs./(MRs+1);
     fuel_portions = [(1-oxidizer_portion); oxidizer_portion];
     fuel_masses = [rocket.stage1.mprop, rocket.stage2.mprop] .* fuel_portions;
