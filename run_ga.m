@@ -2,8 +2,9 @@ clc;clear;
 addpath(genpath(pwd))
 problem.fitnessfcn = @run_model_ga;
 problem.nvars = 9;
-problem.lb = [12, 0, 0, 1,1,1,0.8,7000, 1000]; 
-problem.ub = [1000, 1, 1, 15,15,11,4.5,4e6, 1.5e6];
+%           [# launch,reuse1,reuse2,engine1,engine2,re-entry mat, ri ,  mprop1, mprop2]
+problem.lb =[12,       0,      0,      1,      1,         1,      0.8,  7000,    1000]; 
+problem.ub =[1000,     1,      1,      15,     15,        11,     4.5,  4e6,     1.5e6];
 problem.solver = 'ga';
 
 pop_size = 200; %default is 50 when less than 5 design variables and 200 when more than 5 design variables

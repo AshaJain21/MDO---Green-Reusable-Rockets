@@ -1,8 +1,9 @@
 clc;clear;
 addpath(genpath(pwd))
 problem.nvars = 3;
-problem.lb = [0.8,7000, 1000]; 
-problem.ub = [4.5,4e6, 1.5e6];
+%            [ri ,  mprop1, mprop2]
+problem.lb = [0.8,   7000,  1000]; 
+problem.ub = [4.5,   4e6,   1.5e6];
 problem.solver = 'fmincon';
 options = optimoptions('fmincon','Display','iter','Algorithm','sqp');
 problem.options = options;
