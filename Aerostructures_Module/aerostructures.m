@@ -159,7 +159,7 @@ if reuse1 == 1 %boost back, landing burn needed
     ust1 = zeros(1,length(h));
     ust1(1) = 0; %assume 0 velocity at separation (after the "boost back")
   for i = 2:length(h)
-     [~,~,~, rho] = atmoscoesa(h(end-i+1)); %start at altitude of separation
+     [~,~,~, rho] = atmoscoesa(h(end-i+1), 'None'); %start at altitude of separation
       %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES FIXEEEEEE
       ust1(i) = ust1(i-1) + 2*(-g); %calculate velocity of rocket (downwards)
         Cd = 1.17; %FOR NOW
@@ -179,7 +179,7 @@ if reuse2 == 1 %re-entry, landing burn needed + belly flop
     ust2(1) = 7.2e3; %assume a deorbit velocity of ~7.2 km/s from staging paper
     
     for i = 2:(length(alt)) 
-     [~,~,~, rho] = atmoscoesa(alt(end-i+1)); %start at altitude of sep.
+     [~,~,~, rho] = atmoscoesa(alt(end-i+1), 'None'); %start at altitude of sep.
         %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES 
        if alt(end-i+1) > 84852
             [~,~,~, rho] = atmoscoesa(84852); %change this later
@@ -285,7 +285,7 @@ time = zeros(1, (length(h) + length(h2))-1) ;%per m total time for reaching LEO
 accel = zeros(1,length(h));
  for i = 2:length(h) %%%%%%DO I NEED TO DO H-1 IN LENGTH TO ENSURE ROCKET MASS DOES NOT GO OUTSIDE OF ARRAY BOUNDS 
      %get atmospheric data
-        [~,~,~,rho] = atmoscoesa(h(i));
+        [~,~,~,rho] = atmoscoesa(h(i), 'None');
 
         mi = rockmass(i-1); %initial fuel
         mf = rockmass(i-1) - fc*500; %updates fuel consumption for every 500 m
@@ -310,7 +310,7 @@ st2mass_calc(1) = st2mass+st2prop; %starting stage mass
 accel2 = zeros(1,length(h2));
  for i = 2:length(h2)
      %get atmospheric data
-      [~,~,~,rho] = atmoscoesa(h2(i));
+      [~,~,~,rho] = atmoscoesa(h2(i), 'None');
       mi = st2mass_calc(i-1); %initial fuel
       mf = st2mass_calc(i-1) - fc2*1000; %updates fuel consumption for every 1000 m
       st2mass_calc(i) = mf; %update new mass
