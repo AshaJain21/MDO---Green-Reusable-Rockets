@@ -9,7 +9,7 @@ function noPipes = calc_inscribed_circles(rs, rl)
         if (rs > rl) 
           disp("Inside smaller diameters larger than outside diameter!");
         elseif (rl < 2 * rs)
-          disp("Only 1 pipe fits!")
+%           disp("Only 1 pipe fits!")
           noPipes = 1;
         else
         noPipes = count_circlces(rs, rc);
