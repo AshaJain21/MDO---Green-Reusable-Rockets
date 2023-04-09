@@ -23,6 +23,8 @@ function [g, h] = calculate_penalties(constraints)
     g = g + max(0, constraints.payload_height);
     g = g + max(0, constraints.min_stg1_num_engines);
     g = g + max(0, constraints.max_stg1_num_engines);
+    g = g + max(0, constraints.eng_stg1_rocket_size);
+    g = g + max(0, constraints.eng_stg2_rocket_size);
 
     %Equality Constraints 
     h = h + (constraints.mprop1)^2;

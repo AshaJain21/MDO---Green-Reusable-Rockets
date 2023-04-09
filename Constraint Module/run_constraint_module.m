@@ -42,5 +42,9 @@ function constraints = run_constraint_module(design_variables, parameters, rocke
    constraints.min_stg1_num_engines = parameters.min_num_engines - rocket.stage1.nEng;
    constraints.max_stg1_num_engines = rocket.stage1.nEng - parameters.max_num_engines;
 
+   %Constraint on engine size relative to rocket radius
+   constraints.eng_stg1_rocket_size = design_variables.stage1.engine_prop{1,8} - design_variables.rocket_ri;
+   constraints.eng_stg2_rocket_size = design_variables.stage2.engine_prop{1,8} - design_variables.rocket_ri;
+
 
 end
