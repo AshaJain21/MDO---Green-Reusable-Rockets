@@ -18,13 +18,13 @@ function [g, h] = calculate_penalties(constraints)
    h = 0;
     %Inequality Constraints 
     g = g + max(0, constraints.launch_cadence);
-    g = g + max(0, constraints.max_cost_year);
+%     g = g + max(0, constraints.max_cost_year);
     g = g + max(0, constraints.rocket_height);
     g = g + max(0, constraints.payload_height);
     g = g + max(0, constraints.min_stg1_num_engines);
     g = g + max(0, constraints.max_stg1_num_engines);
-    g = g + max(0, constraints.eng_stg1_rocket_size);
-    g = g + max(0, constraints.eng_stg2_rocket_size);
+    g = g + (max(0, constraints.eng_stg1_rocket_size)*100);
+    g = g + (max(0, constraints.eng_stg2_rocket_size)*100);
 
     %Equality Constraints 
     h = h + (constraints.mprop1)^2;
