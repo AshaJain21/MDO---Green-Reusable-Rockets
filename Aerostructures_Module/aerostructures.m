@@ -118,8 +118,8 @@ if maxq > sigma_max
     [st1mass, st2mass, heat_shield_mass, SAst2] =...
         struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density);
 
-else 
-    fprintf('Wall Thickness Supports Max Q');
+% else 
+%     fprintf('Wall Thickness Supports Max Q');
     
 end 
 
@@ -129,8 +129,8 @@ end
 
 if maxqnew > maxq
     fprintf('New Maxq is larger...');
-else 
-    fprintf('Wall Thickness Supports Max Q');
+% else 
+%     fprintf('Wall Thickness Supports Max Q');
     
 end 
 

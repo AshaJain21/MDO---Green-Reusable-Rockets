@@ -1,5 +1,6 @@
 function penalized_cost = run_model_derivative(x)
     %Set discrete design variables 
+    %# launch,reuse1,reuse2,engine1,engine2,re-entry mat
     num_launches = 45;
     stage1_boolean = 0;
     stage2_boolean = 0;
