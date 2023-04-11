@@ -68,7 +68,7 @@ rocket.stage2.height = st2h;
 %based on known rocket stage thrust and height
 %Will need to rerun if max q is not met
 
-[~, ro] = calc_wallthick(thrust1,thrust2,ri, FOS, sigma_max);
+[ro] = calc_wallthick(thrust1,thrust2,ri, FOS, sigma_max);
 
 %% Calculate Structural masses
 
@@ -112,14 +112,14 @@ if maxq > sigma_max
         'is not enough to support max q in flight']);
     %RERUN STRUCTURES-
     %replace sigma_max with maxq
-    [~, ro] = calc_wallthick(thrust1,thrust2,ri, FOS, maxq);
+    ro = calc_wallthick(thrust1,thrust2,ri, FOS, maxq);
 
     %Calculate Structural masses
     [st1mass, st2mass, heat_shield_mass, SAst2] =...
         struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density);
 
-else 
-    fprintf('Wall Thickness Supports Max Q');
+% else 
+%     fprintf('Wall Thickness Supports Max Q');
     
 end 
 
@@ -129,8 +129,8 @@ end
 
 if maxqnew > maxq
     fprintf('New Maxq is larger...');
-else 
-    fprintf('Wall Thickness Supports Max Q');
+% else 
+%     fprintf('Wall Thickness Supports Max Q');
     
 end 
 
@@ -225,7 +225,7 @@ prop_ox2_density = parameters.propellant_properties...
 
 end
 
-function [t, ro] = calc_wallthick(thrust1,thrust2,ri, FOS, sigma_max)
+function [ro] = calc_wallthick(thrust1,thrust2,ri, FOS, sigma_max)
 %Stage 1
 A1 = FOS*thrust1/sigma_max; %get area required to accomodate this stress w/chosen FOS
 ro_1 = sqrt(A1/pi + ri^2);
@@ -235,14 +235,16 @@ A2 = FOS*thrust2/sigma_max; %get area required to accomodate this stress w/chose
 ro_2 = sqrt(A2/pi + ri^2);
 t2 = ro_2 - ri;
     %take thickest wall thickness for rocket
-    if t1 < t2 
-        ro = ro_2;
+    if t1 < t2
+        roinit = ro_2;
         t = t2;
-    else %t1>t2
-        ro = ro_1;
+    elseif t1>t2
+        roinit = ro_1;
         t = t1;
+    else %t1=t2
+        roinit=0.001+ri;
     end
-
+ro = max(0.001+ri, roinit);
 end
 
 function [st1mass, st2mass, heat_shield_mass, SAst2]= struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density) 

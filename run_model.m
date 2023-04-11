@@ -1,4 +1,4 @@
-function [launch_cadence, total_rf, total_od, total_gwp, cost, constraints] = run_model(design_variables, parameters)
+function [launch_cadence, total_rf, total_od, total_gwp, cost, constraints, rocket] = run_model(design_variables, parameters)
 
 rocket.stage1.mprop = design_variables.mprop1_guess;
 rocket.stage2.mprop = design_variables.mprop2_guess;
@@ -12,6 +12,8 @@ rocket.stage2.mprop = design_variables.mprop2_guess;
 
 cost = run_cost_module(design_variables, parameters, rocket, launch_cadence);
 
-constraints = run_constraint_module(design_variables, parameters, rocket, launch_cadence, cost);
+constraints = 0;
+
+% constraints = run_constraint_module(design_variables, parameters, rocket, launch_cadence, cost);
 
 end

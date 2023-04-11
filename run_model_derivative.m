@@ -6,8 +6,9 @@ function penalized_cost = run_model_derivative(x)
     stage2_boolean = 0;
     engine_prop_1_row = 4;
     engine_prop_2_row = 8;
-    engine_prop_db = readtable("engine-prop-combinations.csv");
     reentry_shield_material_row = 9;
+    warning('OFF', 'MATLAB:table:ModifiedVarnames');
+    engine_prop_db = readtable("engine-prop-combinations.csv");
     reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
     design_variables = setup_designvariables(num_launches, stage1_boolean,stage2_boolean, engine_prop_db(engine_prop_1_row, :), engine_prop_db(engine_prop_2_row, :), reentry_shield_material_db(reentry_shield_material_row, :), x(1), x(2), x(3));
