@@ -106,36 +106,33 @@ fc2 = mdotst2_f/st2ve;  %fuel consumption kg per metre;
     ,pay_mass,heat_shield_mass, thrust1, thrust2);
 
 %Check max q ensure wall thickness is enough
+%Constraint on wall thickness for max q
 %q = stress FOS*thrust/sigma_max = area needed
+ 
 if maxq > sigma_max
-    fprintf(['Wall thickness for rocket'...                 
-        'is not enough to support max q in flight']);
+    %fprintf(['Wall thickness for rocket'...                 
+     %   'is not enough to support max q in flight']);
     %RERUN STRUCTURES-
     %replace sigma_max with maxq
     ro = calc_wallthick(thrust1,thrust2,ri, FOS, maxq);
 
-    %Calculate Structural masses
+    %Calculate updated Structural masses to handle max q
     [st1mass, st2mass, heat_shield_mass, SAst2] =...
         struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density);
-
 % else 
 %     fprintf('Wall Thickness Supports Max Q');
-    
 end 
-
 %check again using new masses
-[maxqnew] = launch(h, h2, ro,fc, g, fc2, st1mass,st1prop,st2prop,...
-    st2mass,pay_mass,heat_shield_mass, thrust1, thrust2);
+%[maxqnew] = launch(h, h2, ro,fc, g, fc2, st1mass,st1prop,st2prop,...
+%    st2mass,pay_mass,heat_shield_mass, thrust1, thrust2);
 
-if maxqnew > maxq
-    fprintf('New Maxq is larger...');
+%if maxqnew > maxq
+ %   fprintf('New Maxq is larger...');
 % else 
-%     fprintf('Wall Thickness Supports Max Q');
-    
-end 
+%     fprintf('Wall Thickness Supports Max Q');  
+%end 
 
-%FOR TOMORROW FIX THIS SO IT LOOPS BACK TO THE STRUCTURES MODULE - MAKE
-%SEPARATE FUNCTIONS FOR CALCULATING THE MASS AND DOING THE AERO STUFF
+
 %% Calculate FINAL Structural masses
 %Stage 1
 rocket.ro = ro;
@@ -242,9 +239,9 @@ t2 = ro_2 - ri;
         roinit = ro_1;
         t = t1;
     else %t1=t2
-        roinit=0.001+ri;
+        roinit=0.004+ri; 
     end
-ro = max(0.001+ri, roinit);
+ro = max(0.004+ri, roinit); %wall thickness must be at least 4mm
 end
 
 function [st1mass, st2mass, heat_shield_mass, SAst2]= struct_calc(st1h,st2h, strucmat_density, ro, ri, re_mat_density) 
