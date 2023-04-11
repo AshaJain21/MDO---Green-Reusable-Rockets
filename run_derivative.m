@@ -1,8 +1,9 @@
 clc;clear;
 warning('off', 'all');
-
 addpath(genpath(pwd))
 warning('OFF', 'MATLAB:table:ModifiedVarnames');
+delete 'rocket_results.mat'; %ONLY if we dont have one
+
 problem.nvars = 3;
 %            [ri ,  mprop1, mprop2]
 problem.lb = [0.8,   7000,  1000]; 
@@ -10,14 +11,15 @@ problem.ub = [4.5,   4e6,   1.5e6];
 problem.solver = 'fmincon';
 problem.nonlcon = @calculate_nonpenalty_constraints_derivative; %normalized constraints
 
-%options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
-%    'iter','Algorithm','sqp', 'MaxFunctionEvaluations', 3000);
-%problem.options = options;
-%problem.objective = @run_model_derivative;
-%problem.x0 = [1.561	1505000	755000 ];%[1.561, 1.0774e6, 1.6552e5];
-%[x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
+options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
+    'iter','Algorithm','sqp', 'MaxFunctionEvaluations', 3000, ...
+    'ConstraintTolerance', 1e-1);
+problem.options = options;
+problem.objective = @run_model_derivative;
+problem.x0 = [1.561	1505000	755000 ];%[1.561, 1.0774e6, 1.6552e5];
+[x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
 
-%numlaunch = [20 45 410 800];
+numlaunch = [20 45 410 800];
 %engine1 = 1:1:15;
 %engine2 = 1:1:15;
 %reuse1 = [0 1];
@@ -32,8 +34,8 @@ num_trials = length(ri) * length(st1mprop)*length(st2mprop);
 %Initialize arrays for results
 doe_results = zeros(num_trials, 7);%(2+problem.nvars+3));
 exp_num = 1;
-%output_full = struct(problemtype='', rngstate=struct(), generations=0, funccount=0, message='', maxconstraint=0, hybridflag=[]);
-%population_data_full = zeros(1, (problem.nvars+1));
+output_full = struct(problemtype='', rngstate=struct(), generations=0, funccount=0, message='', maxconstraint=0, hybridflag=[]);
+population_data_full = zeros(1, (problem.nvars+1));
 %x,fval,exitflag,output,lambda,grad,hessian
 
 for i = 1:length(ri)
@@ -54,11 +56,13 @@ for i = 1:length(ri)
             problem.x0 = [ri_trial	prop1 prop2 ];%[1.561, 1.0774e6, 1.6552e5];
             [x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
 
+            %[x_opt,fval,exitflag,output,population,scores] 
+            %[pop_size, mutation_rate, x_opt, exitflag, fval, comp_time];
             % Store Values
             doe_results(exp_num, :) = [x,fval,exitflag,output,lambda,grad,hessian];
-            %marker_row = ones(1, (problem.nvars+1))*exp_num;
-            %population_data_full = [population_data_full; marker_row;[population, scores]];
-            %output_full = [output_full, output];
+            marker_row = ones(1, (problem.nvars+1))*exp_num;
+            population_data_full = [population_data_full; marker_row;[population, scores]];
+            output_full = [output_full, output];
             exp_num = exp_num + 1;
         
         end
