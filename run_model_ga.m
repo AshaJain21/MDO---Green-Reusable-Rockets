@@ -7,8 +7,10 @@ function penalized_cost = run_model_ga(x)
 
     design_variables = setup_designvariables(round(x(1)), round(x(2)), round(x(3)), engine_prop_db(engine_prop_1_row, :), engine_prop_db(engine_prop_2_row, :), reentry_shield_material_db(reentry_shield_material_row, :), x(7), x(8), x(9));
     parameters = setup_parameters();
-    [~, ~, ~, ~, cost, constraints] = run_model(design_variables, parameters);
-    [g, h] = calculate_penalties(constraints);
+    g = 0;
+    h = 0;
+    [~, ~, ~, ~, cost, ~, ~] = run_model(design_variables, parameters);
+%     [g, h] = calculate_penalties(constraints);
     penalized_cost  = sum(cost(1, :)) + g + h;
 
 end
