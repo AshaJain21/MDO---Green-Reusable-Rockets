@@ -1,10 +1,10 @@
 function [c, ceq] = calculate_nonpenalty_constraints_derivative(x)
   
-    num_launches = 20;
+    num_launches = 100;
     stage1_boolean = 0;
     stage2_boolean = 0;
-    engine_prop_1_row = 4;
-    engine_prop_2_row = 8;
+    engine_prop_1_row = 8;
+    engine_prop_2_row = 4;
     engine_prop_db = readtable("engine-prop-combinations.csv");
     reentry_shield_material_row = 9;
     reentry_shield_material_db = readtable("reentry_shield_materials.csv");
