@@ -1,5 +1,6 @@
 clc;clear;
 addpath(genpath(pwd))
+delete rocket_results_ga.mat
 problem.fitnessfcn = @run_model_ga;
 problem.nvars = 9;
 %           [# launch,reuse1,reuse2,engine1,engine2,re-entry mat, ri ,  mprop1, mprop2]
@@ -32,7 +33,7 @@ for i = 1:length(pop_size_opts)
         mutation_rate = mutation_rate_opts(j);
         mutation_settings = {@mutationuniform, mutation_rate};
 
-        options = optimoptions('ga', 'PopulationSize', pop_size, 'MutationFcn', mutation_settings);
+        options = optimoptions('ga', 'PopulationSize', pop_size, 'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
         problem.options = options;
 
         fprintf('======= Current Trial: Population size: %d, Mutation rate: %d ============\n', pop_size, mutation_rate);
