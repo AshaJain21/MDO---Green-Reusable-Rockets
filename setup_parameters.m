@@ -21,7 +21,7 @@ function parameters = setup_parameters()
     parameters.orbital_altitude = 500; %km 
     parameters.reentry_angle = 2; %deg
     %kuiper plans 83 launches to meet 5 yr goal of 3300 sats: https://www.thestreet.com/amazon/news/project-kuiper-what-investors-should-know
-    parameters.delivery_time = 5; %yrs 
+    parameters.delivery_time = 25; %yrs 
 
     parameters.refurb_learning_rate= 0.9;
     parameters.manuf_learning_rate= 0.9;
