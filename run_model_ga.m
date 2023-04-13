@@ -11,14 +11,14 @@ function penalized_cost = run_model_ga(x)
     h = 0;
     [~, ~, ~, ~, cost, ~, rocket] = run_model(design_variables, parameters);
 
-    if isfile('rocket_results_ga.mat')
-        load('rocket_results_ga');
-        rockets_all = [rockets_all, rocket];
-    else
-        rockets_all = rocket;
-    end
-
-    save('rocket_results_ga', 'rockets_all');
+%     if isfile('rocket_results_ga.mat')
+%         load('rocket_results_ga');
+%         rockets_all = [rockets_all, rocket];
+%     else
+%         rockets_all = rocket;
+%     end
+% 
+%     save('rocket_results_ga', 'rockets_all');
 %     [g, h] = calculate_penalties(constraints);
     penalized_cost  = sum(cost(1, :)) + g + h;
 
