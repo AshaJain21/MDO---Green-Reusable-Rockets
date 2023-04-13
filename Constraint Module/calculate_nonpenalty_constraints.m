@@ -50,8 +50,8 @@ function [c, ceq] = calculate_nonpenalty_constraints(x)
    c(end+1) = rocket.payload_height - (parameters.max_payload_height_fraction*total_rocket_height);
 
    %Constraint on mprop1 and mprop1_guess
-   ceq(end+1) = rocket.stage1.mprop - design_variables.mprop1_guess;
-   ceq(end+1) = rocket.stage2.mprop - design_variables.mprop2_guess;
+   c(end+1) = rocket.stage1.mprop - design_variables.mprop1_guess;
+   c(end+1) = rocket.stage2.mprop - design_variables.mprop2_guess;
 
    %Constraint num_engines
    c(end+1) = parameters.min_num_engines - rocket.stage1.nEng;
