@@ -33,7 +33,7 @@ for i = 1:length(pop_size_opts)
         mutation_rate = mutation_rate_opts(j);
         mutation_settings = {@mutationuniform, mutation_rate};
 
-        options = optimoptions('ga');%, 'PopulationSize', pop_size, 'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
+        options = optimoptions('ga', 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotbestf,@gaplotstopping, @gaplotscores, @gaplotrange});%, 'PopulationSize', pop_size, 'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
         problem.options = options;
 
         fprintf('======= Current Trial: Population size: %d, Mutation rate: %d ============\n', pop_size, mutation_rate);
