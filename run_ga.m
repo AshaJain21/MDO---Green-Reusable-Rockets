@@ -8,7 +8,7 @@ problem.lb =[12,       0,      0,      1,      1,         1,      0.8,  7000,   
 problem.ub =[1500,     1,      1,      15,     15,        11,     4.5,  4e6,     1.5e6];
 problem.solver = 'ga';
 
-problem.nonlcon = @calculate_nonpenalty_constraints;
+% problem.nonlcon = @calculate_nonpenalty_constraints;
 
 pop_size_opts = [50];%, 100, 300];
 mutation_rate_opts = [0.01];%, 0.05, 0.1];

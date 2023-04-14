@@ -12,8 +12,6 @@ rocket.stage2.mprop = design_variables.mprop2_guess;
 
 cost = run_cost_module(design_variables, parameters, rocket, launch_cadence);
 
-constraints = 0;
-
-% constraints = run_constraint_module(design_variables, parameters, rocket, launch_cadence, cost);
+constraints = run_constraint_module(design_variables, parameters, rocket, launch_cadence, cost);
 
 end
