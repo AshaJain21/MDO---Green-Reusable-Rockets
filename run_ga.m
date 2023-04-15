@@ -10,8 +10,8 @@ problem.solver = 'ga';
 
 problem.nonlcon = @calculate_nonpenalty_constraints;
 
-pop_size_opts = [50];%, 100, 300];
-mutation_rate_opts = [0.01];%, 0.05, 0.1];
+pop_size_opts = [50, 100, 200];%, 300];
+mutation_rate_opts = [0.01, 0.05];%, 0.1];
 
 % pop_size = 200; %default is 50 when less than 5 design variables and 200 when more than 5 design variables
 % max_gen = problem.nvars * 100; %This is the same calculation as default value
@@ -33,7 +33,7 @@ for i = 1:length(pop_size_opts)
         mutation_rate = mutation_rate_opts(j);
         mutation_settings = {@mutationuniform, mutation_rate};
 
-        options = optimoptions('ga', 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotbestf,@gaplotstopping, @gaplotscores, @gaplotrange});%, 'PopulationSize', pop_size, 'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
+        options = optimoptions('ga', 'PopulationSize', pop_size,'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotbestf,@gaplotstopping, @gaplotscores, @gaplotrange});% 'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
         problem.options = options;
 
         fprintf('======= Current Trial: Population size: %d, Mutation rate: %d ============\n', pop_size, mutation_rate);
