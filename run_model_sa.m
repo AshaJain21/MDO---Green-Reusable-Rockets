@@ -1,4 +1,5 @@
-function penalized_cost = run_model_ga(x)
+function penalized_cost = run_model_sa(x)
+    warning('OFF', 'MATLAB:table:ModifiedVarnames');
     engine_prop_1_row = round(x(4));
     engine_prop_2_row = round(x(5));
     engine_prop_db = readtable("engine-prop-combinations.csv");
@@ -9,17 +10,17 @@ function penalized_cost = run_model_ga(x)
     parameters = setup_parameters();
     g = 0;
     h = 0;
-    [~, ~, ~, ~, cost, ~, rocket] = run_model(design_variables, parameters);
+    [~, ~, ~, ~, cost, constraints, rocket] = run_model(design_variables, parameters);
 
-%     if isfile('rocket_results_ga.mat')
-%         load('rocket_results_ga');
-%         rockets_all = [rockets_all, rocket];
-%     else
-%         rockets_all = rocket;
-%     end
-% 
-%     save('rocket_results_ga', 'rockets_all');
-%     [g, h] = calculate_penalties(constraints);
+     if isfile('sa_rocket_results_ga.mat')
+         load('sa_rocket_results_ga');
+         rockets_all = [rockets_all, rocket];
+     else
+         rockets_all = rocket;
+     end
+    
+     save('sa_rocket_results_ga', 'rockets_all');
+    [g, h] = calculate_penalties(constraints);
     penalized_cost  = sum(cost(1, :)) + g + h;
 
 end

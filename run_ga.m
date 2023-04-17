@@ -1,16 +1,17 @@
 clc;clear;
 addpath(genpath(pwd))
+delete rocket_results_ga.mat
 problem.fitnessfcn = @run_model_ga;
 problem.nvars = 9;
 %           [# launch,reuse1,reuse2,engine1,engine2,re-entry mat, ri ,  mprop1, mprop2]
 problem.lb =[12,       0,      0,      1,      1,         1,      0.8,  7000,    1000]; 
-problem.ub =[1000,     1,      1,      15,     15,        11,     4.5,  4e6,     1.5e6];
+problem.ub =[1500,     1,      1,      16,     16,        11,     4.5,  4e6,     1.5e6];
 problem.solver = 'ga';
 
 problem.nonlcon = @calculate_nonpenalty_constraints;
 
-pop_size_opts = [50, 100, 300];
-mutation_rate_opts = [0.01, 0.05, 0.1];
+pop_size_opts = [50, 75, 100];%, 300];
+mutation_rate_opts = [0.01, 0.03];%, 0.1];
 
 % pop_size = 200; %default is 50 when less than 5 design variables and 200 when more than 5 design variables
 % max_gen = problem.nvars * 100; %This is the same calculation as default value
@@ -32,7 +33,7 @@ for i = 1:length(pop_size_opts)
         mutation_rate = mutation_rate_opts(j);
         mutation_settings = {@mutationuniform, mutation_rate};
 
-        options = optimoptions('ga', 'PopulationSize', pop_size, 'MutationFcn', mutation_settings);
+        options = optimoptions('ga', 'PopulationSize', pop_size, 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotbestf,@gaplotstopping, @gaplotscores, @gaplotrange});%  'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
         problem.options = options;
 
         fprintf('======= Current Trial: Population size: %d, Mutation rate: %d ============\n', pop_size, mutation_rate);
