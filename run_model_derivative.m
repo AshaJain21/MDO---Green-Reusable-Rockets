@@ -2,11 +2,11 @@ function penalized_cost = run_model_derivative(x)
     %Set discrete design variables 
     %# launch,reuse1,reuse2,engine1,engine2,re-entry mat
     %rockets_all = load(rocketall)%readstruct("rocket.mat","FileType",'auto');
-    num_launches = 100;
+    num_launches = 20;
     stage1_boolean = 0;
     stage2_boolean = 0;
-    engine_prop_1_row = 8;
-    engine_prop_2_row = 4;
+    engine_prop_1_row = 8; %
+    engine_prop_2_row = 8;
     reentry_shield_material_row = 9;
     warning('OFF', 'MATLAB:table:ModifiedVarnames');
     engine_prop_db = readtable("engine-prop-combinations.csv");

@@ -1,10 +1,10 @@
 function [c, ceq] = calculate_nonpenalty_constraints_derivative(x)
   
-    num_launches = 100;
+    num_launches = 20;
     stage1_boolean = 0;
     stage2_boolean = 0;
-    engine_prop_1_row = 8;
-    engine_prop_2_row = 4;
+    engine_prop_1_row = 8;%1 4 8 12 15
+    engine_prop_2_row = 8;
     engine_prop_db = readtable("engine-prop-combinations.csv");
     reentry_shield_material_row = 9;
     reentry_shield_material_db = readtable("reentry_shield_materials.csv");
@@ -60,6 +60,14 @@ function [c, ceq] = calculate_nonpenalty_constraints_derivative(x)
    %Constraint on engine size relative to rocket radius
    c(end+1) = design_variables.stage1.engine_prop{1,8} - design_variables.rocket_ri;
    c(end+1) = design_variables.stage2.engine_prop{1,8} - design_variables.rocket_ri;
-
+ 
+%    if isfile('nonlcon_results.mat')
+%          load('nonlcon_results');
+%           c_all = [c_all; c];
+%     else
+%          c_all = c;
+%     end
+%     %writestruct(rocketupdate,"rocket.dat","FileType",'auto');
+%     save('nonlcon_results', 'c_all');
 
 end
