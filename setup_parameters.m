@@ -2,7 +2,7 @@ function parameters = setup_parameters()
     parameters.mass_per_satellite = 600; %kg
     parameters.sat_model_radius = 0.75; %m
     parameters.sat_model_height = 0.4; %m
-    parameters.num_of_satellites = 5000; %kg
+    parameters.num_of_satellites = 5000;
     parameters.rocket_fleet_size = 15;
     parameters.structural_material = 'Al 6061';
     parameters.struc_to_propellant_mass_ratio = 0.1;
@@ -21,7 +21,7 @@ function parameters = setup_parameters()
     parameters.orbital_altitude = 500; %km 
     parameters.reentry_angle = 2; %deg
     %kuiper plans 83 launches to meet 5 yr goal of 3300 sats: https://www.thestreet.com/amazon/news/project-kuiper-what-investors-should-know
-    parameters.delivery_time = 25; %yrs 
+    parameters.delivery_time = 10; %yrs 
 
     parameters.refurb_learning_rate= 0.9;
     parameters.manuf_learning_rate= 0.9;
@@ -48,9 +48,9 @@ function parameters = setup_parameters()
     parameters.orbitalVelocity = 7600; %m/s
     parameters.drag_deltaV = 2000; %m/s
 
-    parameters.max_rocket_height = 200; %m
+    parameters.max_rocket_height = 150; %m
     parameters.min_num_engines = 1;
-    parameters.max_num_engines = 30;
+    parameters.max_num_engines = 1000;
     parameters.max_payload_height_fraction = 0.5; %Payload should not be more than <fraction> of total rocket height
     
 end
