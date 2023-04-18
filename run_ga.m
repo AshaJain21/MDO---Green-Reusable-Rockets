@@ -41,7 +41,9 @@ for i = 1:length(pop_size_opts)
         population_data_full = [population_data_full; marker_row;[population, scores]];
         output_full = [output_full, output];
         exp_num = exp_num + 1;
-%         end
     end
 end
+
+%Filter any rows with exit val of -2
+filtered_doe_res = doe_res(doe_res(:,12)>=0,:);
 
