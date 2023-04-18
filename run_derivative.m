@@ -16,8 +16,39 @@ options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
     'ConstraintTolerance', 1e-1);
 problem.options = options;
 problem.objective = @run_model_derivative;
-problem.x0 = [1.0 1e41e4 ];%[1.561, 1.0774e6, 1.6552e5];
+problem.x0 = [4.4663, 6.3813e5, 2.5879e5];%[1.561, 1.0774e6, 1.6552e5];
 [x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
+
+%% From hessian get scaling factors
+[U,S,V] = svd(hessian);
+condition = max(diag(S))/min(diag(S));
+scaling_exp = floor(log10(diag(S)));
+global scaling_vec
+scaling_vec = 10.^scaling_exp;
+%hessian scaling factor
+%% Rescale
+global scaling_vec
+warning('off', 'all');
+addpath(genpath(pwd))
+warning('OFF', 'MATLAB:table:ModifiedVarnames');
+delete 'rocket_results.mat'; %ONLY if we dont have one
+delete 'nonlcon_results.mat'
+problem.nvars = 3;
+%            [ri ,  mprop1, mprop2]
+problem.lb = [0.8*scaling_vec(1),   7000*scaling_vec(2),  1000*scaling_vec(3)];%[]; 
+problem.ub = [4.5*scaling_vec(1),   4e6*scaling_vec(2),   1.5e6*scaling_vec(3)];%[];
+problem.solver = 'fmincon';
+problem.nonlcon = @rescaled_nonpenalty_constraints_derivative; %normalized constraints
+
+options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
+    'iter','Algorithm','sqp', 'MaxFunctionEvaluations', 3000, ...
+    'ConstraintTolerance', 1e-1);
+problem.options = options;
+problem.objective = @run_model_derivative;
+problem.x0 = [4.4663*scaling_vec(1), 6.3813e5*scaling_vec(2), 2.5879e5*scaling_vec(3)];%[1.561, 1.0774e6, 1.6552e5];
+[x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
+
+
 
 %% 
 clc;clear;

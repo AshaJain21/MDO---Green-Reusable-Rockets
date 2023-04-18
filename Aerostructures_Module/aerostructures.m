@@ -149,28 +149,28 @@ rocket.stage2.heatshield_mass = heat_shield_mass;
 %Landing
 if reuse1 == 1 %boost back, landing burn needed 
     st1mpb = st1mass; %(mass post burn, still have some left over for landing)
-    st1_Sb_recovery = pi*ro*2*st1h; %total SA at angle of fall 
-    st1_cross_recovery = pi*ro^2; %%cross sectional area at angle of fall 
+    st1_Sb_recovery = ro*2*st1h/cos(deg2rad(reangle)); %projected SA 
+    %st1_cross_recovery = pi*ro^2; %%cross sectional area at angle of fall 
     %(assume stg1 fall straight vertically)
-    st1tv = zeros(1,length(h));
-    ust1 = zeros(1,length(h));
-    ust1(1) = 0; %assume 0 velocity at separation (after the "boost back")
-  for i = 2:length(h)
-     [~,~,~, rho] = atmoscoesa(h(end-i+1), 'None'); %start at altitude of separation
+    %st1tv = zeros(1,length(h));
+    %ust1 = zeros(1,length(h));
+    %ust1(1) = 0; %assume 0 velocity at separation (after the "boost back")
+  %for i = 2:length(h)
+     [~,~,~, rho] = atmoscoesa(500);%, 'None'); %calculate terminal vel @ 500 m
       %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES FIXEEEEEE
-      ust1(i) = ust1(i-1) + 2*(-g); %calculate velocity of rocket (downwards)
-        Cd = 1.17; %FOR NOW
-        st1tv(i) = sqrt(2*st1mpb*g/rho*st1_cross_recovery*(Cd)); %goes from high alt to end
-  end  
-       rocket.stage1.terminal_velocity = st1tv(end); %where do you want terminal velocity? MAX? ASK ASHA / JUSTIN
+      %ust1(i) = ust1(i-1) + 2*(-g); %calculate velocity of rocket (downwards)
+      Cd = 1.17; %FOR NOW
+      st1tv = sqrt(2*st1mpb*g/rho*st1_Sb_recovery*(Cd)); %goes from high alt to end
+  %end  
+       rocket.stage1.terminal_velocity = st1tv; %where do you want terminal velocity? MAX? ASK ASHA / JUSTIN
 end
 %Re-entry from LEO Stg 2 %heat flux %angle, radius, length of stg2 - 
 if reuse2 == 1 %re-entry, landing burn needed + belly flop
     st2mpb = st2mass; %(mass post burn, t over for landing)
     %cross sectional area at angle of fall
     st2_cross_recovery = pi*ro^2/cos(deg2rad(reangle)); 
-    st2_Sb_recovery = pi*ro*2*st2h/cos(deg2rad(reangle)); %total wetted area not sure which to use!!!!!!!!!!!!!!!!!!!!!!
-    alt = 0:500:LEOalt; %full altitude of deorbit [m]
+    st2_Sb_recovery = ro*2*st2h/cos(deg2rad(reangle)); %total wetted area not sure which to use!!!!!!!!!!!!!!!!!!!!!!
+    alt = 500:500:LEOalt; %full altitude of deorbit [m]
     st2tv = zeros(1,length(alt));
     ust2 = zeros(1,length(alt));
     ust2(1) = 7.2e3; %assume a deorbit velocity of ~7.2 km/s from staging paper
@@ -179,13 +179,15 @@ if reuse2 == 1 %re-entry, landing burn needed + belly flop
      [~,~,~, rho] = atmoscoesa(alt(end-i+1), 'None'); %start at altitude of sep.
         %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES 
        if alt(end-i+1) > 84852
-            [~,~,~, rho] = atmoscoesa(84852); %change this later
+            [~,~,~, rho] = atmoscoesa(84852); %change this later         
        end
-        ust2(i) = ust2(i-1) + 2*(-g); %calculate velocity of rocket (downwards)
-        Cd = 1.17; %FOR NOW
-        st2tv(i) = sqrt(2*st2mpb*g/rho*st2_cross_recovery*(Cd)); %goes from high alt to end
+       Cd = 1.17; %FOR NOW
+        a = (- g) + (0.5*rho*Cd*ust2(i)^2)/st2mpb; %calculate velocity of rocket (downwards)
+        ust2(i) = ust2(i-1) + 2*a*500;
+        
+        st2tv(i) = sqrt(2*st2mpb*g/rho*st2_Sb_recovery*(Cd)); %goes from high alt to end
     end
-      rocket.stage2.terminal_velocity = st2tv(end);
+      rocket.stage2.terminal_velocity = st2tv(end); %IMPLEMENT TOTAL DRY MASS + NOT TERMINAL VELOCITY
 end
 
 

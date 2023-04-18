@@ -1,5 +1,6 @@
-function [c, ceq] = calculate_nonpenalty_constraints_derivative(x)
-  
+function [c, ceq] = rescaled_nonpenalty_constraints_derivative(x)
+    global scaling_vec
+    
     num_launches = 410;
     stage1_boolean = 1;
     stage2_boolean = 0;
@@ -50,8 +51,8 @@ function [c, ceq] = calculate_nonpenalty_constraints_derivative(x)
    c(end+1) = rocket.payload_height - (parameters.max_payload_height_fraction*total_rocket_height);
 
    %Constraint on mprop1 and mprop1_guess
-   ceq(end+1) = rocket.stage1.mprop - design_variables.mprop1_guess;
-   ceq(end+1) = rocket.stage2.mprop - design_variables.mprop2_guess;
+   ceq(end+1) = (rocket.stage1.mprop - design_variables.mprop1_guess)*scaling_vec(2);
+   ceq(end+1) = (rocket.stage2.mprop - design_variables.mprop2_guess)*scaling_vec(3);
 
    %Constraint num_engines
    c(end+1) = parameters.min_num_engines - rocket.stage1.nEng;
