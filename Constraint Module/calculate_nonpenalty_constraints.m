@@ -19,27 +19,27 @@ function [c, ceq] = calculate_nonpenalty_constraints(x)
    c(end+1) =  total_time - (parameters.delivery_time * 12); %months 
 
 
-%   %Constraint on Cost 
-%   budget_per_year = zeros(1, (ceil(total_time/12)));
-%   [~, num_columns] = size(cost);
-%   curr_year = 1;
-%   current_year_budget = 0;
-%   
-%   for col = 1:num_columns
-%       curr_month = cost(2, col);
-% 
-%       if curr_month < (curr_year * 12)
-%           current_year_budget = current_year_budget + cost(1,col);
-%       else
-%           budget_per_year(curr_year) = current_year_budget;    
-%           current_year_budget = cost(1, col);
-%           curr_year = curr_year + 1;
-%       end
-%   end
-%   budget_per_year(curr_year) = current_year_budget;
-% 
-%   max_cost_per_year = max(budget_per_year);
-%   c(end+1) = max_cost_per_year - parameters.max_cost_per_year;
+  %Constraint on Cost 
+  budget_per_year = zeros(1, (ceil(total_time/12)));
+  [~, num_columns] = size(cost);
+  curr_year = 1;
+  current_year_budget = 0;
+  
+  for col = 1:num_columns
+      curr_month = cost(2, col);
+
+      if curr_month < (curr_year * 12)
+          current_year_budget = current_year_budget + cost(1,col);
+      else
+          budget_per_year(curr_year) = current_year_budget;    
+          current_year_budget = cost(1, col);
+          curr_year = curr_year + 1;
+      end
+  end
+  budget_per_year(curr_year) = current_year_budget;
+
+  max_cost_per_year = max(budget_per_year);
+  c(end+1) = max_cost_per_year - parameters.max_cost_per_year;
 
 
    %Constraint on rocket height 
