@@ -3,7 +3,7 @@ warning('off', 'all');
 addpath(genpath(pwd))
 warning('OFF', 'MATLAB:table:ModifiedVarnames');
 delete 'rocket_results.mat'; %ONLY if we dont have one
-
+delete 'nonlcon_results.mat'
 problem.nvars = 3;
 %            [ri ,  mprop1, mprop2]
 problem.lb = [0.8,   7000,  1000]; 
@@ -16,20 +16,17 @@ options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
     'ConstraintTolerance', 1e-1);
 problem.options = options;
 problem.objective = @run_model_derivative;
-problem.x0 = [1.561	1505000	755000 ];%[1.561, 1.0774e6, 1.6552e5];
+problem.x0 = [1.0 1e41e4 ];%[1.561, 1.0774e6, 1.6552e5];
 [x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
 
-%numlaunch = [20 45 410 800];
-%engine1 = 1:1:15; %[1, 5, 7, 9, 11,12, 15]
-%engine2 = 1:1:15; %1, 5, 7, 9, 11, 12, 15
-%reuse1 = [0 1];
-%reuse2 = [0 1];
-%rematmate = 1:1:9;
 %% 
-ri = [1.561,4.5];% 3.0305, 4.5];
-st1mprop = [1e4,3e6];% 1505000, 3e6];
-st2mprop = [1e4, 1.5e6];%755000, 1.5e6];
-
+clc;clear;
+warning('off', 'all');
+addpath(genpath(pwd))
+ri = [1.00, 1.561,2.0, 2.5, 3.0305,4.0, 4.5];% 3.0305, 4.5];
+st1mprop = [1e4,5e4, 1e5,5e5,1e6,1505000,3e6];% 1505000, 3e6];
+st2mprop = [1e4,5e4,1e5,755000,1e6,1.5e6];%755000, 1.5e6];
+problem.nvars =3;
 num_trials = length(ri) * length(st1mprop)*length(st2mprop);
 %Initialize arrays for results
 doe_results = zeros(num_trials, 5);%(2+problem.nvars+3));
@@ -49,6 +46,12 @@ for i = 1:length(ri)
             prop1 = st1mprop(j);
             prop2 = st2mprop(k);
             %mutation_settings = {@mutationuniform, mutation_rate};
+            %problem.nvars = 3;
+%            [ri ,  mprop1, mprop2]
+            problem.lb = [0.8,   7000,  1000]; 
+            problem.ub = [4.5,   4e6,   1.5e6];
+            problem.solver = 'fmincon';
+            problem.nonlcon = @calculate_nonpenalty_constraints_derivative; %normalized constraints
 
             %options = optimoptions('ga', 'PopulationSize', pop_size, 'MutationFcn', mutation_settings);
             options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
