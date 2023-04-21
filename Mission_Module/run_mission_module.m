@@ -17,11 +17,12 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
     sat_vec =  1:parameters.num_of_satellites;
     sat_prod_times = (parameters.init_sat_prod_time/30)*sat_vec.^(log(parameters.sat_prod_learning_rate)/log(2)); %Based on Crawford's Learning Curve
 
-    %DETERMINE LAUNCHER PRODUCTION TIME BASED ON REQUIRED LAUNCHER
+    %DETERMINE LAUNCHER PRODUCTION AND REFURB TIMES BASED ON REQUIRED LAUNCHER
     %RADIUS
     total_launcher_prod_time = get_launcher_prod_time(parameters, design_variables.rocket_ri);
     first_stage_prod_time = parameters.first_stage_prod_percentage * total_launcher_prod_time;
     second_stage_prod_time = total_launcher_prod_time - first_stage_prod_time;
+    launcher_refurb_times = parameters.launcher_refurb_time_percent * total_launcher_prod_time;
     
 
 %             fprintf('============Starting Numbers============\n')
@@ -68,10 +69,10 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
 
         % LAUNCHER REFURBISHMENT
         if (tracking_vars.refurb_active(1) == true) && (curr_time_step == tracking_vars.next_stage_refurb_time(1))
-            tracking_vars = refurbish_launcher_stage(1, curr_time_step, tracking_vars, parameters);
+            tracking_vars = refurbish_launcher_stage(1, curr_time_step, tracking_vars, launcher_refurb_times);
         end
         if (tracking_vars.refurb_active(2) == true) && (curr_time_step == tracking_vars.next_stage_refurb_time(2))
-            tracking_vars = refurbish_launcher_stage(2, curr_time_step, tracking_vars, parameters);
+            tracking_vars = refurbish_launcher_stage(2, curr_time_step, tracking_vars, launcher_refurb_times);
         end
 
 
@@ -79,13 +80,13 @@ function [launch_cadences, rocket] = run_mission_module(design_variables, parame
         % LAUNCH ON DEMAND)
         while (floor(tracking_vars.num_sats_awaiting_launch/num_sat_per_launch) > 0) && (tracking_vars.num_rockets_ready >= 1)
 %                     fprintf('============Launch!============\n')
-            [tracking_vars, launch_cadences] = conduct_launch(true, num_sat_per_launch, tracking_vars, launch_cadences, curr_time_step, design_variables, parameters);
+            [tracking_vars, launch_cadences] = conduct_launch(true, num_sat_per_launch, tracking_vars, launch_cadences, curr_time_step, design_variables, parameters, launcher_refurb_times);
         end
 
         if (tracking_vars.num_sats_awaiting_launch > 0) && (tracking_vars.num_sats_awaiting_launch < num_sat_per_launch) && (tracking_vars.num_sats_produced >= parameters.num_of_satellites) && (length(tracking_vars.ready_q) >= 1)
 %                     fprintf('============Last Launch!============\n')
             % Perform a final partial launch of any remaining satellites
-            [tracking_vars, launch_cadences] = conduct_launch(false, num_sat_per_launch, tracking_vars, launch_cadences, curr_time_step, design_variables, parameters);
+            [tracking_vars, launch_cadences] = conduct_launch(false, num_sat_per_launch, tracking_vars, launch_cadences, curr_time_step, design_variables, parameters, launcher_refurb_times);
         end
     end
 end
@@ -124,9 +125,9 @@ function launcher_prod_time = get_launcher_prod_time(parameters, launcher_radius
     assert(launcher_prod_time > 0, 'Launcher radius provided is larger than the maximum size in parameters.launcher_prod_time_bins')
 end
 
-function tracking_vars = place_rocket_in_refurb(stage_num, tracking_vars, curr_time_step, parameters)
+function tracking_vars = place_rocket_in_refurb(stage_num, tracking_vars, curr_time_step, launcher_refurb_times)
     if tracking_vars.refurb_active(stage_num) == false
-        tracking_vars.next_stage_refurb_time(stage_num) = curr_time_step + (parameters.launcher_refurb_times(stage_num)/30);
+        tracking_vars.next_stage_refurb_time(stage_num) = curr_time_step + launcher_refurb_times(stage_num);
         tracking_vars.refurb_active(stage_num) = true;
     else
         tracking_vars.awaiting_refurb(stage_num) = tracking_vars.awaiting_refurb(stage_num) + 1;
@@ -162,13 +163,13 @@ function tracking_vars = produce_launcher_stage(stage_num, tracking_vars, curr_t
     
 end
 
-function tracking_vars = refurbish_launcher_stage(stage_num, curr_time_step, tracking_vars, parameters)
+function tracking_vars = refurbish_launcher_stage(stage_num, curr_time_step, tracking_vars, launcher_refurb_times)
 %     fprintf('\nStage finished refurbishment!\n')
 
     tracking_vars = add_stage_to_inventory(stage_num, tracking_vars, true);
     
     if tracking_vars.awaiting_refurb(stage_num) > 0
-        tracking_vars.next_stage_refurb_time(stage_num) = curr_time_step + (parameters.launcher_refurb_times(stage_num)/30);
+        tracking_vars.next_stage_refurb_time(stage_num) = curr_time_step + launcher_refurb_times(stage_num);
         tracking_vars.awaiting_refurb(stage_num) = tracking_vars.awaiting_refurb(stage_num) - 1;
     else
         tracking_vars.refurb_active(stage_num) = false;
@@ -189,7 +190,7 @@ function tracking_vars = produce_final_launcher (tracking_vars)
     tracking_vars.additional_rockets_available = tracking_vars.additional_rockets_available + 1;
 end
 
-function [tracking_vars, launch_cadences] = conduct_launch(full, num_sat_per_launch, tracking_vars, launch_cadences, curr_time_step, design_variables, parameters)
+function [tracking_vars, launch_cadences] = conduct_launch(full, num_sat_per_launch, tracking_vars, launch_cadences, curr_time_step, design_variables, parameters, launcher_refurb_times)
     tracking_vars.curr_launch_num = tracking_vars.curr_launch_num + 1;
     
     % Update satellite tracking variables based on whether this is a full
@@ -213,10 +214,10 @@ function [tracking_vars, launch_cadences] = conduct_launch(full, num_sat_per_lau
     
     %Place any reusable stages into refurb
     if design_variables.stage1.reusable == true
-    tracking_vars = place_rocket_in_refurb(1, tracking_vars, curr_time_step, parameters);
+    tracking_vars = place_rocket_in_refurb(1, tracking_vars, curr_time_step, launcher_refurb_times);
     end
     if design_variables.stage2.reusable == true
-    tracking_vars = place_rocket_in_refurb(2, tracking_vars, curr_time_step, parameters);
+    tracking_vars = place_rocket_in_refurb(2, tracking_vars, curr_time_step, launcher_refurb_times);
     end
     
     %Update the last launch time to the current time step
