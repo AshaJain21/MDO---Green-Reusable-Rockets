@@ -15,8 +15,10 @@ pop_size_opts = [50, 75, 100];
 num_trials = 1;
 total_trials = length(pop_size_opts) * num_trials;
 
+doe_res = [];
+
 %Initialize arrays for results
-doe_res = zeros(total_trials, (2+problem.nvars+3));
+% doe_res = zeros(total_trials, (2+problem.nvars+3));
 exp_num = 1;
 output_full = struct(problemtype='', rngstate=struct(), generations=0, funccount=0, message='', maxconstraint=0, hybridflag=[]);
 population_data_full = zeros(1, (problem.nvars+1));
@@ -36,14 +38,8 @@ for i = 1:length(pop_size_opts)
         comp_time = toc(tstart);
 
         % Store Values
-        doe_res(exp_num, :) = [pop_size, j, x_opt, exitflag, fval, comp_time];
-        marker_row = ones(1, (problem.nvars+1))*exp_num;
-        population_data_full = [population_data_full; marker_row;[population, scores]];
-        output_full = [output_full, output];
+        doe_res(end+1) = struct(x_opt=x_opt, fval = fval, exitflag=exitflag, output=output, population=population, scores=scores);
         exp_num = exp_num + 1;
     end
 end
-
-%Filter any rows with exit val of -2
-filtered_doe_res = doe_res(doe_res(:,12)>=0,:);
 
