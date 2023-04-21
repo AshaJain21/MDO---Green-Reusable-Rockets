@@ -1,7 +1,12 @@
-function penalized_cost = run_model_derivative(x)
+function penalized_cost = run_model_derivative_scaled(x)
     %Set discrete design variables
-    %global scaling_vec
-    %xunscaled = x./scaling_vec;
+    global scaling_vec
+    if x(1)> 4.5
+        xunscaled = x./(scaling_vec');
+    else
+        xunscaled = x;
+    end
+    
 
     %# launch,reuse1,reuse2,engine1,engine2,re-entry mat
     %rockets_all = load(rocketall)%readstruct("rocket.mat","FileType",'auto');
@@ -17,7 +22,7 @@ function penalized_cost = run_model_derivative(x)
 
     design_variables = setup_designvariables(num_launches, stage1_boolean,stage2_boolean,...
         engine_prop_db(engine_prop_1_row, :), engine_prop_db(engine_prop_2_row, :), ...
-        reentry_shield_material_db(reentry_shield_material_row, :), x(1), x(2), x(3));
+        reentry_shield_material_db(reentry_shield_material_row, :), xunscaled(1), xunscaled(2), xunscaled(3));
     parameters = setup_parameters();
     [~, ~, ~, ~, cost, ~,rocket] = run_model(design_variables, parameters);
     

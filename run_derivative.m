@@ -16,15 +16,19 @@ options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
     'ConstraintTolerance', 1e-1);
 problem.options = options;
 problem.objective = @run_model_derivative;
-problem.x0 = [4.4663, 6.3813e5, 2.5879e5];%[1.561, 1.0774e6, 1.6552e5];
+problem.x0 = [4.0, 6.3813e5, 2.5879e5];%[1.561, 1.0774e6, 1.6552e5];
 [x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
 
+
 %% From hessian get scaling factors
+  hessian =[14967575.1759008,6461.46021645655,-66601.0093060988;
+      6461.46021645655,3.03878431187838,-29.4119429240569;
+  -66601.0093060988,-29.4119429240569,298.102748320664];
 [U,S,V] = svd(hessian);
 condition = max(diag(S))/min(diag(S));
-scaling_exp = floor(log10(diag(S)));
+scaling_exp = floor(log10(diag(S))); %%%%% SET TO 0 IF NOT APLLYING SCALING 
 global scaling_vec
-scaling_vec = 10.^scaling_exp;
+scaling_vec = 10.^scaling_exp; %%% 
 %hessian scaling factor
 %% Rescale
 global scaling_vec
@@ -44,12 +48,12 @@ options = optimoptions('fmincon','OutputFcn',@savemilpsolutions,'Display',...
     'iter','Algorithm','sqp', 'MaxFunctionEvaluations', 3000, ...
     'ConstraintTolerance', 1e-1);
 problem.options = options;
-problem.objective = @run_model_derivative;
+problem.objective = @run_model_derivative_scaled;
 problem.x0 = [4.4663*scaling_vec(1), 6.3813e5*scaling_vec(2), 2.5879e5*scaling_vec(3)];%[1.561, 1.0774e6, 1.6552e5];
 [x,fval,exitflag,output,lambda,grad,hessian]  = fmincon(problem);
 
-
-
+%[4.4663, 6.3813e5,2.5879e6]
+%[2.15*scaling_vec(1), 2.8505e4*scaling_vec(2), 2.1957e4*scaling_vec(3)];
 %% 
 clc;clear;
 warning('off', 'all');
