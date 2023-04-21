@@ -1,6 +1,7 @@
 clear
 
 load('doe_exp5_mission_test_vars.mat')
+parameters = setup_parameters();
 
 
 %Create fast, no fleet parameters
