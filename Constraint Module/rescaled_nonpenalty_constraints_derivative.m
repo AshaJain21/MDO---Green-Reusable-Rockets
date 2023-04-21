@@ -1,5 +1,12 @@
 function [c, ceq] = rescaled_nonpenalty_constraints_derivative(x)
     global scaling_vec
+    if x(1)> 4.5
+        xunscaled = x./scaling_vec';
+    else
+        xunscaled = x;
+    end
+    
+   % xunscaled = x./scaling_vec;
     
     num_launches = 410;
     stage1_boolean = 1;
@@ -10,7 +17,9 @@ function [c, ceq] = rescaled_nonpenalty_constraints_derivative(x)
     reentry_shield_material_row = 9;
     reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
-    design_variables = setup_designvariables(num_launches, stage1_boolean,stage2_boolean, engine_prop_db(engine_prop_1_row, :), engine_prop_db(engine_prop_2_row, :), reentry_shield_material_db(reentry_shield_material_row, :), x(1), x(2), x(3));
+    design_variables = setup_designvariables(num_launches, stage1_boolean,stage2_boolean,...
+        engine_prop_db(engine_prop_1_row, :), engine_prop_db(engine_prop_2_row, :), ...
+        reentry_shield_material_db(reentry_shield_material_row, :), xunscaled(1), xunscaled(2), xunscaled(3));
     parameters = setup_parameters();
     [launch_cadence, ~, ~, ~, cost, ~, rocket] = run_model(design_variables, parameters);
    
@@ -44,11 +53,12 @@ function [c, ceq] = rescaled_nonpenalty_constraints_derivative(x)
   c(end+1) = max_cost_per_year - parameters.max_cost_per_year;
 
    %Constraint on rocket height 
-   total_rocket_height = rocket.stage1.height + rocket.stage2.height;
-   c(end+1) = total_rocket_height - parameters.max_rocket_height; 
+   total_rocket_height = (rocket.stage1.height + rocket.stage2.height);
+   c(end+1) = (total_rocket_height - parameters.max_rocket_height);%/(scaling_vec(1))^2; 
 
    %Constraint on payload height in relation to rocket height
-   c(end+1) = rocket.payload_height - (parameters.max_payload_height_fraction*total_rocket_height);
+   c(end+1) = (rocket.payload_height - (parameters.max_payload_height_fraction*total_rocket_height));%...
+   %/(scaling_vec(1))^2;
 
    %Constraint on mprop1 and mprop1_guess
    ceq(end+1) = (rocket.stage1.mprop - design_variables.mprop1_guess)*scaling_vec(2);
@@ -56,7 +66,7 @@ function [c, ceq] = rescaled_nonpenalty_constraints_derivative(x)
 
    %Constraint num_engines
    c(end+1) = parameters.min_num_engines - rocket.stage1.nEng;
-   c(end+1) = rocket.stage1.nEng - parameters.max_num_engines;
+   c(end+1) = (rocket.stage1.nEng - parameters.max_num_engines);%/(scaling_vec(1))^2;
 
    %Constraint on engine size relative to rocket radius
    c(end+1) = design_variables.stage1.engine_prop{1,8} - design_variables.rocket_ri;
