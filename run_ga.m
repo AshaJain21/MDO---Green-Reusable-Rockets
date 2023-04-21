@@ -1,6 +1,5 @@
 clc;clear;
 addpath(genpath(pwd))
-delete rocket_results_ga.mat
 problem.fitnessfcn = @run_model_ga;
 problem.nvars = 9;
 %           [# launch,reuse1,reuse2,engine1,engine2,re-entry mat, ri ,  mprop1, mprop2]
