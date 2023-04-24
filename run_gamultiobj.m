@@ -1,4 +1,5 @@
 clc;clear;
+mdo_proj_populations = [];
 addpath(genpath(pwd))
 problem.fitnessfcn = @run_model_gamutliobj;
 problem.nvars = 9;
@@ -10,8 +11,8 @@ problem.solver = 'gamultiobj';
 problem.nonlcon = @calculate_nonpenalty_constraints;
 problem.intcon = [1,2,3,4,5,6];
 
-pop_size_opts = [100, 300, 500];%[50, 75, 100];
-num_trials = 1;
+pop_size_opts = [100];%[50, 75, 100];
+num_trials = 3;
 total_trials = length(pop_size_opts) * num_trials;
 
 doe_res = [];
@@ -24,7 +25,7 @@ for i = 1:length(pop_size_opts)
     for j = 1:num_trials
         pop_size = pop_size_opts(i);
 
-        options = optimoptions('gamultiobj', 'PopulationSize', pop_size, 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotstopping, @gaplotscores});%  'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
+        options = optimoptions('gamultiobj', 'OutputFcn', @ga_multiobj_outputfunc, 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotstopping, @gaplotscores, @gaplotpareto});%  'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
         problem.options = options;
 
         fprintf('======= Current Trial: Population size: %d, Trial: %d ============\n', pop_size, j);
