@@ -11,8 +11,8 @@ function objectives = run_model_gamutliobj(x)
 
     [~, total_rf, total_od, ~, cost, ~, ~] = run_model(design_variables, parameters);
     objectives(1) = total_rf;
-    objectives(2) = total_od;
+    objectives(2) = total_od*1e5;
 %     objectives(2) = total_gwp; 
-    objectives(3) = sum(cost(1, :));
+    objectives(3) = sum(cost(1, :))/1e9;
 end
 
