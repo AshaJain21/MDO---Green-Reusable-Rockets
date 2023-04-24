@@ -3,23 +3,22 @@ clf
 trial_num = 1;
 
 objective_vals_unsorted = doe_res(trial_num).fval;
+objective_vals_unsorted(:,2) = objective_vals_unsorted(:,2)./1e5;
+objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
+
 population_scores = doe_res(trial_num).scores;
 
-% objective_vals = sortrows(objective_vals_unsorted, [1,2]);
+filtered_populations = unique(mdo_proj_populations, 'rows');
+filtered_populations(:, 11) = filtered_populations(:, 11)./1e5;
+filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
 
-%Filtering out infeasible population members
-mask = zeros(width(mdo_proj_populations), 1);
-for i = 1 :width(mdo_proj_populations)
-    row = mdo_proj_populations(i, :) ;
-    [c, ceq] = calculate_nonpenalty_constraints(row);
-    if all(c<0)
-        mask(i) = 1;
-    end
-end
-masked_populations = mdo_proj_populations(mask, :);
+%% Limit how much of the dominated designs are shown
+od_lim = 0.015;
+cost_lim = 3e10;
+filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
-%Computing rocket, launch cadence charateristics for pareto front
-%solutions
+Computing rocket, launch cadence charateristics for pareto front
+solutions
 xopt = doe_res(trial_num).xopt;
 parameters = setup_parameters();
 engine_prop_db = readtable("engine-prop-combinations.csv");
@@ -41,52 +40,54 @@ end
 
 
 figure(1)
-
-subplot(2,3,1)
-scatter3(objective_vals_unsorted(:,1), objective_vals_unsorted(:,2), objective_vals_unsorted(:,3), 300, 'b.')
+subplot(1,2,1)
+plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
+grid on
 xlabel('Radiative Forcing')
 ylabel('Ozone Depletion')
 zlabel('Cost')
+title('Plot of Pareto Points Only')
 
-subplot(2,3,2)
-scatter3(population_scores(:,1), population_scores(:,2), population_scores(:,3), 300, 'r.')
-xlabel('Radiative Forcing')
-ylabel('Ozone Depletion')
-zlabel('Cost')
-
-subplot(2,3,3)
+subplot(1,2,2)
 objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
-plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 300, 'b.')
+plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
+hold on
+scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 100, 'r.')
+hold off
+grid on
 xlabel('Radiative Forcing')
 ylabel('Ozone Depletion')
 zlabel('Cost')
+title('Plot of Pareto Points (blue) with Dominated Solutions (red)')
 
-subplot(2,3,4)
+figure(2)
+subplot(1,3,1)
 objective_vals = sortrows(objective_vals_unsorted, [3,1]);
 % scatter(objective_vals(:,1), objective_vals(:,3), 300, '.')
+plot(objective_vals(:,1), objective_vals(:,3), '.-', 'MarkerSize', 20)
 hold on
-scatter(population_scores(:,1), population_scores(:,3), 300, 'r');
-plot(objective_vals(:,1), objective_vals(:,3), '.-', 'MarkerSize', 16)
+scatter(filtered_populations(:,10), filtered_populations(:,12), 100, 'r.');
 hold off
 xlabel('Radiative Forcing')
 ylabel('Cost')
 
-subplot(2,3,5)
+subplot(1,3,2)
 % scatter(objective_vals(:,2), objective_vals(:,3), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [3,2]);
+plot(objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
 hold on
-scatter(population_scores(:,2), population_scores(:,3), 300, 'r.');
-plot(objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 16)
+scatter(filtered_populations(:,11), filtered_populations(:,12), 100, 'r.');
 hold off
 xlabel('Ozone Depletion')
 ylabel('Cost')
 
-subplot(2,3,6)
+subplot(1,3,3)
 % scatter(objective_vals(:,1), objective_vals(:,2), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [2,1]);
+plot(objective_vals(:,1), objective_vals(:,2), '.-', 'MarkerSize', 20)
 hold on
-scatter(population_scores(:,1), population_scores(:,2), 300, 'r.');
-plot(objective_vals(:,1), objective_vals(:,2), '.-', 'MarkerSize', 16)
+scatter(filtered_populations(:,10), filtered_populations(:,11), 100, 'r.');
+hold off
 xlabel('Radiative Forcing')
 ylabel('Ozone Depletion')
 
