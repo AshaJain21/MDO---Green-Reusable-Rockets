@@ -72,7 +72,6 @@ rocket.stage2.height = st2h;
 %% Calculate wall thickness and rocket outer radius
 %based on known rocket stage thrust and height
 %Will need to rerun if max q is not met
-
 [ro] = calc_wallthick(thrust1,thrust2,ri, FOS, sigma_max);
 
 %% Calculate Structural masses
@@ -127,17 +126,14 @@ if maxq > sigma_max
 end 
 
 
-%% Calculate FINAL Structural masses
+%% Calculate FINAL Stage masses (not including payload mass)
 %Stage 1
 rocket.ro = ro;
 vol = pi*(ro^2 -ri^2)*st1h;
-rocket.stage1.mstruct =vol*strucmat_density;
-
-rocket.stage1.mass_eng = mass_eng_st1;
+rocket.stage1.mstruct =vol*strucmat_density + mass_eng_st1;
 %ROCKET ENGINE MASS
 vol2 = pi*(ro^2 -ri^2)*st2h;
-rocket.stage2.mstruct =vol2*strucmat_density;
-rocket.stage2.mass_eng = mass_eng_st2;
+rocket.stage2.mstruct =vol2*strucmat_density + mass_eng_st2 + heat_shield_mass;
 
 rocket.stage2.heat_shield_SA = SAst2; %[m2] surface area of the heat shield required
 rocket.stage2.heatshield_mass = heat_shield_mass;
@@ -148,11 +144,6 @@ if reuse1 == 1 %boost back, landing burn needed
     st1mpb = st1mass; %(mass post burn, still have some left over for landing)
     st1_Sb_recovery = ro*2*st1h/cos(deg2rad(reangle)); %projected SA 
     %st1_cross_recovery = pi*ro^2; %%cross sectional area at angle of fall 
-    %(assume stg1 fall straight vertically)
-    %st1tv = zeros(1,length(h));
-    %ust1 = zeros(1,length(h));
-    %ust1(1) = 0; %assume 0 velocity at separation (after the "boost back")
-  %for i = 2:length(h)
      [~,~,~, rho] = atmoscoesa(500);%, 'None'); %calculate terminal vel @ 500 m
       %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES FIXEEEEEE
       %ust1(i) = ust1(i-1) + 2*(-g); %calculate velocity of rocket (downwards)

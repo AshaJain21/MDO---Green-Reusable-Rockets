@@ -7,9 +7,9 @@ function penalized_cost = run_model_derivative(x)
     %rockets_all = load(rocketall)%readstruct("rocket.mat","FileType",'auto');
     num_launches = 410;
     stage1_boolean = 1;
-    stage2_boolean = 1;
-    engine_prop_1_row = 5; %
-    engine_prop_2_row = 5;
+    stage2_boolean = 0;
+    engine_prop_1_row = 11; %
+    engine_prop_2_row = 11;
     reentry_shield_material_row = 9;
     warning('OFF', 'MATLAB:table:ModifiedVarnames');
     engine_prop_db = readtable("engine-prop-combinations.csv");
