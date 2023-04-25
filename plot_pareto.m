@@ -151,7 +151,7 @@ title("Reusability of Rocket Among Pareto Front Solutions");
 %Stage Radius 
 radius_values = xopt(:, 7);
 figure();
-histogram(radius_values);
+histogram(radius_values, 3);
 xlabel("Rocket Radius (m)");
 ylabel("Count");
 title("Rocket Radius in Pareto Front Solutions");
@@ -179,7 +179,7 @@ figure();
 histogram(rebased_data_stg1,[0.5, 1.5, 2.5] ); %hold on;
 %histogram(stg2_ep_values); 
 hold off;
-xlabel("Stage 1 Engine-Propellant Choice");
+xlabel("Stage 1 & 2 Engine-Propellant Choice");
 xticklabels(labels);
 xtickangle(0);
 ylabel("Count");
@@ -206,7 +206,24 @@ pareto_front_ids = 1:length(xopt);
 figure();
 scatter(pareto_front_ids, total_propmass, 16)
 
-
+%% Launch Cadence Plots
+colors = ['r', 'b', 'k', 'g', 'c', 'm', 'y', "#7E2F8E", "#a3957e", "#9F2B68"];
+figure()
+for j = 1:length(pareto_solution_outputs)
+    launch_cadence = pareto_solution_outputs(j).launch_cadence;
+    cumulative_launch_cadence = cumsum(launch_cadence(1,:));
+    loglog(cumulative_launch_cadence, 'o', "MarkerSize",15) % "MarkerEdgeColor" colors(j)
+    hold on
+end
+legend_labels = append('Pareto #', string(1:length(pareto_solution_outputs)));
+legend(legend_labels, 'FontSize', 16)
+xlabel('Launch ID', 'FontSize', 16)
+ylabel('Number of months since start when launch occurrs', 'FontSize', 16)
+title('Launch Cadences for Each Trial', 'FontSize', 16)
+ax=gca;
+ax.FontSize = 20;
+grid on
+hold off
 
 
 
