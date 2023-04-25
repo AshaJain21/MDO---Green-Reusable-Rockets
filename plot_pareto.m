@@ -2,6 +2,7 @@ clf
 addpath(genpath(pwd))
 
 trial_num = 1;
+selected_pt_num = 2;
 
 objective_vals_unsorted = doe_res(trial_num).fval;
 objective_vals_unsorted(:,2) = objective_vals_unsorted(:,2)./1e5;
@@ -10,6 +11,7 @@ objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
 population_scores = doe_res(trial_num).scores;
 
 filtered_populations = unique(mdo_proj_populations, 'rows');
+filtered_populations = filtered_populations(:, 1:end-1);
 filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
 filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
 
@@ -17,6 +19,22 @@ filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
 od_lim = 0.015;
 cost_lim = 2e10;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
+
+pareto_points = [doe_res(trial_num).x_opt, doe_res(trial_num).fval];
+pareto_points(:, 11) = pareto_points(:, 11)./1e4;
+pareto_points(:, 12) = pareto_points(:, 12)*1e9;
+
+% Code to show pareto point is non-dominated
+dominated_solutions = setdiff(filtered_populations, pareto_points, 'rows');
+selected_pareto_point = pareto_points(selected_pt_num, :);
+
+dom_matrix = zeros(height(dominated_solutions), 3);
+
+for pt_num = 1:height(dominated_solutions)
+    sol = dominated_solutions(pt_num, :);
+    dominance_test = [(selected_pareto_point(10) <= sol(10)), (selected_pareto_point(11) <= sol(11)), (selected_pareto_point(12) <= sol(12))];
+    dom_matrix(pt_num, :) = dominance_test;
+end
 
 % Computing rocket, launch cadence charateristics for pareto front
 % solutions
