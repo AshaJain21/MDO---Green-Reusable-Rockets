@@ -17,8 +17,7 @@ od_lim = 0.015;
 cost_lim = 3e10;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
-Computing rocket, launch cadence charateristics for pareto front
-solutions
+%% Computing rocket, launch cadence charateristics for pareto front solutions
 xopt = doe_res(trial_num).xopt;
 parameters = setup_parameters();
 engine_prop_db = readtable("engine-prop-combinations.csv");
@@ -38,6 +37,7 @@ for pareto_solu = 1:length(xopt)
     launch_cadences(i) = struct_launch_cadence;
 end
 
+%% Ploting Pareto
 
 figure(1)
 subplot(1,2,1)
@@ -97,7 +97,7 @@ engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
 %Stage Reusablility Plot
-xopt = doe_res(trial_num).xopt;
+xopt = doe_res(trial_num).x_opt;
 reusability_combo = zeros(1, width(xopt));
 for p = 1:length(xopt)
     x= xopt(p, :);
@@ -114,23 +114,21 @@ for p = 1:length(xopt)
     end
 end
 figure();
-histogram(reusability_combo);
+histogram(reusability_combo, [0.5, 1.5, 2.5, 3.5, 4.5, 5]);
 xlabel("Stage Reusability Configuration");
 ylabel("Count");
-xticklabels( ["Fully Reusable", "Stage 1 Reusable", "Stage 2 Reusable", "Expendable"]);
+xticklabels( ["", "Fully Reusable", "", "Stage 1 Reusable", "", "Stage 2 Reusable", "", "Expendable"]);
 title("Reusability of Rocket Among Pareto Front Solutions");
-
+%% testing
 %Stage Radius 
-xopt = doe_res(trial_num).xopt;
 radius_values = xopt(:, 7);
 figure();
 histogram(radius_values);
 xlabel("Rocket Radius (m)");
 ylabel("Count");
 title("Rocket Radius in Pareto Front Solutions");
-
+%% testing 
 %Stage 1 & 2 Engine-Prop Combos 
-xopt = doe_res(trial_num).xopt;
 stg1_ep_values = xopt(:, 4);
 stg2_ep_values = xopt(:, 5);
 unique_ids = unique([stg1_ep_values, stg2_ep_values], 'sorted');
@@ -140,7 +138,7 @@ for id_index = 1:length(unique_ids)
     engine_name = string(engine_prop_db{id, 1});
     fuel_name = string(engine_prop_db{id, 2});
     oxidizer_name = string(engine_prop_db{id, 3});
-    labels(i) = strcat(engine_name, ' \n', fuel_name, '\', oxidizer_name);
+    labels(id_index) = strcat(engine_name, ' \n', fuel_name, '\', oxidizer_name);
 end
 figure();
 histogram(stg1_ep_values); hold on;
@@ -153,7 +151,7 @@ title("Stage Engine-Propellant Choice in Pareto Front Solutions");
 %Stage Height Plot
 rocket_heights = zeros(1, width(rockets));
 for p = 1:width(rockets)
-    rocket = rockets(i);
+    rocket = rockets(p);
     rocket_heights(p) = rocket.stage1.height + rocket.stage2.height;
 end
 figure();
@@ -164,7 +162,6 @@ title("Rocket Heights in Pareto Front Solutions");
 
 
 %Rocket Total Propellant Plot
-xopt = doe_res(trial_num).xopt;
 stg1_propmass = xopt(:, 8);
 stg2_propmass = xopt(:, 9);
 total_propmass = stg1_propmass + stg2_propmass;
