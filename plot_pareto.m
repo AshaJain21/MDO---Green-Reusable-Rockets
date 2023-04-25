@@ -1,4 +1,5 @@
 clf
+addpath(genpath(pwd))
 
 trial_num = 1;
 
@@ -9,23 +10,22 @@ objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
 population_scores = doe_res(trial_num).scores;
 
 filtered_populations = unique(mdo_proj_populations, 'rows');
-filtered_populations(:, 11) = filtered_populations(:, 11)./1e5;
+filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
 filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
 
-%% Limit how much of the dominated designs are shown
+% Limit how much of the dominated designs are shown
 od_lim = 0.015;
-cost_lim = 3e10;
+cost_lim = 2e10;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
-Computing rocket, launch cadence charateristics for pareto front
-solutions
-xopt = doe_res(trial_num).xopt;
+% Computing rocket, launch cadence charateristics for pareto front
+% solutions
+xopt = doe_res(trial_num).x_opt;
 parameters = setup_parameters();
 engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
-rockets = [];
-launch_cadences = [];
-struct_launch_cadence = struct;
+pareto_solution_outputs = [];
+
 for pareto_solu = 1:length(xopt)
     x = xopt(pareto_solu, :);
     engine_prop_1_row = round(x(4));
@@ -33,63 +33,72 @@ for pareto_solu = 1:length(xopt)
     reentry_shield_material_row = round(x(6));
     design_variables = setup_designvariables(round(x(1)), round(x(2)), round(x(3)), engine_prop_db(engine_prop_1_row, :), engine_prop_db(engine_prop_2_row, :), reentry_shield_material_db(reentry_shield_material_row, :), x(7), x(8), x(9));
     [launch_cadence, total_rf, total_od, total_gwp, cost, constraints, rocket] = run_model(design_variables, parameters);
-    rockets(i) = rocket;
-    struct_launch_cadence.launch_cadence = launch_cadence;
-    launch_cadences(i) = struct_launch_cadence;
+    pareto_solution_outputs = [pareto_solution_outputs, struct(rocket=rocket, launch_cadence=launch_cadence)];
 end
 
-
 figure(1)
-subplot(1,2,1)
+tiledlayout(1,2)
+
+ax1 = nexttile;
+objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
 grid on
-xlabel('Radiative Forcing')
-ylabel('Ozone Depletion')
-zlabel('Cost')
-title('Plot of Pareto Points Only')
+xlabel('Radiative Forcing [W/m^2]', 'FontSize', 14)
+ylabel('Ozone Depletion [%]', 'FontSize', 14)
+zlabel('Cost [$]', 'FontSize', 14)
+title('Plot of Pareto Points Only', 'FontSize', 16)
+legend({'Pareto Points/Front'}, 'FontSize', 16)
 
-subplot(1,2,2)
-objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
+ax2 = nexttile;
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
 hold on
 scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 100, 'r.')
 hold off
 grid on
-xlabel('Radiative Forcing')
-ylabel('Ozone Depletion')
-zlabel('Cost')
-title('Plot of Pareto Points (blue) with Dominated Solutions (red)')
+xlabel('Radiative Forcing [W/m^2]', 'FontSize', 14)
+ylabel('Ozone Depletion [%]', 'FontSize', 14)
+zlabel('Cost [$]', 'FontSize', 14)
+title('Plot of Pareto Points (blue) with Dominated Solutions (red)', 'FontSize', 16)
+legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 16)
+
+linkaxes([ax1, ax2], 'xyz')
 
 figure(2)
-subplot(1,3,1)
+t = tiledlayout(1,3);
+title(t, 'Pairwise Pareto Plots of Ozone Depletion, Radiative Forcing and Cost Objectives', 'FontSize', 22)
+
+ax1 = nexttile;
 objective_vals = sortrows(objective_vals_unsorted, [3,1]);
 % scatter(objective_vals(:,1), objective_vals(:,3), 300, '.')
 plot(objective_vals(:,1), objective_vals(:,3), '.-', 'MarkerSize', 20)
 hold on
 scatter(filtered_populations(:,10), filtered_populations(:,12), 100, 'r.');
 hold off
-xlabel('Radiative Forcing')
-ylabel('Cost')
+xlabel('Radiative Forcing [W/m^2]', 'FontSize', 14)
+ylabel('Cost [$]', 'FontSize', 14)
+legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
 
-subplot(1,3,2)
+ax2 = nexttile;
 % scatter(objective_vals(:,2), objective_vals(:,3), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [3,2]);
 plot(objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
 hold on
 scatter(filtered_populations(:,11), filtered_populations(:,12), 100, 'r.');
 hold off
-xlabel('Ozone Depletion')
-ylabel('Cost')
+xlabel('Ozone Depletion [%]', 'FontSize', 14)
+ylabel('Cost [$]', 'FontSize', 14)
+legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
 
-subplot(1,3,3)
+ax3 = nexttile;
 % scatter(objective_vals(:,1), objective_vals(:,2), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [2,1]);
 plot(objective_vals(:,1), objective_vals(:,2), '.-', 'MarkerSize', 20)
 hold on
 scatter(filtered_populations(:,10), filtered_populations(:,11), 100, 'r.');
 hold off
-xlabel('Radiative Forcing')
-ylabel('Ozone Depletion')
+xlabel('Radiative Forcing [W/m^2]', 'FontSize', 14)
+ylabel('Ozone Depletion [%]', 'FontSize', 14)
+legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
 
 
 %% Plotting rocket discrete values in pareto solutions 
@@ -151,13 +160,13 @@ ylabel("Count");
 title("Stage Engine-Propellant Choice in Pareto Front Solutions");
 
 %Stage Height Plot
-rocket_heights = zeros(1, width(rockets));
-for p = 1:width(rockets)
-    rocket = rockets(i);
+rocket_heights = zeros(1, length(pareto_solution_outputs));
+for p = 1:length(pareto_solution_outputs)
+    rocket = pareto_solution_outputs(p).rocket;
     rocket_heights(p) = rocket.stage1.height + rocket.stage2.height;
 end
 figure();
-histogram(reusability_combo);
+histogram(rocket_heights);
 xlabel("Rocket Height (m)");
 ylabel("Count");
 title("Rocket Heights in Pareto Front Solutions");
