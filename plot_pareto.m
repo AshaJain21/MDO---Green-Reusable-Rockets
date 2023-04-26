@@ -21,20 +21,23 @@ cost_lim = 2e10;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
 xopt = doe_res(trial_num).x_opt;
+
 %% Computing rocket, launch cadence charateristics for pareto front solutions
 pareto_points = [doe_res(trial_num).x_opt, doe_res(trial_num).fval];
 pareto_points(:, 11) = pareto_points(:, 11)./1e4;
 pareto_points(:, 12) = pareto_points(:, 12)*1e9;
 
 % Code to show pareto point is non-dominated
-dominated_solutions = setdiff(filtered_populations, pareto_points, 'rows');
 selected_pareto_point = pareto_points(selected_pt_num, :);
+dominated_solutions = setdiff(filtered_populations, selected_pareto_point, 'rows');
 
-dom_matrix = zeros(height(dominated_solutions), 3);
+dom_matrix = zeros(height(dominated_solutions), 4);
 
 for pt_num = 1:height(dominated_solutions)
     sol = dominated_solutions(pt_num, :);
-    dominance_test = [(selected_pareto_point(10) <= sol(10)), (selected_pareto_point(11) <= sol(11)), (selected_pareto_point(12) <= sol(12))];
+    dominance_test = zeros(1,4);
+    dominance_test(1:3) = [(selected_pareto_point(10) < sol(10)), (selected_pareto_point(11) < sol(11)), (selected_pareto_point(12) < sol(12))];
+    dominance_test(4) = sum(dominance_test(1:3));
     dom_matrix(pt_num, :) = dominance_test;
 end
 
@@ -120,6 +123,16 @@ hold off
 xlabel('Radiative Forcing [W/m^2]', 'FontSize', 14)
 ylabel('Ozone Depletion [%]', 'FontSize', 14)
 legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
+
+figure(3)
+indices = 1:height(dom_matrix);
+scatter(indices, dom_matrix(:,4), 100, '.')
+ax = gca;
+ax.FontSize = 14;
+ylim([-1, 4])
+title('Plot of Dominance Test Results', 'FontSize', 16)
+xlabel('Point ID', 'FontSize', 14)
+ylabel('Dominance Test Total Score', 'FontSize', 14)
 
 
 %% Stage Reusablility Plot
