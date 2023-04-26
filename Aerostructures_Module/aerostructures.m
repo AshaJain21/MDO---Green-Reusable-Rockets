@@ -148,7 +148,7 @@ if reuse1 == 1 %boost back, landing burn needed
       %delv = 2*g*500; %projectile motion NOT SURE IF THIS APPLIES FIXEEEEEE
       %ust1(i) = ust1(i-1) + 2*(-g); %calculate velocity of rocket (downwards)
       Cd = 1.17; %FOR NOW
-      st1tv = sqrt(2*st1mpb*g/rho*st1_Sb_recovery*(Cd)); %goes from high alt to end
+      st1tv = sqrt(2*st1mpb*g / (rho*st1_Sb_recovery*(Cd))); %goes from high alt to end
   %end  
        rocket.stage1.terminal_velocity = st1tv; %where do you want terminal velocity? MAX? ASK ASHA / JUSTIN
 end

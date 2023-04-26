@@ -14,14 +14,14 @@ radius = linspace(0.8, 4.5, 10);
 engine1 = 1:16;
 engine2 = 1:16;
 reentry_material = 9;
-mprop1_guess = [0.97e6, 1.3e6];
-mprop2_guess = [1.6e5, 12e5];
+mprop1_guess = linspace(9e5, 5e6, 10);
+mprop2_guess = linspace(1.6e5, 12e5, 10);
 
 %Create experiments matrix
-num_experiments = 100; %length(num_launches) * length(stg1_reusable) * length(stg2_reusable) * length(radius) * length(engine1) * length(engine2) * length(mprop1_guess) * length(mprop2_guess);
+num_experiments = 10; %length(num_launches) * length(stg1_reusable) * length(stg2_reusable) * length(radius) * length(engine1) * length(engine2) * length(mprop1_guess) * length(mprop2_guess);
 experiments = zeros(num_experiments, 13);
-
-for i = 1:num_experiments
+i = 1;
+while i < num_experiments
     fprintf('======= Running Experiment %.15g\n', i)
     %Set up design variables 
     num_of_launches = randsample(num_launches, 1);
@@ -50,15 +50,36 @@ for i = 1:num_experiments
 
     design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine_prop_1, engine_prop_2, reentry_shield_material, rocket_radius, mprop1_guess, mprop2_guess);
     [launch_cadence, total_rf, total_od, total_gwp, cost, constraints, rocket] = run_model(design_variables, parameters);
-    constraints
-    [c, ceq] = calculate_nonpenalty_constraints([num_of_launches, reusable_stage_1, reusable_stage_2, engine1_index, engine2_index, reentry_material, rocket_radius, mprop1_guess, mprop2_guess]);
-    if all(c < 0)
+    %[c, ceq] = calculate_nonpenalty_constraints([num_of_launches, reusable_stage_1, reusable_stage_2, engine1_index, engine2_index, reentry_material, rocket_radius, mprop1_guess, mprop2_guess]);
+    [experiments, i] = call_run_model(design_variables, parameters, experiments, i);
+    
+
+end
+
+function [experiments, i] = call_run_model(design_variables, parameters, experiments, i)
+    [launch_cadence, total_rf, total_od, total_gwp, cost, constraints, rocket] = run_model(design_variables, parameters);
+    if all(constraints.c<0)
         experiments(i, 1:9) = design_variables;
         experiments(i, 10) = sum(cost(1, :));
         experiments(i, 11) = total_rf;
         experiments(i, 12) = total_od; 
+        i = i +1;
+        return
+    elseif (constraints.mprop1 > 0 || constraints.mprop2 > 0) && constraints.launch_cadence < 0  && ...
+                    constraints.max_cost_year < 0  && constraints.rocket_height < 0 && ...
+                    constraints.min_stg1_num_engines < 0 &&  constraints.min_stg2_num_engines < 0 && ...
+                    constraints.max_stg1_num_engines < 0 &&  constraints.max_stg2_num_engines < 0
+        if constraints.mprop2 > 0 
+            design_variables.mprop1_guess = design_variables.mprop1_guess + abs( constraints.mprop1)*1.05;
+            design_variables.mprop2_guess = design_variables.mprop2_guess + abs( constraints.mprop2)*1.05;
+            [experiments, i] = call_run_model(design_variables, parameters, experiments, i); 
+        else
+            design_variables.mprop1_guess = design_variables.mprop1_guess + abs( constraints.mprop1)*1.05;
+            [experiments, i] = call_run_model(design_variables, parameters, experiments, i);
+        end
     end
-   
+    return
 
 end
+
 
