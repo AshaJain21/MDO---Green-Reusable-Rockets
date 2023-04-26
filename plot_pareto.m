@@ -1,23 +1,33 @@
 %% Set up 
+clear; clc;
 addpath(genpath(pwd))
 
 trial_num = 1;
 selected_pt_num = 2;
 
+load('ga_multiobj_run6.mat')
+combined_population = mdo_proj_populations;
 objective_vals_unsorted = doe_res(trial_num).fval;
+doe_res_combined = doe_res;
+load('ga_multiobj_run7.mat', "mdo_proj_populations", "doe_res");
+combined_population = [combined_population;mdo_proj_populations];
+objective_vals_unsorted = [objective_vals_unsorted; doe_res(trial_num).fval];
+doe_res_combined = [doe_res_combined, doe_res];
+doe_res = doe_res_combined;
+
 objective_vals_unsorted(:,2) = objective_vals_unsorted(:,2)./1e5;
 objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
 
 population_scores = doe_res(trial_num).scores;
 
-filtered_populations = unique(mdo_proj_populations, 'rows');
-filtered_populations = filtered_populations(:, 1:end-1);
+filtered_populations = unique(combined_population, 'rows');
+filtered_populations = filtered_populations(:, 1:end-1); %This line removes the last column containing the boolean for whether that point is feasible or not. This is necessary to make the setdiff later in the script work
 filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
 filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
 
 % Limit how much of the dominated designs are shown
-od_lim = 0.015;
-cost_lim = 2e10;
+od_lim = 0.15;
+cost_lim = 7e10;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
 xopt = doe_res(trial_num).x_opt;
@@ -92,6 +102,7 @@ t = tiledlayout(1,3);
 title(t, 'Pairwise Pareto Plots of Ozone Depletion, Radiative Forcing and Cost Objectives', 'FontSize', 22)
 
 ax1 = nexttile;
+ax1.FontSize = 16;
 objective_vals = sortrows(objective_vals_unsorted, [3,1]);
 % scatter(objective_vals(:,1), objective_vals(:,3), 300, '.')
 plot(objective_vals(:,1), objective_vals(:,3), '.-', 'MarkerSize', 20)
@@ -103,6 +114,7 @@ ylabel('Cost [$]', 'FontSize', 14)
 legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
 
 ax2 = nexttile;
+ax2.FontSize = 16;
 % scatter(objective_vals(:,2), objective_vals(:,3), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [3,2]);
 plot(objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
@@ -114,6 +126,7 @@ ylabel('Cost [$]', 'FontSize', 14)
 legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
 
 ax3 = nexttile;
+ax3.FontSize = 16;
 % scatter(objective_vals(:,1), objective_vals(:,2), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [2,1]);
 plot(objective_vals(:,1), objective_vals(:,2), '.-', 'MarkerSize', 20)
