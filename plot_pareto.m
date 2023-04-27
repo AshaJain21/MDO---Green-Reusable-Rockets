@@ -8,15 +8,16 @@ selected_pt_num = 2;
 load('ga_multiobj_run6.mat')
 combined_population = mdo_proj_populations;
 objective_vals_unsorted = doe_res(trial_num).fval;
-doe_res_combined = doe_res;
+x_opt_combined = doe_res(trial_num).x_opt;
 load('ga_multiobj_run7.mat', "mdo_proj_populations", "doe_res");
 combined_population = [combined_population;mdo_proj_populations];
 objective_vals_unsorted = [objective_vals_unsorted; doe_res(trial_num).fval];
-doe_res_combined = [doe_res_combined, doe_res];
-doe_res = doe_res_combined;
+x_opt_combined = [x_opt_combined; doe_res(trial_num).x_opt];
 
 objective_vals_unsorted(:,2) = objective_vals_unsorted(:,2)./1e5;
 objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
+
+pareto_points_combined = [x_opt_combined, objective_vals_unsorted];
 
 population_scores = doe_res(trial_num).scores;
 
@@ -25,12 +26,18 @@ filtered_populations = filtered_populations(:, 1:end-1); %This line removes the 
 filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
 filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
 
-% Limit how much of the dominated designs are shown
-od_lim = 0.15;
-cost_lim = 7e10;
-filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
+pareto_points_unique = unique(pareto_points_combined, 'rows');
+xopt = pareto_points_unique(:, 1:9);
+objective_vals_unsorted = pareto_points_unique(:, 10:end);
 
-xopt = doe_res(trial_num).x_opt;
+[objective_vals_unsorted, pareto_point_idxs] = paretoFront( objective_vals_unsorted );
+
+xopt = xopt(pareto_point_idxs, :);
+
+% Limit how much of the dominated designs are shown
+% od_lim = 0.15;
+% cost_lim = 7e10;
+% filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
 %% Computing rocket, launch cadence charateristics for pareto front solutions
 pareto_points = [doe_res(trial_num).x_opt, doe_res(trial_num).fval];
@@ -53,7 +60,6 @@ end
 
 % Computing rocket, launch cadence charateristics for pareto front
 % solutions
-xopt = doe_res(trial_num).x_opt;
 parameters = setup_parameters();
 engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
@@ -77,6 +83,7 @@ ax1 = nexttile;
 objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
 grid on
+set(ax1,'Xscale','log','Zscale','log','Yscale','log')
 xlabel('Radiative Forcing [W/m^2]', 'FontSize', 14)
 ylabel('Ozone Depletion [%]', 'FontSize', 14)
 zlabel('Cost [$]', 'FontSize', 14)
@@ -149,9 +156,9 @@ ylabel('Dominance Test Total Score', 'FontSize', 14)
 
 
 %% Stage Reusablility Plot
-engine_prop_db = readtable("engine-prop-combinations.csv");
-reentry_shield_material_db = readtable("reentry_shield_materials.csv");
-xopt = doe_res(trial_num).x_opt;
+% engine_prop_db = readtable("engine-prop-combinations.csv");
+% reentry_shield_material_db = readtable("reentry_shield_materials.csv");
+% xopt = doe_res(trial_num).x_opt;
 reusability_combo = zeros(1, width(xopt));
 for p = 1:length(xopt)
     x= xopt(p, :);
