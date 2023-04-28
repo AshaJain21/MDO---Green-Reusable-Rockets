@@ -11,8 +11,8 @@ num_launches = round(linspace(10, 500, 10));
 stg1_reusable = [0,1];
 stg2_reusable = [0,1];
 radius = linspace(0.8, 4.5, 10);
-engine1 = 1:16;
-engine2 = 1:16;
+engine1 = [2, 5, 7, 11];
+engine2 = [2, 5, 7, 11];
 reentry_material = 9;
 mprop1_guess = linspace(9e5, 5e6, 10);
 mprop2_guess = linspace(1.6e5, 12e5, 10);
@@ -64,21 +64,21 @@ function [experiments, i] = call_run_model(design_variables, parameters, experim
         experiments(i, 11) = total_rf;
         experiments(i, 12) = total_od; 
         i = i +1;
-        return
-    elseif (constraints.mprop1 > 0 || constraints.mprop2 > 0) && constraints.launch_cadence < 0  && ...
-                    constraints.max_cost_year < 0  && constraints.rocket_height < 0 && ...
-                    constraints.min_stg1_num_engines < 0 &&  constraints.min_stg2_num_engines < 0 && ...
-                    constraints.max_stg1_num_engines < 0 &&  constraints.max_stg2_num_engines < 0
-        if constraints.mprop2 > 0 
-            design_variables.mprop1_guess = design_variables.mprop1_guess + abs( constraints.mprop1)*1.05;
-            design_variables.mprop2_guess = design_variables.mprop2_guess + abs( constraints.mprop2)*1.05;
-            [experiments, i] = call_run_model(design_variables, parameters, experiments, i); 
-        else
-            design_variables.mprop1_guess = design_variables.mprop1_guess + abs( constraints.mprop1)*1.05;
-            [experiments, i] = call_run_model(design_variables, parameters, experiments, i);
-        end
-    end
-    return
+    end 
+%     elseif (constraints.mprop1 > 0 || constraints.mprop2 > 0) && constraints.launch_cadence < 0  && ...
+%                     constraints.max_cost_year < 0  && constraints.rocket_height < 0 && ...
+%                     constraints.min_stg1_num_engines < 0 &&  constraints.min_stg2_num_engines < 0 && ...
+%                     constraints.max_stg1_num_engines < 0 &&  constraints.max_stg2_num_engines < 0
+%         if constraints.mprop2 > 0 
+%             design_variables.mprop1_guess = design_variables.mprop1_guess + abs( constraints.mprop1)*1.05;
+%             design_variables.mprop2_guess = design_variables.mprop2_guess + abs( constraints.mprop2)*1.05;
+%             [experiments, i] = call_run_model(design_variables, parameters, experiments, i); 
+%         else
+%             design_variables.mprop1_guess = design_variables.mprop1_guess + abs( constraints.mprop1)*1.05;
+%             [experiments, i] = call_run_model(design_variables, parameters, experiments, i);
+%         end
+%     end
+%     return
 
 end
 

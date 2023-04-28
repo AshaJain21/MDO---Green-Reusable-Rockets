@@ -9,7 +9,7 @@ objective_vals_unsorted(:,2) = objective_vals_unsorted(:,2)./1e5;
 objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
 
 population_scores = doe_res(trial_num).scores;
-
+mdo_proj_populations = [mdo_proj_populations; mdo_proj_populations_7];
 filtered_populations = unique(mdo_proj_populations, 'rows');
 filtered_populations = filtered_populations(:, 1:end-1);
 filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;

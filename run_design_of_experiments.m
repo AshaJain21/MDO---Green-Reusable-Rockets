@@ -18,7 +18,7 @@ engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
 
 
-for i = 1:4%max(num_experiments)
+for i = 1:max(num_experiments)
     fprintf('======= Running Experiment %.15g\n', i)
     %Set up design variables 
     num_of_launches = experiments.num_of_launches(i);
@@ -39,10 +39,15 @@ for i = 1:4%max(num_experiments)
     reusable_stage_1 = experiments.reusable_stage1(i);
     reusable_stage_2 = experiments.reusable_stage2(i);
 
-    design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine_prop_1, engine_prop_2, reentry_shield_material, rocket_radius);
+    mprop1_guess = 3e6;
+    mprop2_guess = 1e6;
 
-    [delivery_time, env_impact, cost] = run_model(design_variables, parameters);
+    design_variables = setup_designvariables(num_of_launches, reusable_stage_1, reusable_stage_2, engine_prop_1, engine_prop_2, reentry_shield_material, rocket_radius, mprop1_guess, mprop2_guess);
+
+    [launch_cadence, total_rf, total_od, total_gwp, cost, constraints, rocket] = run_model(design_variables, parameters);
     experiments{i, 8} = sum(cost(1, :));
+    experiments{i, 9} = any(constraints.c <= 0);
+    any(constraints.c <= 0)
 end
 
 %Compute the effects of each design variable
