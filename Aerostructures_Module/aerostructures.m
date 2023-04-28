@@ -181,7 +181,7 @@ if reuse2 == 1 %re-entry, landing burn needed + belly flop
        ust2(i) =sqrt( (ust2(i-1))^2 + 2*accel*2000); %500 m
        q(i) = 0.5*rho*ust2(i)^2; %dynamic pressure
        %need final velocity 500 m above ground
-       st2tv(i) = sqrt(2*st2mpb*g/rho*st2_Sb_recovery*(Cd)); %goes from high alt to end
+       st2tv(i) = sqrt(2*st2mpb*g / (rho*st2_Sb_recovery*(Cd))); %goes from high alt to end
     end
       rocket.stage2.terminal_velocity = st2tv(end); %IMPLEMENT TOTAL DRY MASS + NOT TERMINAL VELOCITY
 end
