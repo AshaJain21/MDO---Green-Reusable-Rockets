@@ -10,8 +10,8 @@ problem.solver = 'ga';
 problem.nonlcon = @calculate_nonpenalty_constraints;
 problem.intcon = [1,2,3,4,5,6];
 
-pop_size_opts = [100, 300, 500];
-num_trials = 3;
+pop_size_opts = [500];
+num_trials = 5;
 total_trials = length(pop_size_opts) * num_trials;
 
 %Initialize arrays for results
