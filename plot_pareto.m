@@ -5,8 +5,8 @@ addpath(genpath(pwd))
 trial_num = 1;
 selected_pt_num = 2;
 use_optimal_points_all_trials = 1;
-data_file_1 = 'ga_multiobj_run6.mat';
-data_file_2 = 'ga_multiobj_run7.mat';
+data_file_1 = 'ga_multiobj_run8.mat';
+data_file_2 = 'ga_multiobj_run9.mat';
 
 load(data_file_1);
 combined_population = mdo_proj_populations;
@@ -26,20 +26,20 @@ end
 
 combined_population = [combined_population;mdo_proj_populations];
 
+filtered_populations = unique(combined_population, 'rows');
+filtered_populations = filtered_populations(:, 1:end-1); %This line removes the last column containing the boolean for whether that point is feasible or not. This is necessary to make the setdiff later in the script work
+filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
+filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
+
 objective_vals_unsorted(:,2) = objective_vals_unsorted(:,2)./1e5;
 objective_vals_unsorted(:,3) = objective_vals_unsorted(:,3)*1e9;
 
-population_scores = doe_res(trial_num).scores;
-
-filtered_populations = unique(combined_population, 'rows');
-filtered_populations = filtered_populations(:, 1:end-1); %This line removes the last column containing the boolean for whether that point is feasible or not. This is necessary to make the setdiff later in the script work
-
-filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
-filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
+% population_scores = doe_res(trial_num).scores;
 
 if use_optimal_points_all_trials == 1
     [objective_vals_unsorted, pareto_point_idxs] = paretoFiltering(filtered_populations);
     xopt = filtered_populations(pareto_point_idxs, 1:9);
+    pareto_points = [xopt, objective_vals_unsorted];
 end
 
 % Limit how much of the dominated designs are shown
@@ -90,7 +90,7 @@ ax1 = nexttile;
 objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
 grid on
-% set(ax1,'Xscale','log','Zscale','log','Yscale','log')
+set(ax1,'Xscale','log','Zscale','log','Yscale','log')
 xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 14)
 ylabel('Ozone Depletion [%]', 'FontSize', 14)
 zlabel('Cost [$]', 'FontSize', 14)
@@ -103,7 +103,7 @@ hold on
 scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 100, 'r.')
 hold off
 grid on
-% set(ax2,'Xscale','log','Zscale','log','Yscale','log')
+set(ax2,'Xscale','log','Zscale','log','Yscale','log')
 xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 14)
 ylabel('Ozone Depletion [%]', 'FontSize', 14)
 zlabel('Cost [$]', 'FontSize', 14)
