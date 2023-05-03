@@ -5,8 +5,8 @@ addpath(genpath(pwd))
 trial_num = 1;
 selected_pt_num = 2;
 use_optimal_points_all_trials = 1;
-data_file_1 = 'ga_multiobj_run6.mat';
-data_file_2 = 'ga_multiobj_run7.mat';
+data_file_1 = 'multga_05032023_asha.mat';
+data_file_2 = 'ga_multiobj_run11.mat';
 
 load(data_file_1);
 combined_population = mdo_proj_populations;

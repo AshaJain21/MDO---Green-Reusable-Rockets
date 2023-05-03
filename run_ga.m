@@ -10,7 +10,7 @@ problem.solver = 'ga';
 problem.nonlcon = @calculate_nonpenalty_constraints;
 problem.intcon = [1,2,3,4,5,6];
 
-pop_size_opts = [500];
+pop_size_opts = [500, 500];
 num_trials = 5;
 total_trials = length(pop_size_opts) * num_trials;
 
@@ -25,7 +25,7 @@ for i = 1:length(pop_size_opts)
     for j = 1:num_trials
         pop_size = pop_size_opts(i);
 
-        options = optimoptions('ga', 'PopulationSize', pop_size, 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotbestf,@gaplotstopping, @gaplotscores, @gaplotrange});%  'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
+        options = optimoptions('ga', 'PopulationSize', pop_size, 'UseParallel', true, 'UseVectorized', false, 'PlotFcn',{@gaplotstopping, @gaplotscores});%  'MutationFcn', mutation_settings, 'ConstraintTolerance', 1e-1);
         problem.options = options;
 
         fprintf('======= Current Trial: Population size: %d, Trial: %d ============\n', pop_size, j);
