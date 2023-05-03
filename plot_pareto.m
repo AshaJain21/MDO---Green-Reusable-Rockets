@@ -1,5 +1,6 @@
 %% Set up 
 clear; clc;
+clf
 addpath(genpath(pwd))
 
 trial_num = 1;
@@ -44,12 +45,8 @@ end
 
 % Limit how much of the dominated designs are shown
 od_lim = 0.15;
-cost_lim = 7e10;
+cost_lim = 2e10;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
-
-%% Computing rocket, launch cadence charateristics for pareto front solutions
-pareto_points(:, 11) = pareto_points(:, 11)./1e4;
-pareto_points(:, 12) = pareto_points(:, 12)*1e9;
 
 % Code to show pareto point is non-dominated
 selected_pareto_point = pareto_points(selected_pt_num, :);
@@ -65,8 +62,7 @@ for pt_num = 1:height(dominated_solutions)
     dom_matrix(pt_num, :) = dominance_test;
 end
 
-% Computing rocket, launch cadence charateristics for pareto front
-% solutions
+%% Computing rocket, launch cadence charateristics for pareto front solutions
 parameters = setup_parameters();
 engine_prop_db = readtable("engine-prop-combinations.csv");
 reentry_shield_material_db = readtable("reentry_shield_materials.csv");
@@ -88,69 +84,89 @@ tiledlayout(1,2)
 
 ax1 = nexttile;
 objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
-plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
+plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 grid on
+ax1.FontSize = 14;
 set(ax1,'Xscale','log','Zscale','log','Yscale','log')
 xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 14)
 ylabel('Ozone Depletion [%]', 'FontSize', 14)
-zlabel('Cost [$]', 'FontSize', 14)
+zlabel('Cost [$USD]', 'FontSize', 14)
 title('Plot of Pareto Points Only', 'FontSize', 16)
-legend({'Pareto Points/Front'}, 'FontSize', 16)
+legend({'Approx. Pareto Front'}, 'FontSize', 16)
 
 ax2 = nexttile;
-plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
+scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD")
 hold on
-scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 100, 'r.')
+plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold off
 grid on
+ax2.FontSize = 14;
 set(ax2,'Xscale','log','Zscale','log','Yscale','log')
 xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 14)
 ylabel('Ozone Depletion [%]', 'FontSize', 14)
-zlabel('Cost [$]', 'FontSize', 14)
-title('Plot of Pareto Points (blue) with Dominated Solutions (red)', 'FontSize', 16)
-legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 16)
+zlabel('Cost [$USD]', 'FontSize', 14)
+title('Plot of Pareto Points (Red) With Dominated Solutions (Blue)', 'FontSize', 16)
+legend({'Dominated Solutions', 'Approx. Pareto Front'}, 'FontSize', 16)
 
 linkaxes([ax1, ax2], 'xyz')
 
+figure(10)
+ax=gca;
+scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD")
+hold on
+plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
+hold off
+grid on
+ax.FontSize = 16;
+set(ax,'Xscale','log','Zscale','log','Yscale','log')
+xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 18)
+ylabel('Ozone Depletion [%]', 'FontSize', 18)
+zlabel('Cost [$USD]', 'FontSize', 18)
+title('Plot of Pareto Points (Red) With Dominated Solutions (Blue)', 'FontSize', 20)
+legend({'Dominated Solutions', 'Approx. Pareto Front'}, 'FontSize', 18)
+
+
 figure(2)
-t = tiledlayout(1,3);
+t = tiledlayout(1,2);
 title(t, 'Pairwise Pareto Plots of Ozone Depletion, Radiative Forcing and Cost Objectives', 'FontSize', 22)
 
-ax1 = nexttile;
-ax1.FontSize = 16;
+ax3 = nexttile;
+ax3.FontSize = 18;
 objective_vals = sortrows(objective_vals_unsorted, [3,1]);
 % scatter(objective_vals(:,1), objective_vals(:,3), 300, '.')
-plot(objective_vals(:,1), objective_vals(:,3), '.-', 'MarkerSize', 20)
+plot(objective_vals(:,1), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold on
-scatter(filtered_populations(:,10), filtered_populations(:,12), 100, 'r.');
+scatter(filtered_populations(:,10), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD", 'MarkerEdgeAlpha', 0.2);
 hold off
-xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 14)
-ylabel('Cost [$]', 'FontSize', 14)
-legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
+xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 18)
+ylabel('Cost [$USD]', 'FontSize', 18)
+legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 18)
 
-ax2 = nexttile;
-ax2.FontSize = 16;
+ax4 = nexttile;
+ax4.FontSize = 18;
 % scatter(objective_vals(:,2), objective_vals(:,3), 300, '.')
 objective_vals = sortrows(objective_vals_unsorted, [3,2]);
-plot(objective_vals(:,2), objective_vals(:,3), '.-', 'MarkerSize', 20)
+plot(objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold on
-scatter(filtered_populations(:,11), filtered_populations(:,12), 100, 'r.');
+scatter2 = scatter(filtered_populations(:,11), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD");
 hold off
-xlabel('Ozone Depletion [%]', 'FontSize', 14)
-ylabel('Cost [$]', 'FontSize', 14)
-legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
+alpha(scatter2, 0.1)
+xlabel('Ozone Depletion [%]', 'FontSize', 18)
+ylabel('Cost [$USD]', 'FontSize', 18)
+legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 18)
 
-ax3 = nexttile;
-ax3.FontSize = 16;
-% scatter(objective_vals(:,1), objective_vals(:,2), 300, '.')
-objective_vals = sortrows(objective_vals_unsorted, [2,1]);
-plot(objective_vals(:,1), objective_vals(:,2), '.-', 'MarkerSize', 20)
-hold on
-scatter(filtered_populations(:,10), filtered_populations(:,11), 100, 'r.');
-hold off
-xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 14)
-ylabel('Ozone Depletion [%]', 'FontSize', 14)
-legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 14)
+% ax5 = nexttile;
+% ax5.FontSize = 18;
+% % scatter(objective_vals(:,1), objective_vals(:,2), 300, '.')
+% objective_vals = sortrows(objective_vals_unsorted, [2,1]);
+% plot(objective_vals(:,1), objective_vals(:,2), 'r.-', 'MarkerSize', 20)
+% hold on
+% scatter3 = scatter(filtered_populations(:,10), filtered_populations(:,11), 25, '.', 'MarkerEdgeColor', "#0072BD");
+% alpha(scatter3, 0.1)
+% hold off
+% xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 18)
+% ylabel('Ozone Depletion [%]', 'FontSize', 18)
+% legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 18)
 
 figure(3)
 indices = 1:height(dom_matrix);
