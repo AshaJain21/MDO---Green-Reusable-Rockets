@@ -6,8 +6,8 @@ addpath(genpath(pwd))
 trial_num = 1;
 selected_pt_num = 2;
 use_optimal_points_all_trials = 1;
-data_file_1 = 'multga_05032023_asha.mat';
-data_file_2 = 'ga_multiobj_run11.mat';
+data_file_1 = 'ga_multiobj_run8.mat';
+additional_data_files_2 = {'ga_multiobj_run9.mat'};
 
 load(data_file_1);
 combined_population = mdo_proj_populations;
@@ -21,7 +21,7 @@ end
 filtered_populations = unique(combined_population, 'rows');
 filtered_populations = filtered_populations(:, 1:end-1); %This line removes the last column containing the boolean for whether that point is feasible or not. This is necessary to make the setdiff later in the script work
 filtered_populations(:, 11) = filtered_populations(:, 11)./1e4;
-filtered_populations(:, 12) = filtered_populations(:, 12)*1e9;
+filtered_populations(:, 12) = filtered_populations(:, 12);
 
 [objective_vals_unsorted, pareto_point_idxs] = paretoFiltering(filtered_populations);
 xopt = filtered_populations(pareto_point_idxs, 1:9);
@@ -29,7 +29,7 @@ pareto_points = [xopt, objective_vals_unsorted];
 
 % Limit how much of the dominated designs are shown
 od_lim = 0.15;
-cost_lim = 2e10;
+cost_lim = 20;
 filtered_populations = filtered_populations( (filtered_populations(:,11) <= od_lim) & (filtered_populations(:, 12) <= cost_lim), :);
 
 % Code to show pareto point is non-dominated
