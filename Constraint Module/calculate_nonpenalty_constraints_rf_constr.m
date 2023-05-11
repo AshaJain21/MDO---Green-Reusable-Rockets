@@ -54,6 +54,6 @@ function [c, ceq] = calculate_nonpenalty_constraints_rf_constr(x, rf_constraint)
    c(end+1) = design_variables.stage2.engine_prop{1,8} - design_variables.rocket_ri;
 
    %Calculate the constraint on rf
-   c(end+1) = total_rf - rf_constraint;
+   c(end+1) = rf_constraint - total_rf;
 
 end

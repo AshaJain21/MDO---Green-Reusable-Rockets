@@ -9,7 +9,7 @@ problem.solver = 'ga';
 
 problem.intcon = [1,2,3,4,5,6];
 rf_constraint_opts = logspace(log10(0.1), log10(100), 20);
-rf_constraint_opts = flip(rf_constraint_opts)
+% rf_constraint_opts = flip(rf_constraint_opts);
 pop_size_opts = [500];
 num_trials = 1;
 total_trials = length(pop_size_opts) * num_trials * length(rf_constraint_opts);
