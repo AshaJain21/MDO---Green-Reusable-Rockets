@@ -6,6 +6,9 @@ addpath(genpath(pwd))
 trial_num = 1;
 selected_pt_num = 2;
 use_optimal_points_all_trials = 1;
+
+load('combined_epsilon_pts.mat', 'epsilon_pts')
+
 data_file_1 = 'ga_multiobj_run8.mat';
 additional_data_files_2 = {'ga_multiobj_run9.mat'};
 
@@ -69,6 +72,9 @@ tiledlayout(1,2)
 ax1 = nexttile;
 objective_vals = sortrows(objective_vals_unsorted, [1, 2, 3]);
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
+hold on 
+% scatter3(epsilon_pts.RF, epsilon_pts.OD, epsilon_pts.Cost, 50, 'x', 'MarkerEdgeColor', 'm')
+hold off
 grid on
 ax1.FontSize = 14;
 set(ax1,'Xscale','log','Zscale','log','Yscale','log')
@@ -81,6 +87,7 @@ legend({'Approx. Pareto Front'}, 'FontSize', 16)
 ax2 = nexttile;
 scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD")
 hold on
+% scatter3(epsilon_pts.RF, epsilon_pts.OD, epsilon_pts.Cost, 50, 'x', 'MarkerEdgeColor', 'm')
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold off
 grid on
@@ -98,6 +105,7 @@ figure(10)
 ax=gca;
 scatter3(filtered_populations(:,10), filtered_populations(:,11), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD")
 hold on
+% scatter3(epsilon_pts.RF, epsilon_pts.OD, epsilon_pts.Cost, 50, 'x', 'MarkerEdgeColor', 'm')
 plot3(objective_vals(:,1), objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold off
 grid on
@@ -109,6 +117,21 @@ zlabel('Cost [$USD]', 'FontSize', 18)
 title('Plot of Pareto Points (Red) With Dominated Solutions (Blue)', 'FontSize', 20)
 legend({'Dominated Solutions', 'Approx. Pareto Front'}, 'FontSize', 18)
 
+figure(11)
+ax5 = gca;
+ax5.FontSize = 18;
+objective_vals = sortrows(objective_vals_unsorted, [3,1]);
+% scatter(objective_vals(:,1), objective_vals(:,3), 300, '.')
+plot(objective_vals(:,1), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
+hold on
+scatter(epsilon_pts.RF, epsilon_pts.Cost, 50, 'x', 'MarkerEdgeColor', 'm')
+scatter(filtered_populations(:,10), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD", 'MarkerEdgeAlpha', 0.2);
+hold off
+xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 18)
+ylabel('Cost [$USD]', 'FontSize', 18)
+legend({'Pareto Points/Front', 'Additional Points Found Using Epsilon Constraint Method', 'Dominated Solutions'}, 'FontSize', 18)
+set(ax5,'Xscale','log','Yscale','log')
+title('Validation of Discontinuous Pareto Front Using Epsilon Constraint Method', 'FontSize', 20)
 
 figure(2)
 t = tiledlayout(1,2);
@@ -120,11 +143,13 @@ objective_vals = sortrows(objective_vals_unsorted, [3,1]);
 % scatter(objective_vals(:,1), objective_vals(:,3), 300, '.')
 plot(objective_vals(:,1), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold on
+% scatter(epsilon_pts.RF, epsilon_pts.Cost, 50, 'x', 'MarkerEdgeColor', 'm')
 scatter(filtered_populations(:,10), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD", 'MarkerEdgeAlpha', 0.2);
 hold off
 xlabel('Radiative Forcing [mW/m^2]', 'FontSize', 18)
 ylabel('Cost [$USD]', 'FontSize', 18)
 legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 18)
+set(ax3,'Xscale','log','Yscale','log')
 
 ax4 = nexttile;
 ax4.FontSize = 18;
@@ -132,12 +157,14 @@ ax4.FontSize = 18;
 objective_vals = sortrows(objective_vals_unsorted, [3,2]);
 plot(objective_vals(:,2), objective_vals(:,3), 'r.-', 'MarkerSize', 20)
 hold on
+% scatter(epsilon_pts.OD, epsilon_pts.Cost, 50, 'x', 'MarkerEdgeColor', 'm')
 scatter2 = scatter(filtered_populations(:,11), filtered_populations(:,12), 25, '.', 'MarkerEdgeColor', "#0072BD");
 hold off
 alpha(scatter2, 0.1)
 xlabel('Ozone Depletion [%]', 'FontSize', 18)
 ylabel('Cost [$USD]', 'FontSize', 18)
 legend({'Pareto Points/Front', 'Dominated Solutions'}, 'FontSize', 18)
+set(ax4,'Xscale','log','Yscale','log')
 
 % ax5 = nexttile;
 % ax5.FontSize = 18;
