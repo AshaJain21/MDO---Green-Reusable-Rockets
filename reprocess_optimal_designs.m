@@ -8,8 +8,8 @@ function all_results = reprocess_optimal_designs(doe_res)
     
     for i = 1:height(doe_res)
         design_variables = setup_designvariables(doe_res(i, 3), doe_res(i, 4), doe_res(i, 5), engine_prop_db(doe_res(i, 6), :), engine_prop_db(doe_res(i, 7), :), reentry_shield_material_db(doe_res(i, 8), :), doe_res(i, 9), doe_res(i, 10), doe_res(i, 11));
-        [launch_cadence, total_rf, ~, ~, ~, constraints, rocket] = run_model(design_variables, parameters);
-        res_struct = struct(launch_cadence=launch_cadence, rocket=rocket, constraints=constraints, total_rf=total_rf);
+        [launch_cadence, total_rf, total_od, ~, ~, constraints, rocket] = run_model(design_variables, parameters);
+        res_struct = struct(launch_cadence=launch_cadence, rocket=rocket, constraints=constraints, total_rf=total_rf, total_od=total_od);
         all_results = [all_results, res_struct];
     end
 
